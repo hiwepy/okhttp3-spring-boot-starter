@@ -7,6 +7,8 @@ Spring Boot Starter For Okhttp 3.x
 
 
  > 基于 okhttp 3.x 的 Spring Boot Starter 实现
+ 
+ 部分代码参考了：https://github.com/linux-china/spring-boot-starter-okhttp3
 
 ### Maven
 

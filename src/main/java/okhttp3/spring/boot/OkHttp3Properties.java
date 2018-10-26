@@ -11,8 +11,8 @@ import okhttp3.WebSocketListener;
 import okio.Sink;
 import okio.Source;
 
-@ConfigurationProperties(Okhttp3Properties.PREFIX)
-public class Okhttp3Properties {
+@ConfigurationProperties(OkHttp3Properties.PREFIX)
+public class OkHttp3Properties {
 
 	public static final String PREFIX = "okhttp3";
 
@@ -92,6 +92,37 @@ public class Okhttp3Properties {
      */
 	private int pingInterval = 0;
 	
+	private Protocol protocol = Protocol.SSL;
+	
+	public enum Protocol {
+
+		/**
+		 * SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。该协议由两层组成：SSL记录协议和SSL握手协议。
+		 */
+		SSL("SSL"),
+		SSLv2("SSLv2"),
+		SSLv3("SSLv3"),
+		/**
+		 * TLS：(Transport Layer Security，传输层安全协议)，用于两个应用程序之间提供保密性和数据完整性。该协议由两层组成：TLS记录协议和TLS握手协议。
+		 */
+		TLS("TLS"),
+		TLSv1("TLSv1"),
+		TLSv2("TLSv2");
+
+		private final String protocol;
+
+		Protocol(String protocol) {
+			this.protocol = protocol;
+		}
+
+		public String value() {
+			return protocol;
+		}
+		
+	}
+	
+	
+	
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -154,6 +185,14 @@ public class Okhttp3Properties {
 
 	public void setPingInterval(int pingInterval) {
 		this.pingInterval = pingInterval;
+	}
+
+	public Protocol getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
 	}
 	
 }

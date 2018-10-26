@@ -1,5 +1,6 @@
 package okhttp3.spring.boot;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -27,9 +28,9 @@ import okhttp3.spring.boot.ssl.TrustManagerUtils;
  */
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
-@ConditionalOnProperty(prefix = Okhttp3Properties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ Okhttp3Properties.class })
-public class Okhttp3AutoConfiguration {
+@ConditionalOnProperty(prefix = OkHttp3Properties.PREFIX, value = "enabled", havingValue = "true")
+@EnableConfigurationProperties({ OkHttp3Properties.class })
+public class OkHttp3AutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -42,35 +43,44 @@ public class Okhttp3AutoConfiguration {
 	public X509TrustManager trustManager() {
 		return TrustManagerUtils.getAcceptAllTrustManager();
 	}
-
+	
 	@Bean
 	@ConditionalOnMissingBean
-	public CertificateChainCleaner certificatePinner(X509TrustManager trustManager) {
-		return CertificateChainCleaner.get(trustManager);
-	}
-
-	@Bean
-	public OkHttpClient okHttpClient(OkHttpHostnameVerifier okhttpHostnameVerifier, 
-			X509TrustManager trustManager,
-			Okhttp3Properties properties) throws Exception {
-
+	public SSLSocketFactory trustedSSLSocketFactory(X509TrustManager trustManager) throws IOException {
 		/*
 		 * 默认信任所有的证书 TODO 最好加上证书认证，主流App都有自己的证书
 		 */
 		SSLContext sslContext = SSLContextUtils.createSSLContext("TLS", null, 
 				new TrustManager[] { trustManager },
 				new SecureRandom());
-		SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
+		return sslContext.getSocketFactory();
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+	public CertificateChainCleaner certificatePinner(X509TrustManager trustManager) {
+		return CertificateChainCleaner.get(trustManager);
+	}
+	
+	@Bean
+	public OkHttpClient okHttpClient(OkHttpHostnameVerifier okhttpHostnameVerifier, 
+			X509TrustManager trustManager,
+			SSLSocketFactory trustedSSLSocketFactory,
+			OkHttp3Properties properties) throws Exception {
+
+		
 		OkHttpClient client = new OkHttpClient().newBuilder()
-				.sslSocketFactory(sslSocketFactory, trustManager)
+				.connectTimeout(properties.getConnectTimeout(), TimeUnit.SECONDS)
 				.hostnameVerifier(okhttpHostnameVerifier)
 				.followRedirects(properties.isFollowRedirects())
 				.followSslRedirects(properties.isFollowSslRedirects())
 				.pingInterval(properties.getPingInterval(), TimeUnit.SECONDS)
-				.connectTimeout(properties.getConnectTimeout(), TimeUnit.SECONDS)
+				.readTimeout(properties.getReadTimeout(), TimeUnit.SECONDS)
+				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
+				.sslSocketFactory(trustedSSLSocketFactory, trustManager)
 				.writeTimeout(properties.getWriteTimeout(), TimeUnit.SECONDS)
-				.readTimeout(properties.getReadTimeout(), TimeUnit.SECONDS).build();
+				.build();
 
 		return client;
 	}
