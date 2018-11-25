@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -107,6 +108,11 @@ public class OkHttp3AutoConfiguration {
 	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder,
 			ObjectProvider<Interceptor> interceptors) throws Exception {
 		return okhttp3Builder.build();
+	}
+	
+	@Bean
+	public OkHttp3ClientHttpRequestFactory okHttp3ClientHttpRequestFactory(OkHttpClient okhttp3Client) {
+		return new OkHttp3ClientHttpRequestFactory(okhttp3Client);
 	}
 
 }

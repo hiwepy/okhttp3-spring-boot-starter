@@ -16,7 +16,7 @@ public class OkHttp3Properties {
 
 	public static final String PREFIX = "okhttp3";
 
-	/** Whether Enable H2 Server. */
+	/** Whether Enable OkHttp3 Client. */
 	private boolean enabled = false;
 
 	/**
