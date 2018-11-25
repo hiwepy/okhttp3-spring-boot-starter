@@ -371,41 +371,48 @@
         <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
         <maven-surefire-plugin.vertsion>2.21.0</maven-surefire-plugin.vertsion>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
-		<okhttp.version>3.11.0</okhttp.version>
+		<guava.version>26.0-jre</guava.version>
+		<okhttp3.version>3.12.0</okhttp3.version>
 		<metrics.version>4.0.3</metrics.version>
 	</properties>
 	
 	<dependencyManagement>
 		<dependencies>
+			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+			<dependency>
+			    <groupId>com.google.guava</groupId>
+			    <artifactId>guava</artifactId>
+			    <version>${guava.version}</version>
+			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
 			<dependency>
 			    <groupId>com.squareup.okhttp3</groupId>
 			    <artifactId>okhttp</artifactId>
-			    <version>${okhttp.version}</version>
+			    <version>${okhttp3.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/logging-interceptor -->
 			<dependency>
 			    <groupId>com.squareup.okhttp3</groupId>
 			    <artifactId>logging-interceptor</artifactId>
-			    <version>${okhttp.version}</version>
+			    <version>${okhttp3.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-dnsoverhttps -->
 			<dependency>
 			    <groupId>com.squareup.okhttp3</groupId>
 			    <artifactId>okhttp-dnsoverhttps</artifactId>
-			    <version>${okhttp.version}</version>
+			    <version>${okhttp3.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-urlconnection -->
 			<dependency>
 			    <groupId>com.squareup.okhttp3</groupId>
 			    <artifactId>okhttp-urlconnection</artifactId>
-			    <version>${okhttp.version}</version>
+			    <version>${okhttp3.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-apache -->
 			<dependency>
 			    <groupId>com.squareup.okhttp3</groupId>
 			    <artifactId>okhttp-apache</artifactId>
-			    <version>${okhttp.version}</version>
+			    <version>${okhttp3.version}</version>
 			</dependency>
 			<dependency>
 	            <groupId>io.dropwizard.metrics</groupId>
@@ -465,6 +472,10 @@
 		</dependency>
 		
 		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp</artifactId>
 		</dependency>
@@ -472,7 +483,6 @@
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>logging-interceptor</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-dnsoverhttps -->
 		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp-dnsoverhttps</artifactId>
