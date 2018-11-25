@@ -414,6 +414,7 @@
 			    <artifactId>okhttp-apache</artifactId>
 			    <version>${okhttp3.version}</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core -->
 			<dependency>
 	            <groupId>io.dropwizard.metrics</groupId>
 	            <artifactId>metrics-core</artifactId>
