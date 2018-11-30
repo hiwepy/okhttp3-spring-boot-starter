@@ -16,9 +16,11 @@
 package okhttp3.spring.boot.actuate;
 
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -37,16 +39,22 @@ import okhttp3.spring.boot.OkHttp3AutoConfiguration;
  * @author 		： <a href="https://github.com/vindell">vindell</a>
  */
 @Configuration
-@ConditionalOnClass({OkHttpClient.class, MetricRegistry.class})
+@ConditionalOnClass({OkHttpClient.class, MetricRegistry.class, HealthIndicator.class, EndpointAutoConfiguration.class})
 @ConditionalOnEnabledHealthIndicator("okhttp3")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(OkHttp3AutoConfiguration.class)
 public class OkHttp3EndpointAutoConfiguration {
 	
 	@Bean
-	@ConditionalOnEnabledEndpoint
-    public OkHttp3MetricsInterceptor okHttp3MetricsInterceptor() {
-        return new OkHttp3MetricsInterceptor();
+	@ConditionalOnMissingBean
+	public MetricRegistry registry() {
+		return new MetricRegistry();
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+    public OkHttp3MetricsInterceptor okHttp3MetricsInterceptor(MetricRegistry registry) {
+        return new OkHttp3MetricsInterceptor(registry);
     }
 
 	@Bean
