@@ -1,4 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-okhttp3.spring.boot.Okhttp3AutoConfiguration,\
+okhttp3.spring.boot.OkHttp3AutoConfiguration,\
 okhttp3.spring.boot.actuate.OkHttp3EndpointAutoConfiguration
