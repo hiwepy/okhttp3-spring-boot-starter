@@ -16,7 +16,7 @@ Spring Boot Starter For Okhttp 3.x
 <dependency>
 	<groupId>com.github.vindell</groupId>
 	<artifactId>spring-boot-starter-okhttp3</artifactId>
-	<version>${project.version}</version>
+	<version>1.0.1.RELEASE</version>
 </dependency>
 ```
 
