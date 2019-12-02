@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.4.RELEASE</version>
+		<version>2.2.1.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>com.github.vindell</groupId>
-	<artifactId>spring-boot-starter-okhttp3</artifactId>
+	<artifactId>okhttp3-spring-boot-starter</artifactId>
 	<description>Spring Boot Starter For Okhttp 3.x</description>
 	<version>1.0.2-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>

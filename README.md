@@ -1,4 +1,4 @@
-# spring-boot-starter-okhttp3
+# okhttp3-spring-boot-starter
 
 Spring Boot Starter For Okhttp 3.x
 
@@ -15,7 +15,7 @@ Spring Boot Starter For Okhttp 3.x
 ``` xml
 <dependency>
 	<groupId>com.github.vindell</groupId>
-	<artifactId>spring-boot-starter-okhttp3</artifactId>
+	<artifactId>okhttp3-spring-boot-starter</artifactId>
 	<version>${project.version}</version>
 </dependency>
 ```
