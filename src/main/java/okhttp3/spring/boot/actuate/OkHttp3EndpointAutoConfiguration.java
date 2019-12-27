@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, vindell (https://github.com/vindell).
+ * Copyright (c) 2018, hiwepy (https://github.com/hiwepy).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -36,7 +36,7 @@ import okhttp3.spring.boot.OkHttp3AutoConfiguration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link OkHttp3Endpoint}.
- * @author 		： <a href="https://github.com/vindell">vindell</a>
+ * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @Configuration
 @ConditionalOnClass({OkHttpClient.class, MetricRegistry.class, HealthIndicator.class, EndpointAutoConfiguration.class})
