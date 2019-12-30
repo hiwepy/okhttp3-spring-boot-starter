@@ -14,7 +14,7 @@ Spring Boot Starter For Okhttp 3.x
 
 ``` xml
 <dependency>
-	<groupId>com.github.vindell</groupId>
+	<groupId>com.github.hiwepy</groupId>
 	<artifactId>okhttp3-spring-boot-starter</artifactId>
 	<version>${project.version}</version>
 </dependency>
