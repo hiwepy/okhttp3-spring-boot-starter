@@ -115,4 +115,9 @@ public class OkHttp3AutoConfiguration {
 		return new OkHttp3ClientHttpRequestFactory(okhttp3Client);
 	}
 
+	@Bean
+	public OkHttp3Template okHttp3Template(OkHttpClient okHttpClient) {
+		return new OkHttp3Template(okHttpClient);
+	}
+	
 }
