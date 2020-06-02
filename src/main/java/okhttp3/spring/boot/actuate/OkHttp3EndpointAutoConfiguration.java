@@ -17,9 +17,8 @@ package okhttp3.spring.boot.actuate;
 
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -41,7 +40,7 @@ import okhttp3.spring.boot.OkHttp3AutoConfiguration;
 @Configuration
 @ConditionalOnClass({OkHttpClient.class, MetricRegistry.class, HealthIndicator.class, EndpointAutoConfiguration.class})
 @ConditionalOnEnabledHealthIndicator("okhttp3")
-@AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
+@AutoConfigureBefore(EndpointAutoConfiguration.class)
 @AutoConfigureAfter(OkHttp3AutoConfiguration.class)
 public class OkHttp3EndpointAutoConfiguration {
 	
@@ -59,7 +58,7 @@ public class OkHttp3EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
+	@ConditionalOnAvailableEndpoint
     public OkHttp3Endpoint okHttp3Endpoint(MetricRegistry registry) {
         return new OkHttp3Endpoint(registry);
 	}
