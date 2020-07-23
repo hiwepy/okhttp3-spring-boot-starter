@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import okhttp3.ConnectionPool;
 import okhttp3.Response;
 import okhttp3.WebSocketListener;
-import okio.Sink;
 import okio.Source;
 
 @ConfigurationProperties(OkHttp3Properties.PREFIX)
@@ -47,7 +46,20 @@ public class OkHttp3Properties {
      * calling application should do its own recovery of connectivity failures.
      */
 	private boolean retryOnConnectionFailure;
-	 /**
+
+	/*
+     * Sets the default timeout for complete calls. A value of 0 means no timeout, otherwise values
+     * must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
+     *
+     * <p>The call timeout spans the entire call: resolving DNS, connecting, writing the request
+     * body, server processing, and reading the response body. If the call requires redirects or
+     * retries all must complete within one timeout period.
+     *
+     * <p>The default value is 0 which imposes no timeout.
+     */
+	private int callTimeout;
+	
+	 /*
      * Sets the default connect timeout for new connections. A value of 0 means no timeout,
      * otherwise values must be between 1 and {@link Integer#MAX_VALUE} when converted to
      * milliseconds.
@@ -74,7 +86,6 @@ public class OkHttp3Properties {
      * <p>The write timeout is applied for individual write IO operations.
      * The default value is 10 seconds.
      *
-     * @see Sink#timeout()
      */
 	private int writeTimeout = 10;
 	/**
@@ -91,6 +102,10 @@ public class OkHttp3Properties {
      * <p>The default value of 0 disables client-initiated pings.
      */
 	private int pingInterval = 0;
+	
+	private int maxIdleConnections;
+	
+	private long keepAliveDuration;
 	
 	private Protocol protocol = Protocol.SSL;
 	
@@ -120,9 +135,7 @@ public class OkHttp3Properties {
 		}
 		
 	}
-	
-	
-	
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -155,6 +168,14 @@ public class OkHttp3Properties {
 		this.retryOnConnectionFailure = retryOnConnectionFailure;
 	}
 
+	public int getCallTimeout() {
+		return callTimeout;
+	}
+
+	public void setCallTimeout(int callTimeout) {
+		this.callTimeout = callTimeout;
+	}
+
 	public int getConnectTimeout() {
 		return connectTimeout;
 	}
@@ -185,6 +206,22 @@ public class OkHttp3Properties {
 
 	public void setPingInterval(int pingInterval) {
 		this.pingInterval = pingInterval;
+	}
+
+	public int getMaxIdleConnections() {
+		return maxIdleConnections;
+	}
+
+	public void setMaxIdleConnections(int maxIdleConnections) {
+		this.maxIdleConnections = maxIdleConnections;
+	}
+
+	public long getKeepAliveDuration() {
+		return keepAliveDuration;
+	}
+
+	public void setKeepAliveDuration(long keepAliveDuration) {
+		this.keepAliveDuration = keepAliveDuration;
 	}
 
 	public Protocol getProtocol() {
