@@ -5,12 +5,12 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -24,7 +24,8 @@ import okhttp3.CertificatePinner;
 import okhttp3.ConnectionPool;
 import okhttp3.ConnectionSpec;
 import okhttp3.CookieJar;
-import okhttp3.Interceptor;
+import okhttp3.Dns;
+import okhttp3.EventListener;
 import okhttp3.OkHttpClient;
 import okhttp3.internal.tls.CertificateChainCleaner;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -98,11 +99,32 @@ public class OkHttp3AutoConfiguration {
 	}
 	
 	@Bean
+	@ConditionalOnMissingBean
+	public Dns dns() {
+		return Dns.SYSTEM;
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+	public EventListener eventListener() {
+		return EventListener.NONE;
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+	public SocketFactory socketFactory() {
+		return SocketFactory.getDefault();
+	}
+	
+	@Bean
 	public okhttp3.OkHttpClient.Builder okhttp3Builder(
 			CertificatePinner certificatePinner,
 			@Autowired(required = false) List<ConnectionSpec> connectionSpecs,
 			CookieJar cookieJar,
-			OkHttpHostnameVerifier okhttpHostnameVerifier,
+			Dns dns,
+			EventListener eventListener,
+			OkHttpHostnameVerifier hostnameVerifier,
+			SocketFactory socketFactory,
 			X509TrustManager trustManager, 
 			SSLSocketFactory trustedSSLSocketFactory,
 			HttpLoggingInterceptor loggingInterceptor, 
@@ -116,15 +138,17 @@ public class OkHttp3AutoConfiguration {
 				//.cache(cache)
 				.callTimeout(properties.getCallTimeout(), TimeUnit.SECONDS)
 				.certificatePinner(certificatePinner)
-				.connectionPool(connectionPool())
+				.connectionPool(connectionPool(properties))
 				.connectionSpecs(connectionSpecs)
 				.connectTimeout(properties.getConnectTimeout(), TimeUnit.SECONDS)
 				.cookieJar(cookieJar)
 				.dns(dns)
-				.hostnameVerifier(okhttpHostnameVerifier)
+				.eventListener(eventListener)
 				.followRedirects(properties.isFollowRedirects())
 				.followSslRedirects(properties.isFollowSslRedirects())
+				.hostnameVerifier(hostnameVerifier)
 				.pingInterval(properties.getPingInterval(), TimeUnit.SECONDS)
+				.socketFactory(socketFactory)
 				.readTimeout(properties.getReadTimeout(), TimeUnit.SECONDS)
 				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
 				.sslSocketFactory(trustedSSLSocketFactory, trustManager)
@@ -136,14 +160,13 @@ public class OkHttp3AutoConfiguration {
      * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
      */
     @Bean
-    public ConnectionPool connectionPool() {
-        return new ConnectionPool(200, 5, TimeUnit.MINUTES);
+    public ConnectionPool connectionPool(OkHttp3Properties properties) {
+        return new ConnectionPool(properties.getMaxIdleConnections(), properties.getKeepAliveDuration(), TimeUnit.SECONDS);
     }
 	
 	@Bean
 	@ConditionalOnMissingBean(OkHttpClient.class)
-	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder,
-			ObjectProvider<Interceptor> interceptors) throws Exception {
+	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder) throws Exception {
 		return okhttp3Builder.build();
 	}
 	

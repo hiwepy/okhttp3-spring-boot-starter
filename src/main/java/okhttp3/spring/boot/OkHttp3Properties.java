@@ -102,10 +102,10 @@ public class OkHttp3Properties {
      * <p>The default value of 0 disables client-initiated pings.
      */
 	private int pingInterval = 0;
-	
-	private int maxIdleConnections;
-	
-	private long keepAliveDuration;
+	/** The maximum number of idle connections for each address. */
+	private int maxIdleConnections = 200;
+	 /** keep alive Duration. The default value is 30000 seconds. */
+	private long keepAliveDuration = 30000;
 	
 	private Protocol protocol = Protocol.SSL;
 	
