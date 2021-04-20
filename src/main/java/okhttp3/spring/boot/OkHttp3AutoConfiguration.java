@@ -44,7 +44,7 @@ import okhttp3.spring.boot.ssl.TrustManagerUtils;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @ConditionalOnProperty(prefix = OkHttp3Properties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3SslProperties.class, 
+@EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class, 
 	GzipRequestProperties.class, RequestHeaderProperties.class })
 public class OkHttp3AutoConfiguration {
  
@@ -77,18 +77,25 @@ public class OkHttp3AutoConfiguration {
 			ObjectProvider<NetworkInterceptor> networkInterceptorProvider,
 			HttpLoggingInterceptor loggingInterceptor, 
 			OkHttp3Properties properties,
+			OkHttp3PoolProperties poolProperties,
 			OkHttp3SslProperties sslProperties) throws Exception {
 		
 		loggingInterceptor.setLevel(properties.getLogLevel());
 		
-		okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
+		/**
+	     * Create a new connection pool with tuning parameters appropriate for a single-user application.
+	     * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
+	     */
+    	ConnectionPool connectionPool = new ConnectionPool(poolProperties.getMaxIdleConnections(), poolProperties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
+		
+    	okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
 				// Application Interceptors、Network Interceptors : https://segmentfault.com/a/1190000013164260
 				.addInterceptor(loggingInterceptor)
 				.addNetworkInterceptor(loggingInterceptor)
 				//.cache(cache)
 				.callTimeout(properties.getCallTimeout(), TimeUnit.SECONDS)
 				.certificatePinner(certificatePinnerProvider.getIfAvailable(()-> { return CertificatePinner.DEFAULT;} ))
-				.connectionPool(connectionPool(properties))
+				.connectionPool(connectionPool)
 				.connectionSpecs(connectionSpecProvider.stream().collect(Collectors.toList()))
 				.connectTimeout(properties.getConnectTimeout(), TimeUnit.SECONDS)
 				.cookieJar(cookieJarProvider.getIfAvailable(()-> { return CookieJar.NO_COOKIES;}))
@@ -117,7 +124,7 @@ public class OkHttp3AutoConfiguration {
 			/*
 			 * 默认信任所有的证书 TODO 最好加上证书认证，主流App都有自己的证书
 			 */
-			SSLContext sslContext = SSLContextUtils.createSSLContext(properties.getProtocol().name(), null, 
+			SSLContext sslContext = SSLContextUtils.createSSLContext(sslProperties.getProtocol().name(), null, 
 					new TrustManager[] { trustManager },
 					new SecureRandom());
 			
@@ -129,15 +136,6 @@ public class OkHttp3AutoConfiguration {
 		
 		return builder;
 	}
-	
-	/**
-     * Create a new connection pool with tuning parameters appropriate for a single-user application.
-     * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
-     */
-    @Bean
-    public ConnectionPool connectionPool(OkHttp3Properties properties) {
-        return new ConnectionPool(properties.getMaxIdleConnections(), properties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
-    }
 	
 	@Bean
 	@ConditionalOnMissingBean(OkHttpClient.class)
