@@ -2,6 +2,7 @@ package okhttp3.spring.boot;
 
 import java.net.ProxySelector;
 import java.net.Socket;
+import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -28,8 +29,12 @@ public class OkHttp3Properties {
      * HttpURLConnection}'s default.
      */
 	private boolean followSslRedirects;
-	/** Configure this client to follow redirects. If unset, redirects will be followed. */
+	
+	/** 
+	 * Configure this client to follow redirects. If unset, redirects will be followed.
+	 */
 	private boolean followRedirects;
+	
 	/**
      * Configure this client to retry or not when a connectivity problem is encountered. By default,
      * this client silently recovers from the following problems:
@@ -105,10 +110,14 @@ public class OkHttp3Properties {
      * <p>The default value of 0 disables client-initiated pings.
      */
 	private int pingInterval = 0;
-	/** The maximum number of idle connections for each address. */
+	/** 
+	 * The maximum number of idle connections for each address. 
+	 */
 	private int maxIdleConnections = 200;
-	 /** keep alive Duration. The default value is 30000 seconds. */
-	private long keepAliveDuration = 30000;
+	/** 
+	 * keep alive Duration. The default value is 30000 seconds. 
+	 */
+	private Duration keepAliveDuration = Duration.ofSeconds(30000);
 	
 	private Protocol protocol = Protocol.SSL;
 	

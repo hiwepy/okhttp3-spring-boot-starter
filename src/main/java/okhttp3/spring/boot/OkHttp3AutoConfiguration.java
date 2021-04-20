@@ -44,7 +44,8 @@ import okhttp3.spring.boot.ssl.TrustManagerUtils;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @ConditionalOnProperty(prefix = OkHttp3Properties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ OkHttp3Properties.class, GzipRequestProperties.class, RequestHeaderProperties.class })
+@EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3SslProperties.class, 
+	GzipRequestProperties.class, RequestHeaderProperties.class })
 public class OkHttp3AutoConfiguration {
  
 	@Bean
@@ -72,21 +73,11 @@ public class OkHttp3AutoConfiguration {
 			ObjectProvider<OkHttpHostnameVerifier> hostnameVerifierProvider,
 			ObjectProvider<SocketFactory>  socketFactoryProvider,
 			ObjectProvider<X509TrustManager> trustManagerProvider, 
-			HttpLoggingInterceptor loggingInterceptor, 
 			ObjectProvider<ApplicationInterceptor> applicationInterceptorProvider,
 			ObjectProvider<NetworkInterceptor> networkInterceptorProvider,
-			OkHttp3Properties properties) throws Exception {
-		
-		X509TrustManager trustManager = trustManagerProvider.getIfAvailable(()-> { return TrustManagerUtils.getAcceptAllTrustManager(); });
-		
-		/*
-		 * 默认信任所有的证书 TODO 最好加上证书认证，主流App都有自己的证书
-		 */
-		SSLContext sslContext = SSLContextUtils.createSSLContext(properties.getProtocol().name(), null, 
-				new TrustManager[] { trustManager },
-				new SecureRandom());
-		
-		SSLSocketFactory trustedSSLSocketFactory = sslContext.getSocketFactory();
+			HttpLoggingInterceptor loggingInterceptor, 
+			OkHttp3Properties properties,
+			OkHttp3SslProperties sslProperties) throws Exception {
 		
 		loggingInterceptor.setLevel(properties.getLogLevel());
 		
@@ -110,7 +101,6 @@ public class OkHttp3AutoConfiguration {
 				.socketFactory(socketFactoryProvider.getIfAvailable(()-> { return SocketFactory.getDefault();}))
 				.readTimeout(properties.getReadTimeout(), TimeUnit.SECONDS)
 				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
-				.sslSocketFactory(trustedSSLSocketFactory, trustManager)
 				.writeTimeout(properties.getWriteTimeout(), TimeUnit.SECONDS);
 
 		for (ApplicationInterceptor applicationInterceptor : applicationInterceptorProvider) {
@@ -119,6 +109,24 @@ public class OkHttp3AutoConfiguration {
 		for (NetworkInterceptor networkInterceptor : networkInterceptorProvider) {
 			builder.addNetworkInterceptor(networkInterceptor);
 		}
+		
+		if(sslProperties.isEnabled()) {
+			
+			X509TrustManager trustManager = trustManagerProvider.getIfAvailable(()-> { return TrustManagerUtils.getAcceptAllTrustManager(); });
+			
+			/*
+			 * 默认信任所有的证书 TODO 最好加上证书认证，主流App都有自己的证书
+			 */
+			SSLContext sslContext = SSLContextUtils.createSSLContext(properties.getProtocol().name(), null, 
+					new TrustManager[] { trustManager },
+					new SecureRandom());
+			
+			SSLSocketFactory trustedSSLSocketFactory = sslContext.getSocketFactory();
+			
+			builder.sslSocketFactory(trustedSSLSocketFactory, trustManager);
+			
+		}
+		
 		return builder;
 	}
 	
@@ -128,7 +136,7 @@ public class OkHttp3AutoConfiguration {
      */
     @Bean
     public ConnectionPool connectionPool(OkHttp3Properties properties) {
-        return new ConnectionPool(properties.getMaxIdleConnections(), properties.getKeepAliveDuration(), TimeUnit.SECONDS);
+        return new ConnectionPool(properties.getMaxIdleConnections(), properties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
     }
 	
 	@Bean
