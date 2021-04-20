@@ -16,14 +16,13 @@
 package okhttp3.spring.boot.ext;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.google.common.net.HttpHeaders;
 
-import okhttp3.Interceptor;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
@@ -32,17 +31,37 @@ import okhttp3.Response;
  * 请求头拦截器：动态增加请求头
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class RequestHeaderInterceptor implements Interceptor  {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(RequestHeaderInterceptor.class);
+@Slf4j
+public class RequestHeaderInterceptor implements ApplicationInterceptor  {
+
+    private AtomicBoolean enabled = new AtomicBoolean(false);
+
 	private RequestHeaderProperties headerProperties;
 	
 	public RequestHeaderInterceptor(RequestHeaderProperties headerProperties) {
 		this.headerProperties = headerProperties;
+		enabled.set(this.headerProperties.isEnabled());
 	}
 	
+	public void enable() {
+        enabled.set(true);
+    }
+
+    public boolean isEnabled() {
+        return enabled.get();
+    }
+
+    public void disable() {
+        enabled.set(false);
+    }
+    
 	@Override
 	public Response intercept(Chain chain) throws IOException {
+		
+		if (!enabled.get()) {
+            return chain.proceed(chain.request());
+        }
+	 
 		Request originalRequest = chain.request();
 		Builder builder = originalRequest.newBuilder();
 		builder = this.setHeader(originalRequest, builder, HttpHeaders.ACCEPT, headerProperties.getAccept());
@@ -65,8 +84,8 @@ public class RequestHeaderInterceptor implements Interceptor  {
 		if(StringUtils.hasText(value)) {
 			boolean match = request.headers().names().stream().anyMatch(item -> item.equalsIgnoreCase(key));
 			if(!match) {
-				if(LOG.isDebugEnabled()){
-					LOG.debug("Set HTTP HEADER: {}:{}.", key, value);
+				if(log.isDebugEnabled()){
+					log.debug("Set HTTP HEADER: {}:{}.", key, value);
 				}
 				return builder.header(key, value);
 			}

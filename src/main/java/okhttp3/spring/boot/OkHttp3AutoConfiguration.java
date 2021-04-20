@@ -1,9 +1,8 @@
 package okhttp3.spring.boot;
 
-import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -11,7 +10,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,8 +26,11 @@ import okhttp3.CookieJar;
 import okhttp3.Dns;
 import okhttp3.EventListener;
 import okhttp3.OkHttpClient;
-import okhttp3.internal.tls.CertificateChainCleaner;
 import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.spring.boot.ext.ApplicationInterceptor;
+import okhttp3.spring.boot.ext.GzipRequestInterceptor;
+import okhttp3.spring.boot.ext.GzipRequestProperties;
+import okhttp3.spring.boot.ext.NetworkInterceptor;
 import okhttp3.spring.boot.ext.RequestHeaderInterceptor;
 import okhttp3.spring.boot.ext.RequestHeaderProperties;
 import okhttp3.spring.boot.ssl.OkHttpHostnameVerifier;
@@ -42,43 +44,17 @@ import okhttp3.spring.boot.ssl.TrustManagerUtils;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @ConditionalOnProperty(prefix = OkHttp3Properties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ OkHttp3Properties.class, RequestHeaderProperties.class })
+@EnableConfigurationProperties({ OkHttp3Properties.class, GzipRequestProperties.class, RequestHeaderProperties.class })
 public class OkHttp3AutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean(OkHttpHostnameVerifier.class)
-	public OkHttpHostnameVerifier okhttpHostnameVerifier() {
-		return new TrustAllHostnameVerifier();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(X509TrustManager.class)
-	public X509TrustManager trustManager() {
-		return TrustManagerUtils.getAcceptAllTrustManager();
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean(SSLSocketFactory.class)
-	public SSLSocketFactory trustedSSLSocketFactory(X509TrustManager trustManager) throws IOException {
-		/*
-		 * 默认信任所有的证书 TODO 最好加上证书认证，主流App都有自己的证书
-		 */
-		SSLContext sslContext = SSLContextUtils.createSSLContext("TLS", null, 
-				new TrustManager[] { trustManager },
-				new SecureRandom());
-
-		return sslContext.getSocketFactory();
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean(CertificateChainCleaner.class)
-	public CertificateChainCleaner certificatePinner(X509TrustManager trustManager) {
-		return CertificateChainCleaner.get(trustManager);
-	}
-	
+ 
 	@Bean
 	public RequestHeaderInterceptor headerInterceptor(RequestHeaderProperties headerProperties) {
 		return new RequestHeaderInterceptor(headerProperties);
+	}
+	
+	@Bean
+	public GzipRequestInterceptor gzipInterceptor(GzipRequestProperties gzipProperties) {
+		return new GzipRequestInterceptor(gzipProperties);
 	}
 	
 	@Bean
@@ -87,72 +63,63 @@ public class OkHttp3AutoConfiguration {
 	}
 	
 	@Bean
-	@ConditionalOnMissingBean
-	public CertificatePinner certificatePinner() {
-		return CertificatePinner.DEFAULT;
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean
-	public CookieJar cookieJar() {
-		return CookieJar.NO_COOKIES;
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean
-	public Dns dns() {
-		return Dns.SYSTEM;
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean
-	public EventListener eventListener() {
-		return EventListener.NONE;
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean
-	public SocketFactory socketFactory() {
-		return SocketFactory.getDefault();
-	}
-	
-	@Bean
 	public okhttp3.OkHttpClient.Builder okhttp3Builder(
-			CertificatePinner certificatePinner,
-			@Autowired(required = false) List<ConnectionSpec> connectionSpecs,
-			CookieJar cookieJar,
-			Dns dns,
-			EventListener eventListener,
-			OkHttpHostnameVerifier hostnameVerifier,
-			SocketFactory socketFactory,
-			X509TrustManager trustManager, 
-			SSLSocketFactory trustedSSLSocketFactory,
+			ObjectProvider<CertificatePinner> certificatePinnerProvider,
+			ObjectProvider<ConnectionSpec> connectionSpecProvider,
+			ObjectProvider<CookieJar> cookieJarProvider,
+			ObjectProvider<Dns> dnsProvider,
+			ObjectProvider<EventListener> eventListenerProvider,
+			ObjectProvider<OkHttpHostnameVerifier> hostnameVerifierProvider,
+			ObjectProvider<SocketFactory>  socketFactoryProvider,
+			ObjectProvider<X509TrustManager> trustManagerProvider, 
 			HttpLoggingInterceptor loggingInterceptor, 
-			RequestHeaderInterceptor headerInterceptor,
+			ObjectProvider<ApplicationInterceptor> applicationInterceptorProvider,
+			ObjectProvider<NetworkInterceptor> networkInterceptorProvider,
 			OkHttp3Properties properties) throws Exception {
-
-		return new OkHttpClient().newBuilder()
+		
+		X509TrustManager trustManager = trustManagerProvider.getIfAvailable(()-> { return TrustManagerUtils.getAcceptAllTrustManager(); });
+		
+		/*
+		 * 默认信任所有的证书 TODO 最好加上证书认证，主流App都有自己的证书
+		 */
+		SSLContext sslContext = SSLContextUtils.createSSLContext(properties.getProtocol().name(), null, 
+				new TrustManager[] { trustManager },
+				new SecureRandom());
+		
+		SSLSocketFactory trustedSSLSocketFactory = sslContext.getSocketFactory();
+		
+		loggingInterceptor.setLevel(properties.getLogLevel());
+		
+		okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
 				// Application Interceptors、Network Interceptors : https://segmentfault.com/a/1190000013164260
-				.addInterceptor(headerInterceptor)
+				.addInterceptor(loggingInterceptor)
 				.addNetworkInterceptor(loggingInterceptor)
 				//.cache(cache)
 				.callTimeout(properties.getCallTimeout(), TimeUnit.SECONDS)
-				.certificatePinner(certificatePinner)
+				.certificatePinner(certificatePinnerProvider.getIfAvailable(()-> { return CertificatePinner.DEFAULT;} ))
 				.connectionPool(connectionPool(properties))
-				.connectionSpecs(connectionSpecs)
+				.connectionSpecs(connectionSpecProvider.stream().collect(Collectors.toList()))
 				.connectTimeout(properties.getConnectTimeout(), TimeUnit.SECONDS)
-				.cookieJar(cookieJar)
-				.dns(dns)
-				.eventListener(eventListener)
+				.cookieJar(cookieJarProvider.getIfAvailable(()-> { return CookieJar.NO_COOKIES;}))
+				.dns(dnsProvider.getIfAvailable(()-> { return Dns.SYSTEM;} ))
+				.eventListener(eventListenerProvider.getIfAvailable(()-> { return EventListener.NONE;}))
 				.followRedirects(properties.isFollowRedirects())
 				.followSslRedirects(properties.isFollowSslRedirects())
-				.hostnameVerifier(hostnameVerifier)
+				.hostnameVerifier(hostnameVerifierProvider.getIfAvailable(()-> { return new TrustAllHostnameVerifier();} ))
 				.pingInterval(properties.getPingInterval(), TimeUnit.SECONDS)
-				.socketFactory(socketFactory)
+				.socketFactory(socketFactoryProvider.getIfAvailable(()-> { return SocketFactory.getDefault();}))
 				.readTimeout(properties.getReadTimeout(), TimeUnit.SECONDS)
 				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
 				.sslSocketFactory(trustedSSLSocketFactory, trustManager)
 				.writeTimeout(properties.getWriteTimeout(), TimeUnit.SECONDS);
+
+		for (ApplicationInterceptor applicationInterceptor : applicationInterceptorProvider) {
+			builder.addInterceptor(applicationInterceptor);
+		}
+		for (NetworkInterceptor networkInterceptor : networkInterceptorProvider) {
+			builder.addNetworkInterceptor(networkInterceptor);
+		}
+		return builder;
 	}
 	
 	/**

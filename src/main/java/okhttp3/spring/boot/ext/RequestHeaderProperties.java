@@ -17,11 +17,14 @@ package okhttp3.spring.boot.ext;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import lombok.Data;
+
 /**
  * Http Request Header 配置
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @ConfigurationProperties(RequestHeaderProperties.PREFIX)
+@Data
 public class RequestHeaderProperties {
 
 	public static final String PREFIX = "okhttp3.header";
@@ -32,161 +35,60 @@ public class RequestHeaderProperties {
 	public static final String DEFAULT_CONNECTION = "keep-alive";
 	public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:63.0) Gecko/20100101 Firefox/63.0";
 
+	/** Whether Enable OkHttp3 Header . */
+	private boolean enabled = false;
+	
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept
 	 */
-	private String Accept = DEFAULT_ACCEPT;
+	private String accept = DEFAULT_ACCEPT;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Charset
 	 */
-	private String AcceptCharset = DEFAULT_ACCEPT_CHARSET;
+	private String acceptCharset = DEFAULT_ACCEPT_CHARSET;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding
 	 */
-	private String AcceptEncoding = DEFAULT_ACCEPT_ENCODING;
+	private String acceptEncoding = DEFAULT_ACCEPT_ENCODING;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
 	 */
-	private String AcceptLanguage = "*";
+	private String acceptLanguage = "*";
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Ranges
 	 */
-	private String AcceptRanges = "";
+	private String acceptRanges = "";
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
 	 */
-	private String Authorization;
+	private String authorization;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection
 	 */
-	private String Connection = DEFAULT_CONNECTION;
+	private String connection = DEFAULT_CONNECTION;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
 	 */
-	private String Host;
+	private String host;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
 	 */
-	private String Origin = "";
+	private String origin = "";
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authorization
 	 */
-	private String ProxyAuthorization;
+	private String proxyAuthorization;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authenticate
 	 */
-	private String ProxyAuthenticate;
+	private String proxyAuthenticate;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer
 	 */
-	private String Referer;
+	private String referer;
 	/**
 	 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
 	 */
-	private String UserAgent = DEFAULT_USER_AGENT;
-
-	public String getAccept() {
-		return Accept;
-	}
-
-	public void setAccept(String accept) {
-		Accept = accept;
-	}
-
-	public String getAcceptCharset() {
-		return AcceptCharset;
-	}
-
-	public void setAcceptCharset(String acceptCharset) {
-		AcceptCharset = acceptCharset;
-	}
-
-	public String getAcceptEncoding() {
-		return AcceptEncoding;
-	}
-
-	public void setAcceptEncoding(String acceptEncoding) {
-		AcceptEncoding = acceptEncoding;
-	}
-
-	public String getAcceptLanguage() {
-		return AcceptLanguage;
-	}
-
-	public void setAcceptLanguage(String acceptLanguage) {
-		AcceptLanguage = acceptLanguage;
-	}
-
-	public String getAcceptRanges() {
-		return AcceptRanges;
-	}
-
-	public void setAcceptRanges(String acceptRanges) {
-		AcceptRanges = acceptRanges;
-	}
-
-	public String getAuthorization() {
-		return Authorization;
-	}
-
-	public void setAuthorization(String authorization) {
-		Authorization = authorization;
-	}
-
-	public String getConnection() {
-		return Connection;
-	}
-
-	public void setConnection(String connection) {
-		Connection = connection;
-	}
-
-	public String getHost() {
-		return Host;
-	}
-
-	public void setHost(String host) {
-		Host = host;
-	}
-
-	public String getOrigin() {
-		return Origin;
-	}
-
-	public void setOrigin(String origin) {
-		Origin = origin;
-	}
-
-	public String getProxyAuthorization() {
-		return ProxyAuthorization;
-	}
-
-	public void setProxyAuthorization(String proxyAuthorization) {
-		ProxyAuthorization = proxyAuthorization;
-	}
-
-	public String getProxyAuthenticate() {
-		return ProxyAuthenticate;
-	}
-
-	public void setProxyAuthenticate(String proxyAuthenticate) {
-		ProxyAuthenticate = proxyAuthenticate;
-	}
-
-	public String getReferer() {
-		return Referer;
-	}
-
-	public void setReferer(String referer) {
-		Referer = referer;
-	}
-
-	public String getUserAgent() {
-		return UserAgent;
-	}
-
-	public void setUserAgent(String userAgent) {
-		UserAgent = userAgent;
-	}
+	private String userAgent = DEFAULT_USER_AGENT;
 
 }

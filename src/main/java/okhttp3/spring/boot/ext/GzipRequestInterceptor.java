@@ -16,6 +16,7 @@
 package okhttp3.spring.boot.ext;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.net.HttpHeaders;
 
@@ -29,22 +30,48 @@ import okio.GzipSink;
 import okio.Okio;
 
 /**
- * This interceptor compresses the HTTP request body. Many webservers can't
- * handle this!
+ * Implementation of a intercepter to compress http's body using GZIP.
+ *
+ * @author fujian1115 [at] gmail.com
  */
-public class GzipRequestInterceptor implements Interceptor {
+public class GzipRequestInterceptor implements ApplicationInterceptor {
 
+    private AtomicBoolean enabled = new AtomicBoolean(false);
+
+    public GzipRequestInterceptor(GzipRequestProperties gzipProperties) {
+		enabled.set(gzipProperties.isEnabled());
+	}
+    
+    public void enable() {
+        enabled.set(true);
+    }
+
+    public boolean isEnabled() {
+        return enabled.get();
+    }
+
+    public void disable() {
+        enabled.set(false);
+    }
+    
 	@Override
 	public Response intercept(Interceptor.Chain chain) throws IOException {
 
-		Request originalRequest = chain.request();
-		if (originalRequest.body() == null || originalRequest.header(HttpHeaders.CONTENT_ENCODING) != null) {
-			return chain.proceed(originalRequest);
-		}
+		 if (!enabled.get()) {
+            return chain.proceed(chain.request());
+        }
 
-		Request compressedRequest = originalRequest.newBuilder().header(HttpHeaders.CONTENT_ENCODING, "gzip")
-				.method(originalRequest.method(), gzip(originalRequest.body())).build();
-		return chain.proceed(compressedRequest);
+        Request originalRequest = chain.request();
+        RequestBody body = originalRequest.body();
+        
+        if (body == null || originalRequest.header(HttpHeaders.CONTENT_ENCODING) != null) {
+            return chain.proceed(originalRequest);
+        }
+
+        Request compressedRequest = originalRequest.newBuilder().header(HttpHeaders.CONTENT_ENCODING, "gzip")
+                .method(originalRequest.method(), gzip(body)).build();
+        return chain.proceed(compressedRequest);
+        
 	}
 
 	private RequestBody gzip(final RequestBody body) {

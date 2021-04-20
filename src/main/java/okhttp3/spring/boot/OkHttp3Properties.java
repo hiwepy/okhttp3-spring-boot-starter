@@ -5,12 +5,15 @@ import java.net.Socket;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import lombok.Data;
 import okhttp3.ConnectionPool;
 import okhttp3.Response;
 import okhttp3.WebSocketListener;
+import okhttp3.logging.HttpLoggingInterceptor.Level;
 import okio.Source;
 
 @ConfigurationProperties(OkHttp3Properties.PREFIX)
+@Data
 public class OkHttp3Properties {
 
 	public static final String PREFIX = "okhttp3";
@@ -109,6 +112,8 @@ public class OkHttp3Properties {
 	
 	private Protocol protocol = Protocol.SSL;
 	
+	private Level logLevel = Level.NONE;
+	
 	public enum Protocol {
 
 		/**
@@ -134,102 +139,6 @@ public class OkHttp3Properties {
 			return protocol;
 		}
 		
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public boolean isFollowSslRedirects() {
-		return followSslRedirects;
-	}
-
-	public void setFollowSslRedirects(boolean followSslRedirects) {
-		this.followSslRedirects = followSslRedirects;
-	}
-
-	public boolean isFollowRedirects() {
-		return followRedirects;
-	}
-
-	public void setFollowRedirects(boolean followRedirects) {
-		this.followRedirects = followRedirects;
-	}
-
-	public boolean isRetryOnConnectionFailure() {
-		return retryOnConnectionFailure;
-	}
-
-	public void setRetryOnConnectionFailure(boolean retryOnConnectionFailure) {
-		this.retryOnConnectionFailure = retryOnConnectionFailure;
-	}
-
-	public int getCallTimeout() {
-		return callTimeout;
-	}
-
-	public void setCallTimeout(int callTimeout) {
-		this.callTimeout = callTimeout;
-	}
-
-	public int getConnectTimeout() {
-		return connectTimeout;
-	}
-
-	public void setConnectTimeout(int connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
-
-	public int getReadTimeout() {
-		return readTimeout;
-	}
-
-	public void setReadTimeout(int readTimeout) {
-		this.readTimeout = readTimeout;
-	}
-
-	public int getWriteTimeout() {
-		return writeTimeout;
-	}
-
-	public void setWriteTimeout(int writeTimeout) {
-		this.writeTimeout = writeTimeout;
-	}
-
-	public int getPingInterval() {
-		return pingInterval;
-	}
-
-	public void setPingInterval(int pingInterval) {
-		this.pingInterval = pingInterval;
-	}
-
-	public int getMaxIdleConnections() {
-		return maxIdleConnections;
-	}
-
-	public void setMaxIdleConnections(int maxIdleConnections) {
-		this.maxIdleConnections = maxIdleConnections;
-	}
-
-	public long getKeepAliveDuration() {
-		return keepAliveDuration;
-	}
-
-	public void setKeepAliveDuration(long keepAliveDuration) {
-		this.keepAliveDuration = keepAliveDuration;
-	}
-
-	public Protocol getProtocol() {
-		return protocol;
-	}
-
-	public void setProtocol(Protocol protocol) {
-		this.protocol = protocol;
 	}
 	
 }
