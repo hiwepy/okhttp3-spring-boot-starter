@@ -13,7 +13,7 @@ public class OkHttp3SslProperties {
 	/** Whether Enable OkHttp3 SSL. */
 	private boolean enabled = false;
 	
-	private Protocol protocol = Protocol.SSL;
+	private Protocol protocol = Protocol.TLS;
 	
 	public enum Protocol {
 

@@ -2,13 +2,17 @@ package okhttp3.spring.boot;
 
 import java.net.ProxySelector;
 import java.net.Socket;
+import java.time.Duration;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
 import okhttp3.ConnectionPool;
+import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.WebSocketListener;
+import okhttp3.internal.Util;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 import okio.Source;
 
@@ -27,12 +31,12 @@ public class OkHttp3Properties {
      * <p>If unset, protocol redirects will be followed. This is different than the built-in {@code
      * HttpURLConnection}'s default.
      */
-	private boolean followSslRedirects;
+	private boolean followSslRedirects = true;
 	
 	/** 
 	 * Configure this client to follow redirects. If unset, redirects will be followed.
 	 */
-	private boolean followRedirects;
+	private boolean followRedirects = true;
 	
 	/**
      * Configure this client to retry or not when a connectivity problem is encountered. By default,
@@ -52,7 +56,7 @@ public class OkHttp3Properties {
      * Set this to false to avoid retrying requests when doing so is destructive. In this case the
      * calling application should do its own recovery of connectivity failures.
      */
-	private boolean retryOnConnectionFailure;
+	private boolean retryOnConnectionFailure = true;
 
 	/*
      * Sets the default timeout for complete calls. A value of 0 means no timeout, otherwise values
@@ -64,7 +68,7 @@ public class OkHttp3Properties {
      *
      * <p>The default value is 0 which imposes no timeout.
      */
-	private int callTimeout;
+	private Duration callTimeout = Duration.ofSeconds(0);
 	
 	 /*
      * Sets the default connect timeout for new connections. A value of 0 means no timeout,
@@ -74,7 +78,7 @@ public class OkHttp3Properties {
      * <p>The connectTimeout is applied when connecting a TCP socket to the target host.
      * The default value is 10 seconds.
      */
-	private int connectTimeout = 10;
+	private Duration connectTimeout = Duration.ofSeconds(10);
 	/**
      * Sets the default read timeout for new connections. A value of 0 means no timeout, otherwise
      * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
@@ -85,7 +89,7 @@ public class OkHttp3Properties {
      * @see Socket#setSoTimeout(int)
      * @see Source#timeout()
      */
-	private int readTimeout = 10;
+	private Duration readTimeout = Duration.ofSeconds(10);
 	 /**
      * Sets the default write timeout for new connections. A value of 0 means no timeout, otherwise
      * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
@@ -94,7 +98,7 @@ public class OkHttp3Properties {
      * The default value is 10 seconds.
      *
      */
-	private int writeTimeout = 10;
+	private Duration writeTimeout = Duration.ofSeconds(10);
 	/**
      * Sets the interval between HTTP/2 and web socket pings initiated by this client. Use this to
      * automatically send ping frames until either the connection fails or it is closed. This keeps
@@ -108,7 +112,15 @@ public class OkHttp3Properties {
      *
      * <p>The default value of 0 disables client-initiated pings.
      */
-	private int pingInterval = 0;
+	private Duration pingInterval = Duration.ofSeconds(0);
+	
+	/**
+	 * the protocols to use, in order of preference. If the list contains {@link
+     *     Protocol#H2_PRIOR_KNOWLEDGE} then that must be the only protocol and HTTPS URLs will not
+     *     be supported. Otherwise the list must contain {@link Protocol#HTTP_1_1}. The list must
+     *     not contain null or {@link Protocol#HTTP_1_0}.
+	 */
+	List<Protocol> protocols = Util.immutableList(Protocol.HTTP_2, Protocol.HTTP_1_1);
 	
 	private Level logLevel = Level.NONE;
 	

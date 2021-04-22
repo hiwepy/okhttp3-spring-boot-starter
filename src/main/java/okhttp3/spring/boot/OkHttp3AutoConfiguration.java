@@ -1,13 +1,11 @@
 package okhttp3.spring.boot;
 
-import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -21,11 +19,11 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 
 import okhttp3.CertificatePinner;
 import okhttp3.ConnectionPool;
-import okhttp3.ConnectionSpec;
 import okhttp3.CookieJar;
 import okhttp3.Dns;
 import okhttp3.EventListener;
 import okhttp3.OkHttpClient;
+import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.spring.boot.ext.ApplicationInterceptor;
 import okhttp3.spring.boot.ext.GzipRequestInterceptor;
@@ -33,9 +31,7 @@ import okhttp3.spring.boot.ext.GzipRequestProperties;
 import okhttp3.spring.boot.ext.NetworkInterceptor;
 import okhttp3.spring.boot.ext.RequestHeaderInterceptor;
 import okhttp3.spring.boot.ext.RequestHeaderProperties;
-import okhttp3.spring.boot.ssl.OkHttpHostnameVerifier;
-import okhttp3.spring.boot.ssl.SSLContextUtils;
-import okhttp3.spring.boot.ssl.TrustAllHostnameVerifier;
+import okhttp3.spring.boot.ssl.SSLContexts;
 import okhttp3.spring.boot.ssl.TrustManagerUtils;
 
 /**
@@ -66,11 +62,10 @@ public class OkHttp3AutoConfiguration {
 	@Bean
 	public okhttp3.OkHttpClient.Builder okhttp3Builder(
 			ObjectProvider<CertificatePinner> certificatePinnerProvider,
-			ObjectProvider<ConnectionSpec> connectionSpecProvider,
 			ObjectProvider<CookieJar> cookieJarProvider,
 			ObjectProvider<Dns> dnsProvider,
 			ObjectProvider<EventListener> eventListenerProvider,
-			ObjectProvider<OkHttpHostnameVerifier> hostnameVerifierProvider,
+			ObjectProvider<HostnameVerifier> hostnameVerifierProvider,
 			ObjectProvider<SocketFactory>  socketFactoryProvider,
 			ObjectProvider<X509TrustManager> trustManagerProvider, 
 			ObjectProvider<ApplicationInterceptor> applicationInterceptorProvider,
@@ -87,28 +82,28 @@ public class OkHttp3AutoConfiguration {
 	     * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
 	     */
     	ConnectionPool connectionPool = new ConnectionPool(poolProperties.getMaxIdleConnections(), poolProperties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
-		
+    	
     	okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
 				// Application Interceptors、Network Interceptors : https://segmentfault.com/a/1190000013164260
 				.addInterceptor(loggingInterceptor)
 				.addNetworkInterceptor(loggingInterceptor)
 				//.cache(cache)
-				.callTimeout(properties.getCallTimeout(), TimeUnit.SECONDS)
+				.callTimeout(properties.getCallTimeout())
 				.certificatePinner(certificatePinnerProvider.getIfAvailable(()-> { return CertificatePinner.DEFAULT;} ))
 				.connectionPool(connectionPool)
-				.connectionSpecs(connectionSpecProvider.stream().collect(Collectors.toList()))
-				.connectTimeout(properties.getConnectTimeout(), TimeUnit.SECONDS)
+				.connectTimeout(properties.getConnectTimeout())
 				.cookieJar(cookieJarProvider.getIfAvailable(()-> { return CookieJar.NO_COOKIES;}))
 				.dns(dnsProvider.getIfAvailable(()-> { return Dns.SYSTEM;} ))
 				.eventListener(eventListenerProvider.getIfAvailable(()-> { return EventListener.NONE;}))
 				.followRedirects(properties.isFollowRedirects())
-				.followSslRedirects(properties.isFollowSslRedirects())
-				.hostnameVerifier(hostnameVerifierProvider.getIfAvailable(()-> { return new TrustAllHostnameVerifier();} ))
-				.pingInterval(properties.getPingInterval(), TimeUnit.SECONDS)
+				.followSslRedirects(properties.isFollowSslRedirects()) 
+				.hostnameVerifier(hostnameVerifierProvider.getIfAvailable(()-> { return OkHostnameVerifier.INSTANCE;} ))
+				.pingInterval(properties.getPingInterval())
+				.protocols(properties.getProtocols())
 				.socketFactory(socketFactoryProvider.getIfAvailable(()-> { return SocketFactory.getDefault();}))
-				.readTimeout(properties.getReadTimeout(), TimeUnit.SECONDS)
+				.readTimeout(properties.getReadTimeout())
 				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
-				.writeTimeout(properties.getWriteTimeout(), TimeUnit.SECONDS);
+				.writeTimeout(properties.getWriteTimeout());
 
 		for (ApplicationInterceptor applicationInterceptor : applicationInterceptorProvider) {
 			builder.addInterceptor(applicationInterceptor);
@@ -121,12 +116,7 @@ public class OkHttp3AutoConfiguration {
 			
 			X509TrustManager trustManager = trustManagerProvider.getIfAvailable(()-> { return TrustManagerUtils.getAcceptAllTrustManager(); });
 			
-			/*
-			 * 默认信任所有的证书 TODO 最好加上证书认证，主流App都有自己的证书
-			 */
-			SSLContext sslContext = SSLContextUtils.createSSLContext(sslProperties.getProtocol().name(), null, 
-					new TrustManager[] { trustManager },
-					new SecureRandom());
+			SSLContext sslContext = SSLContexts.createSSLContext(sslProperties.getProtocol().name(), null, trustManager);
 			
 			SSLSocketFactory trustedSSLSocketFactory = sslContext.getSocketFactory();
 			

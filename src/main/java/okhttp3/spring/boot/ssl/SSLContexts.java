@@ -96,18 +96,6 @@ public class SSLContexts {
 		return createSSLContext(protocol, keyManager == null ? null : new KeyManager[] { keyManager },
 				trustManager == null ? null : new TrustManager[] { trustManager });
 	}
-
-	public static SSLContext createTrustSSLContext() throws SSLInitializationException {
-        try {
-            final SSLContext sslContext = SSLContext.getInstance(SSLContextBuilder.TLS);
-            sslContext.init(null, new TrustManager[] { TrustManagerUtils.getAcceptAllTrustManager() }, new SecureRandom());
-            return sslContext;
-        } catch (final NoSuchAlgorithmException ex) {
-            throw new SSLInitializationException(ex.getMessage(), ex);
-        } catch (final KeyManagementException ex) {
-            throw new SSLInitializationException(ex.getMessage(), ex);
-        }
-    }
  
 	/*
 	 * Create and initialise an SSLContext.
@@ -137,6 +125,31 @@ public class SSLContexts {
 		}
 		return ctx;
 	}
+	
+    /**
+     * Create and initialise an SSLContext.
+     * @param protocol the protocol used to instatiate the context
+     * @param keyManagers the array of key managers, may be {@code null} but array entries must not be {@code null}
+     * @param trustManagers the array of trust managers, may be {@code null} but array entries must not be {@code null}
+     * @param secureRandom This class provides a cryptographically strong random number generator (RNG). 
+     * @return the initialised context.
+     * @throws IOException this is used to wrap any {@link GeneralSecurityException} that occurs
+     */
+    public static SSLContext createSSLContext(String protocol, KeyManager[] keyManagers, TrustManager[] trustManagers,
+    		SecureRandom secureRandom)
+        throws IOException {
+        SSLContext ctx;
+        try {
+            ctx = SSLContexts.custom().setProtocol(protocol).build();
+            ctx.init(keyManagers, trustManagers, secureRandom);
+        } catch (GeneralSecurityException e) {
+            IOException ioe = new IOException("Could not initialize SSL context");
+            ioe.initCause(e);
+            throw ioe;
+        }
+        return ctx;
+    }
+    
 
 	public static SSLContext createSSLContext(KeyStore keystore, TrustStrategy trustStrategy) throws IOException {
 		// 初始化证书
@@ -174,5 +187,6 @@ public class SSLContexts {
     public static SSLContextBuilder custom() {
         return SSLContextBuilder.create();
     }
+   
 
 }
