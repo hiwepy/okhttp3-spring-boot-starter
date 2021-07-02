@@ -22,9 +22,6 @@ public class OkHttp3Properties {
 
 	public static final String PREFIX = "okhttp3";
 
-	/** Whether Enable OkHttp3 Client. */
-	private boolean enabled = false;
-
 	/**
      * Configure this client to follow redirects from HTTPS to HTTP and from HTTP to HTTPS.
      *
