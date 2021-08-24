@@ -15,10 +15,12 @@ public class OkHttp3PoolProperties {
 	/** 
 	 * The maximum number of idle connections for each address. 
 	 */
-	private int maxIdleConnections = 200;
+	private int maxIdleConnections = 5;
 	/** 
-	 * keep alive Duration. The default value is 30000 seconds. 
+	 * keep alive Duration. The default value is 5 Minutes. 
 	 */
-	private Duration keepAliveDuration = Duration.ofSeconds(30000);
+	private Duration keepAliveDuration = Duration.ofMinutes(5);
+	
+	
 	
 }

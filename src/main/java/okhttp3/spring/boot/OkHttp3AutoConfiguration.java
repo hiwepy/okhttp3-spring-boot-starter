@@ -1,5 +1,6 @@
 package okhttp3.spring.boot;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.SocketFactory;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 
+import okhttp3.Cache;
 import okhttp3.CertificatePinner;
 import okhttp3.ConnectionPool;
 import okhttp3.CookieJar;
@@ -53,13 +55,16 @@ public class OkHttp3AutoConfiguration {
 	}
 	
 	@Bean
-	public HttpLoggingInterceptor loggingInterceptor() {
-		return new HttpLoggingInterceptor();
+	public HttpLoggingInterceptor loggingInterceptor(OkHttp3Properties properties) {
+		HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+		loggingInterceptor.setLevel(properties.getLogLevel());
+		return loggingInterceptor;
 	}
 	
 	@Bean
 	public okhttp3.OkHttpClient.Builder okhttp3Builder(
 			ObjectProvider<CertificatePinner> certificatePinnerProvider,
+			ObjectProvider<Cache> cacheProvider,
 			ObjectProvider<CookieJar> cookieJarProvider,
 			ObjectProvider<Dns> dnsProvider,
 			ObjectProvider<EventListener> eventListenerProvider,
@@ -73,8 +78,6 @@ public class OkHttp3AutoConfiguration {
 			OkHttp3PoolProperties poolProperties,
 			OkHttp3SslProperties sslProperties) throws Exception {
 		
-		loggingInterceptor.setLevel(properties.getLogLevel());
-		
 		/**
 	     * Create a new connection pool with tuning parameters appropriate for a single-user application.
 	     * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
@@ -85,7 +88,6 @@ public class OkHttp3AutoConfiguration {
 				// Application Interceptors、Network Interceptors : https://segmentfault.com/a/1190000013164260
 				.addInterceptor(loggingInterceptor)
 				.addNetworkInterceptor(loggingInterceptor)
-				//.cache(cache)
 				.callTimeout(properties.getCallTimeout())
 				.certificatePinner(certificatePinnerProvider.getIfAvailable(()-> { return CertificatePinner.DEFAULT;} ))
 				.connectionPool(connectionPool)
@@ -108,6 +110,11 @@ public class OkHttp3AutoConfiguration {
 		}
 		for (NetworkInterceptor networkInterceptor : networkInterceptorProvider) {
 			builder.addNetworkInterceptor(networkInterceptor);
+		}
+		
+		Cache cache = cacheProvider.getIfAvailable();
+		if(Objects.nonNull(cache)) {
+			builder.cache(cache);
 		}
 		
 		if(sslProperties.isEnabled()) {
