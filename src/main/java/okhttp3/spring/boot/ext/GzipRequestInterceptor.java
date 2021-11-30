@@ -34,7 +34,7 @@ import okio.Okio;
  *
  * @author fujian1115 [at] gmail.com
  */
-public class GzipRequestInterceptor implements ApplicationInterceptor {
+public class GzipRequestInterceptor implements RequestInterceptor {
 
     private AtomicBoolean enabled = new AtomicBoolean(false);
 
@@ -57,7 +57,7 @@ public class GzipRequestInterceptor implements ApplicationInterceptor {
 	@Override
 	public Response intercept(Interceptor.Chain chain) throws IOException {
 
-		 if (!enabled.get()) {
+		if (!enabled.get()) {
             return chain.proceed(chain.request());
         }
 

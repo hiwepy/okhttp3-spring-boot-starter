@@ -32,7 +32,7 @@ import okhttp3.Response;
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @Slf4j
-public class RequestHeaderInterceptor implements ApplicationInterceptor  {
+public class RequestHeaderInterceptor implements RequestInterceptor  {
 
     private AtomicBoolean enabled = new AtomicBoolean(false);
 

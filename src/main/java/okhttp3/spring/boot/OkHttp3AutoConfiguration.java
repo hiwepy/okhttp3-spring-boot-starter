@@ -26,12 +26,13 @@ import okhttp3.EventListener;
 import okhttp3.OkHttpClient;
 import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.spring.boot.ext.ApplicationInterceptor;
 import okhttp3.spring.boot.ext.GzipRequestInterceptor;
 import okhttp3.spring.boot.ext.GzipRequestProperties;
 import okhttp3.spring.boot.ext.NetworkInterceptor;
 import okhttp3.spring.boot.ext.RequestHeaderInterceptor;
 import okhttp3.spring.boot.ext.RequestHeaderProperties;
+import okhttp3.spring.boot.ext.RequestInterceptor;
+import okhttp3.spring.boot.ext.RequestRetryIntercepter;
 import okhttp3.spring.boot.ssl.SSLContexts;
 import okhttp3.spring.boot.ssl.TrustManagerUtils;
 
@@ -47,6 +48,11 @@ public class OkHttp3AutoConfiguration {
 	@Bean
 	public RequestHeaderInterceptor headerInterceptor(RequestHeaderProperties headerProperties) {
 		return new RequestHeaderInterceptor(headerProperties);
+	}
+	
+	@Bean
+	public RequestRetryIntercepter requestRetryIntercepter(OkHttp3Properties properties) {
+		return new RequestRetryIntercepter(properties.getMaxRetry(), properties.getRetryInterval());
 	}
 	
 	@Bean
@@ -71,7 +77,7 @@ public class OkHttp3AutoConfiguration {
 			ObjectProvider<HostnameVerifier> hostnameVerifierProvider,
 			ObjectProvider<SocketFactory>  socketFactoryProvider,
 			ObjectProvider<X509TrustManager> trustManagerProvider, 
-			ObjectProvider<ApplicationInterceptor> applicationInterceptorProvider,
+			ObjectProvider<RequestInterceptor> applicationInterceptorProvider,
 			ObjectProvider<NetworkInterceptor> networkInterceptorProvider,
 			HttpLoggingInterceptor loggingInterceptor, 
 			OkHttp3Properties properties,
@@ -105,7 +111,7 @@ public class OkHttp3AutoConfiguration {
 				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
 				.writeTimeout(properties.getWriteTimeout());
 
-		for (ApplicationInterceptor applicationInterceptor : applicationInterceptorProvider) {
+		for (RequestInterceptor applicationInterceptor : applicationInterceptorProvider) {
 			builder.addInterceptor(applicationInterceptor);
 		}
 		for (NetworkInterceptor networkInterceptor : networkInterceptorProvider) {

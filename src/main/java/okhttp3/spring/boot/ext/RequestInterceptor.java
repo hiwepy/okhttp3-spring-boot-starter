@@ -17,6 +17,6 @@ package okhttp3.spring.boot.ext;
 
 import okhttp3.Interceptor;
 
-public interface ApplicationInterceptor extends Interceptor {
+public interface RequestInterceptor extends Interceptor {
 
 }
