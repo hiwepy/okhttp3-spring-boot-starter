@@ -4,6 +4,7 @@ import java.net.ProxySelector;
 import java.net.Socket;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,12 +24,22 @@ public class OkHttp3Properties {
 	public static final String PREFIX = "okhttp3";
 
 	/**
+	 * Default value for disabling SSL validation.
+	 */
+	public static final boolean DEFAULT_DISABLE_SSL_VALIDATION = false;
+
+	/**
+	 * Default value for following redirects.
+	 */
+	public static final boolean DEFAULT_FOLLOW_REDIRECTS = true;
+
+	/**
      * Configure this client to follow redirects from HTTPS to HTTP and from HTTP to HTTPS.
      *
      * <p>If unset, protocol redirects will be followed. This is different than the built-in {@code
      * HttpURLConnection}'s default.
      */
-	private boolean followSslRedirects = true;
+	private boolean followSslRedirects = DEFAULT_FOLLOW_REDIRECTS;
 
 	/**
 	 * Configure this client to follow redirects. If unset, redirects will be followed.
