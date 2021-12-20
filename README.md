@@ -72,15 +72,21 @@ public class Application {
 
 自定义配置，参考如下：
 ```yaml
+################################################################################################################
+###okhttp3基本配置：
+################################################################################################################
 okhttp3:
-  enabled: true
-  connect-timeout: 10
-  follow-redirects: false
-  follow-ssl-redirects: false
-  ping-interval: 0
-  read-timeout: 10
-  retry-on-connection-failure: false
-  write-timeout: 10
+  connect-timeout: 10s
+  read-timeout: 30s
+  write-timeout: 20s
+  log-level: BODY
+  pool:
+    # 最大空闲连接梳数量，超出该值后，连接用完后会被关闭，最多只会保留idleConnectionCount个连接数量
+    max-idle-connections: 256
+    # 最大瞬时处理连接数量
+    max-requests: 128
+    # 每个请求地址最大瞬时处理连接数量
+    max-requests-per-host: 24
 ```
 
 
