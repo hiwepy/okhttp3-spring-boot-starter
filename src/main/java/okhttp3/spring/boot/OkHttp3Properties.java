@@ -29,12 +29,12 @@ public class OkHttp3Properties {
      * HttpURLConnection}'s default.
      */
 	private boolean followSslRedirects = true;
-	
-	/** 
+
+	/**
 	 * Configure this client to follow redirects. If unset, redirects will be followed.
 	 */
 	private boolean followRedirects = true;
-	
+
 	/**
      * Configure this client to retry or not when a connectivity problem is encountered. By default,
      * this client silently recovers from the following problems:
@@ -54,9 +54,9 @@ public class OkHttp3Properties {
      * calling application should do its own recovery of connectivity failures.
      */
 	private boolean retryOnConnectionFailure = true;
-	
+
 	private int maxRetry; // 最大重试次数
-	
+
     private long retryInterval;// 重试的间隔
 
 	/*
@@ -70,7 +70,7 @@ public class OkHttp3Properties {
      * <p>The default value is 0 which imposes no timeout.
      */
 	private Duration callTimeout = Duration.ofSeconds(0);
-	
+
 	 /*
      * Sets the default connect timeout for new connections. A value of 0 means no timeout,
      * otherwise values must be between 1 and {@link Integer#MAX_VALUE} when converted to
@@ -114,7 +114,7 @@ public class OkHttp3Properties {
      * <p>The default value of 0 disables client-initiated pings.
      */
 	private Duration pingInterval = Duration.ofSeconds(0);
-	
+
 	/**
 	 * the protocols to use, in order of preference. If the list contains {@link
      *     Protocol#H2_PRIOR_KNOWLEDGE} then that must be the only protocol and HTTPS URLs will not
@@ -122,7 +122,7 @@ public class OkHttp3Properties {
      *     not contain null or {@link Protocol#HTTP_1_0}.
 	 */
 	List<Protocol> protocols = Util.immutableList(Protocol.HTTP_2, Protocol.HTTP_1_1);
-	
+
 	private Level logLevel = Level.NONE;
-	
+
 }
