@@ -9,6 +9,11 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import okhttp3.*;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -155,7 +160,15 @@ public class OkHttp3AutoConfiguration {
 
 	@Bean
 	public OkHttp3Template okHttp3Template(OkHttpClient okHttpClient) {
-		return new OkHttp3Template(okHttpClient);
+
+		ObjectMapper objectMapperDef = new ObjectMapper();
+		objectMapperDef.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		objectMapperDef.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
+		objectMapperDef.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS);
+		objectMapperDef.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		objectMapperDef.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+		return new OkHttp3Template(okHttpClient, objectMapperDef);
 	}
 
 }

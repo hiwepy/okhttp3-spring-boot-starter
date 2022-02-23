@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.BeanUtils;
@@ -87,329 +88,200 @@ public class OkHttp3Template implements InitializingBean {
 		}
 	}
 
-	public void post(String url, Function<FormBody.Builder, RequestBody> body,
-			final Function<Response, Boolean> success) {
-		this.post(url, body, success, (call, e) -> {
-			return false;
-		});
+	public <T> T post(String url, Map<String, Object> params, Class<T> rtClass) throws IOException {
+		return this.doRequest(url, RequestMethod.GET, rtClass, null, params, null);
 	}
 
-	public void post(String url, Function<FormBody.Builder, RequestBody> body,
-			final Function<Response, Boolean> success, final BiFunction<Call, IOException, Boolean> failure) {
-
-		// 1.创建RequestBody对象
-		RequestBody formBody = body.apply(new FormBody.Builder());
-		// 2.创建Request对象，设置一个url地址,设置请求方式。
-		Request request = new Request.Builder().url(this.joinPath(url)).post(formBody).build();
-		// 3.创建一个call对象,参数就是Request请求对象
-		Call call = okhttp3Client.newCall(request);
-		// 4.请求加入调度，重写回调方法
-		call.enqueue(new Callback() {
-
-			// 请求失败执行的方法
-			@Override
-			public void onFailure(Call call, IOException e) {
-				failure.apply(call, e);
-			}
-
-			// 请求成功执行的方法
-			@Override
-			public void onResponse(Call call, Response response) throws IOException {
-				if (response.isSuccessful()) {
-					success.apply(response);
-				}
-			}
-
-		});
+	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Class<T> rtClass) throws IOException {
+		return this.doRequest(url, RequestMethod.GET, rtClass, headers, params, null);
 	}
-	
-	public <T extends Okhttp3Response> T post(
+
+	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Map<String, Object> bodyContent, Class<T> rtClass) throws IOException {
+		return this.doRequest(url, RequestMethod.GET, rtClass, headers, params, bodyContent);
+	}
+
+	public <T> T get(String url, Map<String, Object> params, Class<T> rtClass) throws IOException {
+		return this.doRequest(url, RequestMethod.GET, rtClass, null, params, null);
+	}
+
+	public <T> T get(String url, Map<String, Object> headers, Map<String, Object> params, Class<T> rtClass) throws IOException {
+		return this.doRequest(url, RequestMethod.GET, rtClass, headers, params, null);
+	}
+
+	public <T> T doRequest(
 			String url,
+			RequestMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
-			Map<String, Object> params,
-			Object bodyObj,
-			Function<Response, T> success,
-			BiFunction<Call, IOException, Boolean> failure) {
-		long startTime = System.currentTimeMillis();
-
-		Request.Builder builder = null;
-		
-		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), params);
-		log.info("OkHttp3 >> Request Url : {}", httpUrl.query());
-		if(Objects.nonNull(bodyObj)) {
-			String bodyStr = objectMapper.writeValueAsString(bodyObj);
-			log.info("OkHttp3 >> Request Body : {}", bodyStr);
-			RequestBody requestBody = RequestBody.create(APPLICATION_JSON_UTF8, bodyStr);
-			builder = new Request.Builder()
-					.url(httpUrl)
-					.post(requestBody);
-		} else {
-			builder = new Request.Builder()
-					.url(httpUrl)
-					.post();
-		}
-		
-		
-		if(Objects.nonNull(headers)) {
-			log.info("OkHttp3 >> Request Headers : {}", headers);
-			for (Entry<String, Object> entry : headers.entrySet()) {
-				builder.addHeader(entry.getKey(), String.valueOf(entry.getValue()));
-			}
-		}
-		
-		// 2.创建一个call对象,参数就是Request请求对象
-		T res = null;
-		try {
-			try(Response response = this.syncRequest(startTime, builder.build());) {
-				if (response.isSuccessful()) {
-					String body = response.body().string();
-					log.info("OkHttp3 Request Success : url : {}, method : {}, params : {}, code : {}, body : {} , use time : {} ", method, url, params, response.code(), body , System.currentTimeMillis() - startTime);
-					res = this.readValue(body, rtClass);
-	            } else {
-	            	log.error("OkHttp3 Request Failure : url : {}, params : {}, code : {}, message : {}, use time : {} ", url, params, response.code(), response.message(), System.currentTimeMillis() - startTime);
-	            	res = BeanUtils.instantiateClass(rtClass);
-				}
-				res.setCode(response.code());
-			}
-		} catch (Exception e) {
-			log.error("OkHttp3 Request Error : url : {}, params : {}, use time : {} ,  {}", url, params, e.getMessage(), System.currentTimeMillis() - startTime);
-			res = BeanUtils.instantiateClass(rtClass);
-			res.setCode(500);
-		}
-		return res;
-	}
-	
-	
-	protected <T extends Okhttp3Response> void post(String url,
-			Map<String, Object> headers, 
-			Map<String, Object> params, 
-			Class<T> cls, 
-			Consumer<T> consumer) {
-		long startTime = System.currentTimeMillis();
-		
-		
-		
-		
-		this.asyncRequest(url, params, (response) -> {
-			if (response.isSuccessful()) {
-				try {
-					String body = response.body().string();
-					T res = this.readValue(body, cls);
-					res.setCode(response.code());
-					if (res.isSuccess()) {
-						log.info("OkHttp3 {} >> Success, url : {}, params : {}, Code : {}, Body : {}", address.getOpt(),
-								url, params, res.getCode(), body);
-					} else {
-						log.error("OkHttp3 {} >> Failure, url : {}, params : {}, Code : {}", address.getOpt(), url,
-								params, res.getCode());
-					}
-					consumer.accept(res);
-				} catch (IOException e) {
-					log.error("OkHttp3 {} >> Response Parse Error : {}", address.getOpt(), e.getMessage());
-					T res = BeanUtils.instantiateClass(cls);
-					consumer.accept(res);
-				}
-			} else {
-				T res = BeanUtils.instantiateClass(cls);
-				res.setCode(response.code());
-				consumer.accept(res);
-			}
-		});
-	}
-
-	public <T> void get(String url, final Function<Response, T> success) {
-		this.get(url, null, success, (call, e) -> {
-			return null;
-		});
-	}
-
-	public <T> void get(String url, Map<String, Object> params, final Function<Response, T> success) {
-		this.get(url, params, success, (call, e) -> {
-			return null;
-		});
-	}
-
-	public <T> void get(String url, 
-			Map<String, Object> params,
-			Function<Response, T> success,
-			final BiFunction<Call, IOException, Boolean> failure) {
-		this.get(url, params, null, success, failure);
-	}
-
-	public <T extends Okhttp3Response> T get(
-			String url,
-			Class<T> rtClass,
-			Map<String, Object> headers,
-			Map<String, Object> params,
-			Object bodyObj,
-			Function<Response, T> success,
-			BiFunction<Call, IOException, Boolean> failure) {
-		long startTime = System.currentTimeMillis();
-		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), params);
-		log.info("OkHttp3 >> Request Url : {}", httpUrl.query());
-		Request.Builder builder = builder = new Request.Builder().url(httpUrl).get();
-		
-		
-		if(Objects.nonNull(headers)) {
-			log.info("OkHttp3 >> Request Headers : {}", headers);
-			for (Entry<String, Object> entry : headers.entrySet()) {
-				builder.addHeader(entry.getKey(), String.valueOf(entry.getValue()));
-			}
-		}
-		// 2.创建一个call对象,参数就是Request请求对象
-		T res = null;
-		try {
-			try(Response response = this.syncRequest(startTime, builder.build());) {
-				if (response.isSuccessful()) {
-					String body = response.body().string();
-					log.info("OkHttp3 Request Success : url : {}, method : {}, params : {}, code : {}, body : {} , use time : {} ", method, url, params, response.code(), body , System.currentTimeMillis() - startTime);
-					res = this.readValue(body, rtClass);
-	            } else {
-	            	log.error("OkHttp3 Request Failure : url : {}, params : {}, code : {}, message : {}, use time : {} ", url, params, response.code(), response.message(), System.currentTimeMillis() - startTime);
-	            	res = BeanUtils.instantiateClass(rtClass);
-				}
-				res.setCode(response.code());
-			}
-		} catch (Exception e) {
-			log.error("OkHttp3 Request Error : url : {}, params : {}, use time : {} ,  {}", url, params, e.getMessage(), System.currentTimeMillis() - startTime);
-			res = BeanUtils.instantiateClass(rtClass);
-			res.setCode(500);
-		}
-		return res;
-	}
-	
-	public <T extends Okhttp3Response> void asyncGet(
-			String url,
-			Class<T> rtClass,
-			Map<String, Object> headers,
-			Map<String, Object> params,
-			Consumer<T> success,
-			BiFunction<Call, IOException, Boolean> failure, 
-			Consumer<Exception> error) {
+			Map<String, Object> queryParams,
+			Map<String, Object> bodyContent) throws IOException {
 		long startTime = System.currentTimeMillis();
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
-		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), params); 
-		Request.Builder builder = new Request.Builder().url(httpUrl).get();
-		for (Entry<String, Object> entry : headers.entrySet()) {
-			builder.addHeader(entry.getKey(), String.valueOf(entry.getValue()));
-		}
-		// 2.创建一个call对象,参数就是Request请求对象
-		this.asyncRequest(startTime, builder.build(), (response) -> {
-			if (response.isSuccessful()) {
-				try {
-					String body = response.body().string();
-					T res = this.readValue(body, rtClass);
-					res.setCode(response.code());
-					if (res.isSuccess()) {
-						log.info("OkHttp3 Response Success, url : {}, params : {}, Code : {}, Body : {}", 
-								url, params, res.getCode(), body);
-					} else {
-						log.error("OkHttp3 Response Failure, url : {}, params : {}, Code : {}", url,
-								params, res.getCode());
-					}
-					success.accept(res);
-				} catch (IOException e) {
-					log.error("OkHttp3 Response Parse Error : {}", e.getMessage());
-					T res = BeanUtils.instantiateClass(rtClass);
-					success.accept(res);
-				}
-			} else {
-				T res = BeanUtils.instantiateClass(rtClass);
-				res.setCode(response.code());
-				success.accept(res);
-			}
-		}, failure, error);
-
- 
+		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
+		return this.doRequest(startTime, httpUrl, method, rtClass, headers, bodyContent);
 	}
-	
-	
-	public <T extends Okhttp3Response> T syncRequest(
+
+	public <T> T doRequest(
 			long startTime,
 			HttpUrl httpUrl,
+			RequestMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
-			Map<String, Object> params,
-			Function<Response, T> success,
-			BiFunction<Call, IOException, Boolean> failure) {
-		log.info("OkHttp3 >> Request Url : {}", httpUrl.query());
-		Request.Builder builder = builder = new Request.Builder().url(httpUrl).get();
-		if(Objects.nonNull(headers)) {
-			log.info("OkHttp3 >> Request Headers : {}", headers);
-			for (Entry<String, Object> entry : headers.entrySet()) {
-				builder.addHeader(entry.getKey(), String.valueOf(entry.getValue()));
-			}
-		}
+			Map<String, Object> bodyContent) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
+		Response response = this.doRequest(startTime, httpUrl, method, headers, bodyContent);
+		if(rtClass.equals(Void.TYPE)){
+			return null;
+		}
 		T res = null;
+		try {
+			if (response.isSuccessful()) {
+				String body = response.body().string();
+				res = this.readValue(body, rtClass);
+			} else {
+				res = BeanUtils.instantiateClass(rtClass);
+			}
+		} catch (Exception e) {
+			log.error("OkHttp3 >> Async Request Error : {}, use time : {}", e.getMessage(), System.currentTimeMillis() - startTime);
+			res = BeanUtils.instantiateClass(rtClass);
+		}
+		return res;
+	}
+
+	public Response doRequest(
+			long startTime,
+			String url,
+			RequestMethod method,
+			Map<String, Object> headers,
+			Map<String, Object> queryParams,
+			Map<String, Object> bodyContent) throws IOException {
+		// 1.创建Request对象，设置一个url地址,设置请求方式。
+		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
+		return this.doRequest(startTime, httpUrl, method, headers, bodyContent);
+	}
+
+	public Response doRequest(
+			long startTime,
+			HttpUrl httpUrl,
+			RequestMethod method,
+			Map<String, Object> headers,
+			Map<String, Object> bodyContent) throws IOException {
+		// 1、创建Request.Builder对象
+		Request.Builder builder = this.getBuilder(httpUrl, method, headers, bodyContent);
+		// 2.创建一个call对象, 参数就是Request请求对象
 		try {
 			try(Response response = okhttp3Client.newCall(builder.build()).execute();) {
 				if (response.isSuccessful()) {
+					log.info("OkHttp3 >> Request Success : code : {}, use time : {} ", response.code(), System.currentTimeMillis() - startTime);
+				} else {
+					log.error("OkHttp3 >> Request Failure : code : {}, message : {}, use time : {} ", response.code(), response.message(), System.currentTimeMillis() - startTime);
+				}
+				return response;
+			}
+		} catch (Exception e) {
+			log.error("OkHttp3 Request Error : {}, use time : {}", e.getMessage(), System.currentTimeMillis() - startTime);
+		}
+		return null;
+	}
+
+	public <T> void doAsyncRequest(
+			String url,
+			RequestMethod method,
+			Class<T> rtClass,
+			Map<String, Object> headers,
+			Map<String, Object> queryParams,
+			Map<String, Object> bodyContent,
+			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+		long startTime = System.currentTimeMillis();
+		// 1.创建Request对象，设置一个url地址,设置请求方式。
+		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
+		this.doAsyncRequest(startTime, httpUrl, method, rtClass, headers, queryParams, bodyContent, failure);
+	}
+
+	public <T> void doAsyncRequest(
+			long startTime,
+			HttpUrl httpUrl,
+			RequestMethod method,
+			Class<T> rtClass,
+			Map<String, Object> headers,
+			Map<String, Object> queryParams,
+			Map<String, Object> bodyContent,
+			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+		// 2.创建一个call对象,参数就是Request请求对象
+		this.doAsyncRequest(startTime, httpUrl, method, headers, bodyContent, (call, response) -> {
+			if(rtClass.equals(Void.TYPE)){
+				return Void.TYPE;
+			}
+			T res = null;
+			try {
+				if (response.isSuccessful()) {
 					String body = response.body().string();
-					log.info("OkHttp3 >> Request Success : url : {}, method : {}, params : {}, code : {}, body : {} , use time : {} ", method, url, params, response.code(), body , System.currentTimeMillis() - startTime);
 					res = this.readValue(body, rtClass);
-	            } else {
-	            	log.error("OkHttp3 >> Request Failure : url : {}, params : {}, code : {}, message : {}, use time : {} ", url, params, response.code(), response.message(), System.currentTimeMillis() - startTime);
-	            	res = BeanUtils.instantiateClass(rtClass);
+				} else {
+					res = BeanUtils.instantiateClass(rtClass);
 				}
-				res.setCode(response.code());
+			} catch (Exception e) {
+				log.error("OkHttp3 >> Async Request Error : {}, use time : {}", e.getMessage(), System.currentTimeMillis() - startTime);
+				res = BeanUtils.instantiateClass(rtClass);
 			}
-		} catch (Exception e) {
-			log.error("OkHttp3 Request Error : url : {}, params : {}, use time : {} ,  {}", url, params, e.getMessage(), System.currentTimeMillis() - startTime);
-			res = BeanUtils.instantiateClass(rtClass);
-			res.setCode(500);
-		}
-		return res;
+			return res;
+		}, failure);
 	}
-	
-	
-	protected void asyncRequest(long startTime, 
-			Request request,
-			Consumer<Response> success,
-			BiFunction<Call, IOException, Boolean> failure, 
-			Consumer<Exception> error) {
-		try {
 
-			okhttp3Client.newCall(request).enqueue(new Callback() {
+	public <T> void doAsyncRequest(
+			long startTime,
+			String url,
+			RequestMethod method,
+			Map<String, Object> headers,
+			Map<String, Object> queryParams,
+			Map<String, Object> bodyContent,
+			BiFunction<Call, Response, T> success,
+			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+		// 1.创建Request对象，设置一个url地址,设置请求方式。
+		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
+		this.doAsyncRequest(startTime, httpUrl, method, headers, bodyContent, success, failure);
+	}
 
-				@Override
-				public void onFailure(Call call, IOException e) {
-					log.error("OkHttp3 Async Request Failure : url : {}, message : {}, use time : {} ",
-							request.url().toString(), e.getMessage(), System.currentTimeMillis() - startTime);
-					if (Objects.nonNull(failure)) {
-						failure.apply(call, e);
-					}
+	public <T> void doAsyncRequest(
+			long startTime,
+			HttpUrl httpUrl,
+			RequestMethod method,
+			Map<String, Object> headers,
+			Map<String, Object> bodyContent,
+			BiFunction<Call, Response, T> success,
+			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+		// 1、创建Request.Builder对象
+		Request.Builder builder = this.getBuilder(httpUrl, method, headers, bodyContent);
+		// 2.创建一个call对象,参数就是Request请求对象
+		okhttp3Client.newCall(builder.build()).enqueue(new Callback() {
+
+			@Override
+			public void onFailure(Call call, IOException e) {
+				log.error("OkHttp3 >> Async Request Failure : {}, use time : {} ", e.getMessage(), System.currentTimeMillis() - startTime);
+				if (Objects.nonNull(failure)) {
+					failure.apply(call, e);
 				}
-
-				@Override
-				public void onResponse(Call call, Response response) {
-					if (response.isSuccessful()) {
-						log.info("OkHttp3 Async Request Success : url : {}, code : {}, message : {} , use time : {} ",
-								request.url().toString(), response.code(), response.message(),
-								System.currentTimeMillis() - startTime);
-						if (Objects.nonNull(success)) {
-							success.accept(response);
-						}
-					} else {
-						log.error("OkHttp3 Async Request Failure : url : {}, code : {}, message : {}, use time : {} ",
-								request.url().toString(), response.code(), response.message(),
-								System.currentTimeMillis() - startTime);
-					}
-				}
-
-			});
-		} catch (Exception e) {
-			log.error("OkHttp3 Async Request Error : url : {}, message : {} , use time : {} ", request.url().toString(),
-					e.getMessage(), System.currentTimeMillis() - startTime);
-			if (Objects.nonNull(error)) {
-				error.accept(e);
 			}
-		}
+
+			@Override
+			public void onResponse(Call call, Response response) {
+				if (response.isSuccessful()) {
+					log.info("OkHttp3 >> Async Request Success : code : {}, use time : {} ", response.code(), System.currentTimeMillis() - startTime);
+				} else {
+					log.error("OkHttp3 >> Async Request Failure : code : {}, message : {}, use time : {} ", response.code(), response.message(), System.currentTimeMillis() - startTime);
+				}
+				if (Objects.nonNull(success)) {
+					success.apply(call, response);
+				}
+			}
+
+		});
 	}
-	
+
+
 
 	protected HttpUrl getHttpUrl(String httpUrl, Map<String, Object> params) {
+		log.info("OkHttp3 >> Request Url : {}", httpUrl);
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(httpUrl).newBuilder();
 		if (CollectionUtils.isEmpty(params)) {
 			return urlBuilder.build();
@@ -419,11 +291,35 @@ public class OkHttp3Template implements InitializingBean {
 			Iterator<Entry<String, Object>> it = params.entrySet().iterator();
 			while (it.hasNext()) {
 				Entry<String, Object> entry = it.next();
-				urlBuilder.addQueryParameter(entry.getKey(),
-						Objects.isNull(entry.getValue()) ? "" : entry.getValue().toString());
+				urlBuilder.addQueryParameter(entry.getKey(), Objects.isNull(entry.getValue()) ? "" : entry.getValue().toString());
 			}
 		}
 		return urlBuilder.build();
+	}
+
+	protected Request.Builder getBuilder(HttpUrl httpUrl,
+												  RequestMethod method,
+												  Map<String, Object> headers,
+												  Map<String, Object> bodyContent) throws IOException{
+		log.info("OkHttp3 >> Request Query Url : {} , Method : {}", httpUrl.query() , method.getName());
+		// 1、创建Request.Builder对象
+		Request.Builder builder = new Request.Builder().url(httpUrl);
+		// 2、添加请求头
+		if(Objects.nonNull(headers)) {
+			log.info("OkHttp3 >> Request Headers : {}", headers);
+			for (Entry<String, Object> entry : headers.entrySet()) {
+				builder.addHeader(entry.getKey(), String.valueOf(entry.getValue()));
+			}
+		}
+		// 3、添加请求体
+		if(Objects.nonNull(bodyContent)) {
+			String bodyStr = objectMapper.writeValueAsString(bodyContent);
+			log.info("OkHttp3 >> Request Body : {}", bodyStr);
+			builder = method.apply(builder, bodyStr);
+		} else {
+			builder = method.apply(builder);
+		}
+		return builder;
 	}
 
 	/**
