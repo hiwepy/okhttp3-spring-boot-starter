@@ -149,6 +149,37 @@ public class OkHttp3Template implements InitializingBean {
 	}
 
 	public Response doRequest(
+			String url,
+			HttpMethod method) throws IOException {
+		return this.doRequest(url, method, null);
+	}
+
+	public Response doRequest(
+			String url,
+			HttpMethod method,
+			Map<String, Object> queryParams) throws IOException {
+		return this.doRequest(url, method, null, queryParams);
+	}
+
+	public Response doRequest(
+			String url,
+			HttpMethod method,
+			Map<String, Object> headers,
+			Map<String, Object> queryParams) throws IOException {
+		return this.doRequest(url, method, headers, queryParams, null);
+	}
+
+	public Response doRequest(
+			String url,
+			HttpMethod method,
+			Map<String, Object> headers,
+			Map<String, Object> queryParams,
+			Map<String, Object> bodyContent) throws IOException {
+		long startTime = System.currentTimeMillis();
+		return this.doRequest(startTime, url, method, headers, queryParams, bodyContent);
+	}
+
+	public Response doRequest(
 			long startTime,
 			String url,
 			HttpMethod method,
@@ -187,18 +218,18 @@ public class OkHttp3Template implements InitializingBean {
 	public <T> void doAsyncRequest(
 			String url,
 			HttpMethod method,
-			Class<T> rtClass) throws IOException {
-		long startTime = System.currentTimeMillis();
-		this.doAsyncRequest(url, method, rtClass, null, null, null, null);
+			Class<T> rtClass,
+			Consumer<T> success) throws IOException {
+		this.doAsyncRequest(url, method, rtClass, success, null);
 	}
 
 	public <T> void doAsyncRequest(
 			String url,
 			HttpMethod method,
 			Class<T> rtClass,
+			Consumer<T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
-		long startTime = System.currentTimeMillis();
-		this.doAsyncRequest(url, method, rtClass, null, null, null, failure);
+		this.doAsyncRequest(url, method, rtClass, null, success, failure);
 	}
 
 	public <T> void doAsyncRequest(
@@ -206,9 +237,9 @@ public class OkHttp3Template implements InitializingBean {
 			HttpMethod method,
 			Class<T> rtClass,
 			Map<String, Object> queryParams,
+			Consumer<T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
-		long startTime = System.currentTimeMillis();
-		this.doAsyncRequest(url, method, rtClass, null, queryParams, null, failure);
+		this.doAsyncRequest(url, method, rtClass, null, queryParams, success, failure);
 	}
 
 	public <T> void doAsyncRequest(
@@ -217,9 +248,9 @@ public class OkHttp3Template implements InitializingBean {
 			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
+			Consumer<T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
-		long startTime = System.currentTimeMillis();
-		this.doAsyncRequest(url, method, rtClass, headers, queryParams, null, failure);
+		this.doAsyncRequest(url, method, rtClass, headers, queryParams, null, success, failure);
 	}
 
 	public <T> void doAsyncRequest(
@@ -229,11 +260,12 @@ public class OkHttp3Template implements InitializingBean {
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
 			Map<String, Object> bodyContent,
+			Consumer<T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
 		long startTime = System.currentTimeMillis();
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
 		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
-		this.doAsyncRequest(startTime, httpUrl, method, rtClass, headers, bodyContent, failure);
+		this.doAsyncRequest(startTime, httpUrl, method, rtClass, headers, bodyContent, success, failure);
 	}
 
 	public <T> void doAsyncRequest(
@@ -243,6 +275,7 @@ public class OkHttp3Template implements InitializingBean {
 			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> bodyContent,
+			Consumer<T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
 		this.doAsyncRequest(startTime, httpUrl, method, headers, bodyContent, (call, response) -> {
@@ -261,6 +294,7 @@ public class OkHttp3Template implements InitializingBean {
 				log.error("OkHttp3 >> Async Request Error : {}, use time : {}", e.getMessage(), System.currentTimeMillis() - startTime);
 				res = BeanUtils.instantiateClass(rtClass);
 			}
+			success.accept(res);
 			return res;
 		}, failure);
 	}
