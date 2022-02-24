@@ -89,28 +89,28 @@ public class OkHttp3Template implements InitializingBean {
 	}
 
 	public <T> T post(String url, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, RequestMethod.GET, rtClass, null, params, null);
+		return this.doRequest(url, HttpMethod.GET, rtClass, null, params, null);
 	}
 
 	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, RequestMethod.GET, rtClass, headers, params, null);
+		return this.doRequest(url, HttpMethod.GET, rtClass, headers, params, null);
 	}
 
 	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Map<String, Object> bodyContent, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, RequestMethod.GET, rtClass, headers, params, bodyContent);
+		return this.doRequest(url, HttpMethod.GET, rtClass, headers, params, bodyContent);
 	}
 
 	public <T> T get(String url, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, RequestMethod.GET, rtClass, null, params, null);
+		return this.doRequest(url, HttpMethod.GET, rtClass, null, params, null);
 	}
 
 	public <T> T get(String url, Map<String, Object> headers, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, RequestMethod.GET, rtClass, headers, params, null);
+		return this.doRequest(url, HttpMethod.GET, rtClass, headers, params, null);
 	}
 
 	public <T> T doRequest(
 			String url,
-			RequestMethod method,
+			HttpMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
@@ -124,7 +124,7 @@ public class OkHttp3Template implements InitializingBean {
 	public <T> T doRequest(
 			long startTime,
 			HttpUrl httpUrl,
-			RequestMethod method,
+			HttpMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> bodyContent) throws IOException {
@@ -151,7 +151,7 @@ public class OkHttp3Template implements InitializingBean {
 	public Response doRequest(
 			long startTime,
 			String url,
-			RequestMethod method,
+			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
 			Map<String, Object> bodyContent) throws IOException {
@@ -163,11 +163,11 @@ public class OkHttp3Template implements InitializingBean {
 	public Response doRequest(
 			long startTime,
 			HttpUrl httpUrl,
-			RequestMethod method,
+			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> bodyContent) throws IOException {
 		// 1、创建Request.Builder对象
-		Request.Builder builder = this.getBuilder(httpUrl, method, headers, bodyContent);
+		Request.Builder builder = this.createRequestBuilder(httpUrl, method, headers, bodyContent);
 		// 2.创建一个call对象, 参数就是Request请求对象
 		try {
 			try(Response response = okhttp3Client.newCall(builder.build()).execute();) {
@@ -186,7 +186,7 @@ public class OkHttp3Template implements InitializingBean {
 
 	public <T> void doAsyncRequest(
 			String url,
-			RequestMethod method,
+			HttpMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
@@ -201,7 +201,7 @@ public class OkHttp3Template implements InitializingBean {
 	public <T> void doAsyncRequest(
 			long startTime,
 			HttpUrl httpUrl,
-			RequestMethod method,
+			HttpMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
@@ -231,7 +231,7 @@ public class OkHttp3Template implements InitializingBean {
 	public <T> void doAsyncRequest(
 			long startTime,
 			String url,
-			RequestMethod method,
+			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
 			Map<String, Object> bodyContent,
@@ -245,13 +245,13 @@ public class OkHttp3Template implements InitializingBean {
 	public <T> void doAsyncRequest(
 			long startTime,
 			HttpUrl httpUrl,
-			RequestMethod method,
+			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> bodyContent,
 			BiFunction<Call, Response, T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
 		// 1、创建Request.Builder对象
-		Request.Builder builder = this.getBuilder(httpUrl, method, headers, bodyContent);
+		Request.Builder builder = this.createRequestBuilder(httpUrl, method, headers, bodyContent);
 		// 2.创建一个call对象,参数就是Request请求对象
 		okhttp3Client.newCall(builder.build()).enqueue(new Callback() {
 
@@ -297,8 +297,8 @@ public class OkHttp3Template implements InitializingBean {
 		return urlBuilder.build();
 	}
 
-	protected Request.Builder getBuilder(HttpUrl httpUrl,
-												  RequestMethod method,
+	protected Request.Builder createRequestBuilder(HttpUrl httpUrl,
+												  HttpMethod method,
 												  Map<String, Object> headers,
 												  Map<String, Object> bodyContent) throws IOException{
 		log.info("OkHttp3 >> Request Query Url : {} , Method : {}", httpUrl.query() , method.getName());
@@ -348,5 +348,88 @@ public class OkHttp3Template implements InitializingBean {
 			return BeanUtils.instantiateClass(cls);
 		}
 	}
+
+	public static enum HttpMethod {
+
+		/**
+		 * get request.
+		 */
+		GET("GET", (builder, bodyStr)->{
+			return builder.get();
+		}),
+		/**
+		 * head request.
+		 */
+		HEAD("HEAD", (builder, bodyStr)->{
+			return builder.head();
+		}),
+		/**
+		 * post request.
+		 */
+		POST("POST", (builder, bodyStr)->{
+			return builder.post(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr));
+		}),
+		/**
+		 * put request.
+		 */
+		PUT("PUT", (builder, bodyStr)->{
+			return builder.put(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr));
+		}),
+		/**
+		 * patch request.
+		 */
+		PATCH("PATCH", (builder, bodyStr)->{
+			return builder.patch(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr));
+		}),
+		/**
+		 * delete request.
+		 */
+		DELETE("DELETE", (builder, bodyStr)->{
+			return StringUtils.hasText(bodyStr) ? builder.delete(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr)) : builder.delete();
+		}),
+		/**
+		 * options request.
+		 */
+		OPTIONS("OPTIONS", (builder, bodyStr)->{
+			return builder;
+		}),
+		/**
+		 * trace request.
+		 */
+		TRACE("TRACE", (builder, bodyStr)->{
+			return builder;
+		});
+
+		private String name;
+		private BiFunction<Request.Builder, String, Request.Builder> function;
+
+		HttpMethod(String name, BiFunction<Request.Builder, String, Request.Builder> function) {
+			this.name = name;
+			this.function = function;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Request.Builder apply(Request.Builder builder, String bodyStr){
+			return function.apply(builder, bodyStr);
+		}
+
+		public Request.Builder apply(Request.Builder builder){
+			return function.apply(builder, null);
+		}
+
+		public static HttpMethod getByName(int name) {
+			for (HttpMethod type : HttpMethod.values()) {
+				if (type.getName().equals(name)) {
+					return type;
+				}
+			}
+			return null;
+		}
+
+	}
+
 
 }
