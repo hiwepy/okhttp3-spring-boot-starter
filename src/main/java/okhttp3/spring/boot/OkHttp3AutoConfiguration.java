@@ -159,16 +159,22 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	public OkHttp3Template okHttp3Template(OkHttpClient okHttpClient) {
+	public OkHttp3Template okHttp3Template(ObjectProvider<OkHttpClient> okhttp3ClientProvider,
+										  ObjectProvider<ObjectMapper> objectMapperProvider) {
 
-		ObjectMapper objectMapperDef = new ObjectMapper();
-		objectMapperDef.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-		objectMapperDef.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
-		objectMapperDef.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS);
-		objectMapperDef.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-		objectMapperDef.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		OkHttpClient okhttp3Client = okhttp3ClientProvider.getIfAvailable(() -> new OkHttpClient.Builder().build());
 
-		return new OkHttp3Template(okHttpClient, objectMapperDef);
+		ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> {
+			ObjectMapper objectMapperDef = new ObjectMapper();
+			objectMapperDef.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+			objectMapperDef.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
+			objectMapperDef.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS);
+			objectMapperDef.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+			objectMapperDef.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			return objectMapperDef;
+		});
+
+		return new OkHttp3Template(okhttp3Client, objectMapper);
 	}
 
 }
