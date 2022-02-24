@@ -187,6 +187,44 @@ public class OkHttp3Template implements InitializingBean {
 	public <T> void doAsyncRequest(
 			String url,
 			HttpMethod method,
+			Class<T> rtClass) throws IOException {
+		long startTime = System.currentTimeMillis();
+		this.doAsyncRequest(url, method, rtClass, null, null, null, null);
+	}
+
+	public <T> void doAsyncRequest(
+			String url,
+			HttpMethod method,
+			Class<T> rtClass,
+			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+		long startTime = System.currentTimeMillis();
+		this.doAsyncRequest(url, method, rtClass, null, null, null, failure);
+	}
+
+	public <T> void doAsyncRequest(
+			String url,
+			HttpMethod method,
+			Class<T> rtClass,
+			Map<String, Object> queryParams,
+			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+		long startTime = System.currentTimeMillis();
+		this.doAsyncRequest(url, method, rtClass, null, queryParams, null, failure);
+	}
+
+	public <T> void doAsyncRequest(
+			String url,
+			HttpMethod method,
+			Class<T> rtClass,
+			Map<String, Object> headers,
+			Map<String, Object> queryParams,
+			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+		long startTime = System.currentTimeMillis();
+		this.doAsyncRequest(url, method, rtClass, headers, queryParams, null, failure);
+	}
+
+	public <T> void doAsyncRequest(
+			String url,
+			HttpMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
