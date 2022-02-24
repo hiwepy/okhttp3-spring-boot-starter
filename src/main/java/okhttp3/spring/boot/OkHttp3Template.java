@@ -89,53 +89,53 @@ public class OkHttp3Template implements InitializingBean {
 	}
 
 	public <T> T post(String url,  Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.POST, rtClass, null, null, null);
+		return this.doRequest(url, HttpMethod.POST, null, null, null, rtClass);
 	}
 
 	public <T> T post(String url, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.POST, rtClass, null, params, null);
+		return this.doRequest(url, HttpMethod.POST, null, params, null, rtClass);
 	}
 
 	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.POST, rtClass, headers, params, null);
+		return this.doRequest(url, HttpMethod.POST, headers, params, null, rtClass);
 	}
 
 	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Map<String, Object> bodyContent, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.POST, rtClass, headers, params, bodyContent);
+		return this.doRequest(url, HttpMethod.POST, headers, params, bodyContent, rtClass);
 	}
 
 	public <T> T get(String url, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.GET, rtClass, null, null, null);
+		return this.doRequest(url, HttpMethod.GET, null, null, null, rtClass);
 	}
 
 	public <T> T get(String url, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.GET, rtClass, null, params, null);
+		return this.doRequest(url, HttpMethod.GET, null, params, null, rtClass);
 	}
 
 	public <T> T get(String url, Map<String, Object> headers, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.GET, rtClass, headers, params, null);
+		return this.doRequest(url, HttpMethod.GET, headers, params, null, rtClass);
 	}
 
 	public <T> T doRequest(
 			String url,
 			HttpMethod method,
-			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
-			Map<String, Object> bodyContent) throws IOException {
+			Map<String, Object> bodyContent,
+			Class<T> rtClass) throws IOException {
 		long startTime = System.currentTimeMillis();
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
 		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
-		return this.doRequest(startTime, httpUrl, method, rtClass, headers, bodyContent);
+		return this.doRequest(startTime, httpUrl, method, headers, bodyContent, rtClass);
 	}
 
 	public <T> T doRequest(
 			long startTime,
 			HttpUrl httpUrl,
 			HttpMethod method,
-			Class<T> rtClass,
 			Map<String, Object> headers,
-			Map<String, Object> bodyContent) throws IOException {
+			Map<String, Object> bodyContent,
+			Class<T> rtClass) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
 		Response response = this.doRequest(startTime, httpUrl, method, headers, bodyContent);
 		if(rtClass.equals(Void.TYPE)){
@@ -226,65 +226,65 @@ public class OkHttp3Template implements InitializingBean {
 	public <T> void doAsyncRequest(
 			String url,
 			HttpMethod method,
-			Class<T> rtClass,
-			Consumer<T> success) throws IOException {
-		this.doAsyncRequest(url, method, rtClass, success, null);
-	}
-
-	public <T> void doAsyncRequest(
-			String url,
-			HttpMethod method,
-			Class<T> rtClass,
 			Consumer<T> success,
-			BiFunction<Call, IOException, Boolean> failure) throws IOException {
-		this.doAsyncRequest(url, method, rtClass, null, success, failure);
+			Class<T> rtClass) throws IOException {
+		this.doAsyncRequest(url, method, success, null, rtClass);
 	}
 
 	public <T> void doAsyncRequest(
 			String url,
 			HttpMethod method,
-			Class<T> rtClass,
+			Consumer<T> success,
+			BiFunction<Call, IOException, Boolean> failure,
+			Class<T> rtClass) throws IOException {
+		this.doAsyncRequest(url, method, null, success, failure, rtClass);
+	}
+
+	public <T> void doAsyncRequest(
+			String url,
+			HttpMethod method,
 			Map<String, Object> queryParams,
 			Consumer<T> success,
-			BiFunction<Call, IOException, Boolean> failure) throws IOException {
-		this.doAsyncRequest(url, method, rtClass, null, queryParams, success, failure);
+			BiFunction<Call, IOException, Boolean> failure,
+			Class<T> rtClass) throws IOException {
+		this.doAsyncRequest(url, method, null, queryParams, success, failure, rtClass);
 	}
 
 	public <T> void doAsyncRequest(
 			String url,
 			HttpMethod method,
-			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
 			Consumer<T> success,
-			BiFunction<Call, IOException, Boolean> failure) throws IOException {
-		this.doAsyncRequest(url, method, rtClass, headers, queryParams, null, success, failure);
+			BiFunction<Call, IOException, Boolean> failure,
+			Class<T> rtClass) throws IOException {
+		this.doAsyncRequest(url, method, headers, queryParams, null, success, failure, rtClass);
 	}
 
 	public <T> void doAsyncRequest(
 			String url,
 			HttpMethod method,
-			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
 			Map<String, Object> bodyContent,
 			Consumer<T> success,
-			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+			BiFunction<Call, IOException, Boolean> failure,
+			Class<T> rtClass) throws IOException {
 		long startTime = System.currentTimeMillis();
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
 		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
-		this.doAsyncRequest(startTime, httpUrl, method, rtClass, headers, bodyContent, success, failure);
+		this.doAsyncRequest(startTime, httpUrl, method, headers, bodyContent, success, failure, rtClass);
 	}
 
 	public <T> void doAsyncRequest(
 			long startTime,
 			HttpUrl httpUrl,
 			HttpMethod method,
-			Class<T> rtClass,
 			Map<String, Object> headers,
 			Map<String, Object> bodyContent,
 			Consumer<T> success,
-			BiFunction<Call, IOException, Boolean> failure) throws IOException {
+			BiFunction<Call, IOException, Boolean> failure,
+			Class<T> rtClass) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
 		this.doAsyncRequest(startTime, httpUrl, method, headers, bodyContent, (call, response) -> {
 			if(rtClass.equals(Void.TYPE)){
