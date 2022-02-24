@@ -195,7 +195,7 @@ public class OkHttp3Template implements InitializingBean {
 		long startTime = System.currentTimeMillis();
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
 		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
-		this.doAsyncRequest(startTime, httpUrl, method, rtClass, headers, queryParams, bodyContent, failure);
+		this.doAsyncRequest(startTime, httpUrl, method, rtClass, headers, bodyContent, failure);
 	}
 
 	public <T> void doAsyncRequest(
@@ -204,7 +204,6 @@ public class OkHttp3Template implements InitializingBean {
 			HttpMethod method,
 			Class<T> rtClass,
 			Map<String, Object> headers,
-			Map<String, Object> queryParams,
 			Map<String, Object> bodyContent,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
@@ -278,9 +277,7 @@ public class OkHttp3Template implements InitializingBean {
 		});
 	}
 
-
-
-	protected HttpUrl getHttpUrl(String httpUrl, Map<String, Object> params) {
+	public HttpUrl getHttpUrl(String httpUrl, Map<String, Object> params) {
 		log.info("OkHttp3 >> Request Url : {}", httpUrl);
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(httpUrl).newBuilder();
 		if (CollectionUtils.isEmpty(params)) {
@@ -297,7 +294,7 @@ public class OkHttp3Template implements InitializingBean {
 		return urlBuilder.build();
 	}
 
-	protected Request.Builder createRequestBuilder(HttpUrl httpUrl,
+	public Request.Builder createRequestBuilder(HttpUrl httpUrl,
 												  HttpMethod method,
 												  Map<String, Object> headers,
 												  Map<String, Object> bodyContent) throws IOException{
@@ -328,7 +325,7 @@ public class OkHttp3Template implements InitializingBean {
 	 * @param url
 	 * @return
 	 */
-	protected String joinPath(String url) {
+	public String joinPath(String url) {
 		if (StringUtils.hasText(baseUrl)) {
 			String address;
 			if (!baseUrl.endsWith("/")) {
@@ -367,25 +364,25 @@ public class OkHttp3Template implements InitializingBean {
 		 * post request.
 		 */
 		POST("POST", (builder, bodyStr)->{
-			return builder.post(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr));
+			return builder.post(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr));
 		}),
 		/**
 		 * put request.
 		 */
 		PUT("PUT", (builder, bodyStr)->{
-			return builder.put(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr));
+			return builder.put(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr));
 		}),
 		/**
 		 * patch request.
 		 */
 		PATCH("PATCH", (builder, bodyStr)->{
-			return builder.patch(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr));
+			return builder.patch(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr));
 		}),
 		/**
 		 * delete request.
 		 */
 		DELETE("DELETE", (builder, bodyStr)->{
-			return StringUtils.hasText(bodyStr) ? builder.delete(RequestBody.create(OkHttp3Template.APPLICATION_JSON_UTF8, bodyStr)) : builder.delete();
+			return StringUtils.hasText(bodyStr) ? builder.delete(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr)) : builder.delete();
 		}),
 		/**
 		 * options request.
