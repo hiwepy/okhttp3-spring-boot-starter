@@ -209,14 +209,13 @@ public class OkHttp3Template implements InitializingBean {
 		Request.Builder builder = this.createRequestBuilder(httpUrl, method, headers, bodyContent);
 		// 2.创建一个call对象, 参数就是Request请求对象
 		try {
-			try(Response response = okhttp3Client.newCall(builder.build()).execute();) {
-				if (response.isSuccessful()) {
-					log.info("OkHttp3 >> Request Success : code : {}, use time : {} ", response.code(), System.currentTimeMillis() - startTime);
-				} else {
-					log.error("OkHttp3 >> Request Failure : code : {}, message : {}, use time : {} ", response.code(), response.message(), System.currentTimeMillis() - startTime);
-				}
-				return response;
+			Response response = okhttp3Client.newCall(builder.build()).execute();
+			if (response.isSuccessful()) {
+				log.info("OkHttp3 >> Request Success : code : {}, use time : {} ", response.code(), System.currentTimeMillis() - startTime);
+			} else {
+				log.error("OkHttp3 >> Request Failure : code : {}, message : {}, use time : {} ", response.code(), response.message(), System.currentTimeMillis() - startTime);
 			}
+			return response;
 		} catch (Exception e) {
 			log.error("OkHttp3 Request Error : {}, use time : {}", e.getMessage(), System.currentTimeMillis() - startTime);
 		}
