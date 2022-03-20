@@ -28,18 +28,23 @@ public class OkHttp3PoolProperties {
 	public static final int DEFAULT_MAX_REQUESTS_PER_ROUTE = 5;
 
 	/**
-	 * The maximum number of processing connections at the moment , The default value is 64.
-	 * 最大瞬时处理连接数量，默认 64
+	 * The maximum number of requests to execute concurrently. Above this requests queue in memory, waiting for the running calls to complete.
+	 * If more than maxRequests requests are in flight when this is invoked, those requests will remain in flight.
+	 * 设置并发执行的最大请求数。上面是内存中的请求队列，等待正在运行的调用完成。
 	 */
 	private int maxRequests = DEFAULT_MAX_REQUESTS;
 	/**
-	 * The maximum number of od connections for each address, The default value is 5.
-	 * 每个请求地址最大瞬时处理连接数量,默认5
+	 * The maximum number of requests for each host to execute concurrently.
+	 * This limits requests by the URL's host name.
+	 * Note that concurrent requests to a single IP address may still exceed this limit: multiple hostnames may share an IP address or be routed through the same HTTP proxy.
+	 * If more than maxRequestsPerHost requests are in flight when this is invoked, those requests will remain in flight.
+	 * WebSocket connections to hosts do not count against this limit.
+	 * 设置每个主机并发执行的最大请求数。这会根据URL的主机名限制请求。
 	 */
 	private int maxRequestsPerHost = DEFAULT_MAX_REQUESTS_PER_ROUTE;
+
 	/**
 	 * The maximum number of idle connections for each address.
-	 * 最大空闲连接梳数量，超出该值后，连接用完后会被关闭，最多只会保留idleConnectionCount个连接数量
 	 */
 	private int maxIdleConnections = DEFAULT_MAX_CONNECTIONS;
 	/**
