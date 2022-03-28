@@ -2,15 +2,15 @@
 
 Spring Boot Starter For Okhttp 3.x
 
-
-### 说明
-
+### 组件简介
 
  > 基于 okhttp 3.x 的 Spring Boot Starter 实现
  
  部分代码参考了：https://github.com/linux-china/spring-boot-starter-okhttp3
 
-### Maven
+### 使用说明
+
+##### 1、Spring Boot 项目添加 Maven 依赖
 
 ``` xml
 <dependency>
@@ -20,7 +20,27 @@ Spring Boot Starter For Okhttp 3.x
 </dependency>
 ```
 
-### Sample
+##### 2、在`application.yml`文件中增加如下配置
+
+```yaml
+################################################################################################################
+###okhttp3基本配置：
+################################################################################################################
+okhttp3:
+  connect-timeout: 10s
+  read-timeout: 30s
+  write-timeout: 20s
+  log-level: BODY
+  pool:
+    # 最大空闲连接梳数量，超出该值后，连接用完后会被关闭，最多只会保留idleConnectionCount个连接数量
+    max-idle-connections: 256
+    # 最大瞬时处理连接数量
+    max-requests: 128
+    # 每个请求地址最大瞬时处理连接数量
+    max-requests-per-host: 24
+```
+
+##### 3、使用示例
 
 ```java
 
@@ -67,28 +87,7 @@ public class Application {
 	}
 
 }
-
 ```
-
-自定义配置，参考如下：
-```yaml
-################################################################################################################
-###okhttp3基本配置：
-################################################################################################################
-okhttp3:
-  connect-timeout: 10s
-  read-timeout: 30s
-  write-timeout: 20s
-  log-level: BODY
-  pool:
-    # 最大空闲连接梳数量，超出该值后，连接用完后会被关闭，最多只会保留idleConnectionCount个连接数量
-    max-idle-connections: 256
-    # 最大瞬时处理连接数量
-    max-requests: 128
-    # 每个请求地址最大瞬时处理连接数量
-    max-requests-per-host: 24
-```
-
 
 ## Jeebiz 技术社区
 
