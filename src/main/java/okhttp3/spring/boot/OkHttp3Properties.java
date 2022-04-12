@@ -70,19 +70,19 @@ public class OkHttp3Properties {
 
     private long retryInterval;// 重试的间隔
 
-	/*
+	/**
      * Sets the default timeout for complete calls. A value of 0 means no timeout, otherwise values
      * must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
      *
-     * <p>The call timeout spans the entire call: resolving DNS, connecting, writing the request
+     * The call timeout spans the entire call: resolving DNS, connecting, writing the request
      * body, server processing, and reading the response body. If the call requires redirects or
      * retries all must complete within one timeout period.
      *
-     * <p>The default value is 0 which imposes no timeout.
+     * The default value is 0 which imposes no timeout.
      */
 	private Duration callTimeout = Duration.ofSeconds(0);
 
-	 /*
+	 /**
      * Sets the default connect timeout for new connections. A value of 0 means no timeout,
      * otherwise values must be between 1 and {@link Integer#MAX_VALUE} when converted to
      * milliseconds.
@@ -95,7 +95,7 @@ public class OkHttp3Properties {
      * Sets the default read timeout for new connections. A value of 0 means no timeout, otherwise
      * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
      *
-     * <p>The read timeout is applied to both the TCP socket and for individual read IO operations
+     * The read timeout is applied to both the TCP socket and for individual read IO operations
      * including on {@link Source} of the {@link Response}. The default value is 10 seconds.
      *
      * @see Socket#setSoTimeout(int)
