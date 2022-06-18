@@ -16,7 +16,7 @@ Spring Boot Starter For Okhttp 3.x
 <dependency>
 	<groupId>com.github.hiwepy</groupId>
 	<artifactId>okhttp3-spring-boot-starter</artifactId>
-	<version>${project.version}</version>
+	<version>2.0.0.RELEASE</version>
 </dependency>
 ```
 
