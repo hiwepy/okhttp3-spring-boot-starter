@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import okhttp3.*;
 import okhttp3.internal.Util;
 import okhttp3.spring.boot.ext.*;
@@ -175,12 +176,13 @@ public class OkHttp3AutoConfiguration {
 		OkHttpClient okhttp3Client = okhttp3ClientProvider.getIfAvailable(() -> new OkHttpClient.Builder().build());
 
 		ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> {
-			ObjectMapper objectMapperDef = new ObjectMapper();
-			objectMapperDef.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-			objectMapperDef.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
-			objectMapperDef.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS);
-			objectMapperDef.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-			objectMapperDef.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			ObjectMapper objectMapperDef = JsonMapper.builder()
+					.serializationInclusion(JsonInclude.Include.NON_NULL)
+					.enable(MapperFeature.USE_GETTERS_AS_SETTERS)
+					.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
+					.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+					.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+					.build();
 			return objectMapperDef;
 		});
 
