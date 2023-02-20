@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.common.collect.Lists;
 import okhttp3.*;
 import okhttp3.internal.Util;
 import okhttp3.spring.boot.ext.*;
@@ -106,7 +107,7 @@ public class OkHttp3AutoConfiguration {
 
 		List<ConnectionSpec> connectionSpecs = connectionSpecProvider.stream().collect(Collectors.toList());
 		if(Objects.isNull(connectionSpecs)){
-			connectionSpecs = Util.immutableList( ConnectionSpec.MODERN_TLS, ConnectionSpec.CLEARTEXT);
+			connectionSpecs = Lists.newArrayList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT);
 		}
 
 		okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
