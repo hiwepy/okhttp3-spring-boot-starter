@@ -106,7 +106,7 @@ public class OkHttp3AutoConfiguration {
     	ConnectionPool connectionPool = new ConnectionPool(poolProperties.getMaxIdleConnections(), poolProperties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
 
 		List<ConnectionSpec> connectionSpecs = connectionSpecProvider.stream().collect(Collectors.toList());
-		if(Objects.isNull(connectionSpecs)){
+		if(CollectionUtils.isEmpty(connectionSpecs)){
 			connectionSpecs = Lists.newArrayList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT);
 		}
 
