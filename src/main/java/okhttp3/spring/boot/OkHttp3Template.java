@@ -100,7 +100,7 @@ public class OkHttp3Template implements InitializingBean {
 		return this.doRequest(url, HttpMethod.POST, headers, params, null, rtClass);
 	}
 
-	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Map<String, Object> bodyContent, Class<T> rtClass) throws IOException {
+	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Object bodyContent, Class<T> rtClass) throws IOException {
 		return this.doRequest(url, HttpMethod.POST, headers, params, bodyContent, rtClass);
 	}
 
@@ -121,7 +121,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
-			Map<String, Object> bodyContent,
+			Object bodyContent,
 			Class<T> rtClass) throws IOException {
 		long startTime = System.currentTimeMillis();
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
@@ -134,7 +134,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpUrl httpUrl,
 			HttpMethod method,
 			Map<String, Object> headers,
-			Map<String, Object> bodyContent,
+			Object bodyContent,
 			Class<T> rtClass) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
 		Response response = this.doRequest(startTime, httpUrl, method, headers, bodyContent);
@@ -182,7 +182,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
-			Map<String, Object> bodyContent) throws IOException {
+			Object bodyContent) throws IOException {
 		long startTime = System.currentTimeMillis();
 		return this.doRequest(startTime, url, method, headers, queryParams, bodyContent);
 	}
@@ -193,7 +193,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
-			Map<String, Object> bodyContent) throws IOException {
+			Object bodyContent) throws IOException {
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
 		HttpUrl httpUrl = this.getHttpUrl(this.joinPath(url), queryParams);
 		return this.doRequest(startTime, httpUrl, method, headers, bodyContent);
@@ -204,7 +204,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpUrl httpUrl,
 			HttpMethod method,
 			Map<String, Object> headers,
-			Map<String, Object> bodyContent) throws IOException {
+			Object bodyContent) throws IOException {
 		// 1、创建Request.Builder对象
 		Request.Builder builder = this.createRequestBuilder(httpUrl, method, headers, bodyContent);
 		// 2.创建一个call对象, 参数就是Request请求对象
@@ -265,7 +265,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
-			Map<String, Object> bodyContent,
+			Object bodyContent,
 			Consumer<T> success,
 			BiFunction<Call, IOException, Boolean> failure,
 			Class<T> rtClass) throws IOException {
@@ -280,7 +280,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpUrl httpUrl,
 			HttpMethod method,
 			Map<String, Object> headers,
-			Map<String, Object> bodyContent,
+			Object bodyContent,
 			Consumer<T> success,
 			BiFunction<Call, IOException, Boolean> failure,
 			Class<T> rtClass) throws IOException {
@@ -312,7 +312,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpMethod method,
 			Map<String, Object> headers,
 			Map<String, Object> queryParams,
-			Map<String, Object> bodyContent,
+			Object bodyContent,
 			BiFunction<Call, Response, T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
 		// 1.创建Request对象，设置一个url地址,设置请求方式。
@@ -325,7 +325,7 @@ public class OkHttp3Template implements InitializingBean {
 			HttpUrl httpUrl,
 			HttpMethod method,
 			Map<String, Object> headers,
-			Map<String, Object> bodyContent,
+			Object bodyContent,
 			BiFunction<Call, Response, T> success,
 			BiFunction<Call, IOException, Boolean> failure) throws IOException {
 		// 1、创建Request.Builder对象
@@ -376,7 +376,7 @@ public class OkHttp3Template implements InitializingBean {
 	public Request.Builder createRequestBuilder(HttpUrl httpUrl,
 												  HttpMethod method,
 												  Map<String, Object> headers,
-												  Map<String, Object> bodyContent) throws IOException{
+												  Object bodyContent) throws IOException{
 		log.info("OkHttp3 >> Request Query Url : {} , Method : {}", httpUrl.query() , method.getName());
 		// 1、创建Request.Builder对象
 		Request.Builder builder = new Request.Builder().url(httpUrl);
