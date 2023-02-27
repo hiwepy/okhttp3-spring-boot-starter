@@ -92,8 +92,12 @@ public class OkHttp3Template implements InitializingBean {
 		return this.doRequest(url, HttpMethod.POST, null, null, null, rtClass);
 	}
 
-	public <T> T post(String url, Map<String, Object> params, Class<T> rtClass) throws IOException {
-		return this.doRequest(url, HttpMethod.POST, null, params, null, rtClass);
+	public <T> T post(String url,  Object bodyContent, Class<T> rtClass) throws IOException {
+		return this.doRequest(url, HttpMethod.POST, null, null, bodyContent, rtClass);
+	}
+
+	public <T> T post(String url, Map<String, Object> headers, Object bodyContent, Class<T> rtClass) throws IOException {
+		return this.doRequest(url, HttpMethod.POST, headers, null, bodyContent, rtClass);
 	}
 
 	public <T> T post(String url, Map<String, Object> headers, Map<String, Object> params, Class<T> rtClass) throws IOException {
