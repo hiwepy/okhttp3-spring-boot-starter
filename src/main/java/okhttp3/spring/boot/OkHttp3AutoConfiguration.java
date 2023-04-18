@@ -91,7 +91,7 @@ public class OkHttp3AutoConfiguration {
 			ObjectProvider<ProxySelector> proxySelectorProvider,
 			ObjectProvider<SocketFactory>  socketFactoryProvider,
 			ObjectProvider<X509TrustManager> trustManagerProvider,
-			ObjectProvider<RequestInterceptor> applicationInterceptorProvider,
+			ObjectProvider<RequestInterceptor> requestInterceptorProvider,
 			ObjectProvider<NetworkInterceptor> networkInterceptorProvider,
 			HttpLoggingInterceptor loggingInterceptor,
 			OkHttp3Properties properties,
@@ -137,8 +137,8 @@ public class OkHttp3AutoConfiguration {
 				.socketFactory(socketFactoryProvider.getIfAvailable(() -> SocketFactory.getDefault()))
 				.writeTimeout(properties.getWriteTimeout());
 
-		for (RequestInterceptor applicationInterceptor : applicationInterceptorProvider) {
-			builder.addInterceptor(applicationInterceptor);
+		for (RequestInterceptor requestInterceptor : requestInterceptorProvider) {
+			builder.addInterceptor(requestInterceptor);
 		}
 		for (NetworkInterceptor networkInterceptor : networkInterceptorProvider) {
 			builder.addNetworkInterceptor(networkInterceptor);
