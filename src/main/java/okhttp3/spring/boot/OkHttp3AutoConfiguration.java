@@ -2,9 +2,12 @@ package okhttp3.spring.boot;
 
 import java.net.Proxy;
 import java.net.ProxySelector;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.net.SocketFactory;
@@ -19,6 +22,13 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Lists;
+import io.micrometer.common.KeyValue;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.okhttp3.DefaultOkHttpObservationConvention;
+import io.micrometer.core.instrument.binder.okhttp3.OkHttpConnectionPoolMetrics;
+import io.micrometer.core.instrument.binder.okhttp3.OkHttpObservationConvention;
+import io.micrometer.core.instrument.binder.okhttp3.OkHttpObservationInterceptor;
+import io.micrometer.observation.ObservationRegistry;
 import okhttp3.*;
 import okhttp3.internal.Util;
 import okhttp3.spring.boot.ext.*;
@@ -42,7 +52,7 @@ import org.springframework.util.CollectionUtils;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-	GzipRequestProperties.class, RequestHeaderProperties.class })
+		GzipRequestProperties.class, RequestHeaderProperties.class })
 public class OkHttp3AutoConfiguration {
 
 	@Bean
@@ -93,10 +103,12 @@ public class OkHttp3AutoConfiguration {
 			ObjectProvider<X509TrustManager> trustManagerProvider,
 			ObjectProvider<RequestInterceptor> requestInterceptorProvider,
 			ObjectProvider<NetworkInterceptor> networkInterceptorProvider,
+			ObjectProvider<OKhttp3Configurer> configurerProvider,
 			HttpLoggingInterceptor loggingInterceptor,
 			OkHttp3Properties properties,
 			OkHttp3PoolProperties poolProperties,
-			OkHttp3SslProperties sslProperties) throws Exception {
+			OkHttp3SslProperties sslProperties,
+			OkHttp3MetricsProperties metricsProperties) throws Exception {
 
 		/**
 	     * Create a new connection pool with tuning parameters appropriate for a single-user application.
@@ -136,6 +148,14 @@ public class OkHttp3AutoConfiguration {
 				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
 				.socketFactory(socketFactoryProvider.getIfAvailable(() -> SocketFactory.getDefault()))
 				.writeTimeout(properties.getWriteTimeout());
+
+		List<OKhttp3Configurer> oKhttp3Configurers = configurerProvider.stream().collect(Collectors.toList());
+		if(CollectionUtils.isEmpty(connectionSpecs)){
+			for (OKhttp3Configurer oKhttp3Configurer : oKhttp3Configurers) {
+				oKhttp3Configurer.configure(connectionPool);
+				oKhttp3Configurer.configure(builder);
+			}
+		}
 
 		for (RequestInterceptor requestInterceptor : requestInterceptorProvider) {
 			builder.addInterceptor(requestInterceptor);

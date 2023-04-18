@@ -364,6 +364,7 @@
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<metrics.version>4.0.3</metrics.version>
+		<micrometer.version>1.10.4</micrometer.version>
 	</properties>
 
 	<dependencyManagement>
@@ -472,6 +473,11 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
             <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>
