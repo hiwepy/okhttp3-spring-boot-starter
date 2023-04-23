@@ -21,37 +21,39 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.RemovalListener;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Slf4j
 public class RequestRetryIntercepter implements RequestInterceptor {
 	
-	private int maxRetry; // 最大重试次数，假如设置为3次重试的话，则最大可能请求4次（默认1次+3次重试）
+	private int retryMaxAttempts; // 最大重试次数，假如设置为3次重试的话，则最大可能请求4次（默认1次+3次重试）
     private long retryInterval;// 重试的间隔
     private AtomicBoolean enabled = new AtomicBoolean(false);
     private final Cache<String, Integer> cache;
     private final String RETRY_ID_TMP = "retryId-%s";
     
-    public RequestRetryIntercepter(int maxRetry, long retryInterval) {
-        this.maxRetry = maxRetry;
+    public RequestRetryIntercepter(int retryMaxAttempts, long retryInterval) {
+        this.retryMaxAttempts = retryMaxAttempts;
         this.retryInterval = retryInterval;
-        this.enabled.set(maxRetry > 0);
-        this.cache = CacheBuilder.newBuilder()
+        this.enabled.set(retryMaxAttempts > 0);
+        this.cache = Caffeine.newBuilder()
         		.initialCapacity(10)
         		.removalListener(new RemovalListener<String, Integer>() {
 
-					@Override
-					public void onRemoval(RemovalNotification<String, Integer> notification) {
-						log.debug("Remove Cache : {}", notification.getKey());
-					}
-        			
+                    @Override
+                    public void onRemoval(@Nullable String key, @Nullable Integer value, @NonNull RemovalCause cause) {
+                        log.debug("Remove Cache : {}", key);
+                    }
+
 				})
         		.expireAfterAccess(1, TimeUnit.HOURS)
         		.build();
@@ -75,7 +77,7 @@ public class RequestRetryIntercepter implements RequestInterceptor {
         }
         
         // 2、执行重试
-        while ((response == null || !response.isSuccessful()) && retryNum < maxRetry) {
+        while ((response == null || !response.isSuccessful()) && retryNum < retryMaxAttempts) {
             log.info("intercept Request is not successful - {}", retryNum);
             final long nextInterval = getRetryInterval();
         	try {

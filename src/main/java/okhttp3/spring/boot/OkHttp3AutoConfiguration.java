@@ -2,6 +2,7 @@ package okhttp3.spring.boot;
 
 import java.net.Proxy;
 import java.net.ProxySelector;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +22,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.common.collect.Lists;
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.okhttp3.DefaultOkHttpObservationConvention;
@@ -31,6 +31,7 @@ import io.micrometer.core.instrument.binder.okhttp3.OkHttpObservationInterceptor
 import io.micrometer.observation.ObservationRegistry;
 import okhttp3.*;
 import okhttp3.internal.Util;
+import okhttp3.spring.boot.cache.CaffeineCacheCookieJar;
 import okhttp3.spring.boot.ext.*;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -62,7 +63,7 @@ public class OkHttp3AutoConfiguration {
 
 	@Bean
 	public RequestRetryIntercepter requestRetryIntercepter(OkHttp3Properties properties) {
-		return new RequestRetryIntercepter(properties.getMaxRetry(), properties.getRetryInterval());
+		return new RequestRetryIntercepter(properties.getRetryMaxAttempts(), properties.getRetryInterval());
 	}
 
 	@Bean
@@ -83,6 +84,12 @@ public class OkHttp3AutoConfiguration {
 		dispatcher.setMaxRequests(Math.max(properties.getMaxRequests(), OkHttp3PoolProperties.DEFAULT_MAX_REQUESTS));
 		dispatcher.setMaxRequestsPerHost(Math.max(properties.getMaxRequestsPerHost(), OkHttp3PoolProperties.DEFAULT_MAX_REQUESTS_PER_ROUTE));
 		return dispatcher;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CookieJar cookieJar(OkHttp3CookieProperties properties) {
+		return new CaffeineCacheCookieJar(properties.getMaximumSize(), properties.getExpireAfterWrite(), properties.getExpireAfterAccess());
 	}
 
 	@Bean
@@ -118,7 +125,7 @@ public class OkHttp3AutoConfiguration {
 
 		List<ConnectionSpec> connectionSpecs = connectionSpecProvider.stream().collect(Collectors.toList());
 		if(CollectionUtils.isEmpty(connectionSpecs)){
-			connectionSpecs = Lists.newArrayList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT);
+			connectionSpecs = Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT);
 		}
 
 		okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()

@@ -18,9 +18,8 @@ package okhttp3.spring.boot.ext;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
-
-import com.google.common.net.HttpHeaders;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;

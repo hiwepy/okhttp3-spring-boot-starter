@@ -66,9 +66,15 @@ public class OkHttp3Properties {
      */
 	private boolean retryOnConnectionFailure = true;
 
-	private int maxRetry; // 最大重试次数
+	/**
+	 * 最大重试次数
+	 */
+	private int retryMaxAttempts = 0;
 
-    private long retryInterval;// 重试的间隔
+	/**
+	 * 重试的间隔
+	 */
+    private long retryInterval;
 
 	/**
      * Sets the default timeout for complete calls. A value of 0 means no timeout, otherwise values
