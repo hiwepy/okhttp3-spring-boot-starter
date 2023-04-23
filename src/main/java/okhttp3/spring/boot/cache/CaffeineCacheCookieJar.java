@@ -41,17 +41,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @Slf4j
 public class CaffeineCacheCookieJar implements CookieJar {
 
-    protected Cache<HttpUrl, List<Cookie>> cookieCache;
+    protected Cache<String, List<Cookie>> cookieCache;
 
     public CaffeineCacheCookieJar(long maximumSize, Duration expireAfterWrite, Duration expireAfterAccess) {
         this.cookieCache = Caffeine.newBuilder()
                 .initialCapacity(10)
                 .maximumSize(maximumSize)
-                .removalListener(new RemovalListener<HttpUrl, List<Cookie>>() {
+                .removalListener(new RemovalListener<String, List<Cookie>>() {
 
                     @Override
-                    public void onRemoval(@Nullable HttpUrl key, @Nullable List<Cookie> value, @NonNull RemovalCause cause) {
-                        log.debug("Remove Cookie Cache : {}", key);
+                    public void onRemoval(@Nullable String host, @Nullable List<Cookie> value, @NonNull RemovalCause cause) {
+                        log.debug("Remove Cookie Cache : {}", host);
                     }
 
                 })
@@ -66,7 +66,7 @@ public class CaffeineCacheCookieJar implements CookieJar {
      */
     @Override
     public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-        cookieCache.put(url, cookies);
+        cookieCache.put(url.host(), cookies);
     }
 
     /*
@@ -75,15 +75,15 @@ public class CaffeineCacheCookieJar implements CookieJar {
     @Override
     public List<Cookie> loadForRequest(HttpUrl url) {
         // 从缓存中获取Cookie
-        List<Cookie> cookies = cookieCache.getIfPresent(url);
+        List<Cookie> cookies = cookieCache.getIfPresent(url.host());
         if (Objects.nonNull(cookies)) {
             // 移除过期的Cookie
             cookies.removeIf(cookie -> cookie.expiresAt() < System.currentTimeMillis());
             // 更新缓存缓存中的Cookie
-            cookieCache.put(url, cookies);
+            cookieCache.put(url.host(), cookies);
             return cookies;
         }
         return Collections.emptyList();
     }
-    
+
 }
