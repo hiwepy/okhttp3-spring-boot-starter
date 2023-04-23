@@ -73,27 +73,16 @@ public class CaffeineCacheCookieJar implements CookieJar {
      */
     @Override
     public List<Cookie> loadForRequest(HttpUrl url) {
-        // 过期的Cookie
-        List<Cookie> invalidCookies = new ArrayList<>();
-        // 有效的Cookie
-        List<Cookie> validCookies = new ArrayList<>();
         // 从缓存中获取Cookie
         List<Cookie> cookies = cookieCache.getIfPresent(url);
         if (Objects.nonNull(cookies)) {
-            for (Cookie cookie : cookies) {
-                if (cookie.expiresAt() < System.currentTimeMillis()) {
-                    // 判断是否过期
-                    invalidCookies.add(cookie);
-                } else if (cookie.matches(url)) {
-                    // 匹配Cookie对应url
-                    validCookies.add(cookie);
-                }
-            }
+            // 移除过期的Cookie
+            cookies.removeIf(cookie -> cookie.expiresAt() < System.currentTimeMillis());
         }
         // 更新缓存缓存中的Cookie
-        cookieCache.put(url, validCookies);
+        cookieCache.put(url, cookies);
         // 返回List<Cookie>让Request进行设置
-        return validCookies;
+        return cookies;
     }
     
 }
