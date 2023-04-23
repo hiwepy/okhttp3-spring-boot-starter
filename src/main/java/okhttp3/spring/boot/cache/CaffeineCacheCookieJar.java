@@ -17,6 +17,7 @@ package okhttp3.spring.boot.cache;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -80,9 +81,9 @@ public class CaffeineCacheCookieJar implements CookieJar {
             cookies.removeIf(cookie -> cookie.expiresAt() < System.currentTimeMillis());
             // 更新缓存缓存中的Cookie
             cookieCache.put(url, cookies);
+            return cookies;
         }
-        // 返回List<Cookie>让Request进行设置
-        return cookies;
+        return Collections.emptyList();
     }
     
 }
