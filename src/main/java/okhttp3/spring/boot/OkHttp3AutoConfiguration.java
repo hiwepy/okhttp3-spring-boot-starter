@@ -53,7 +53,7 @@ import org.springframework.util.CollectionUtils;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-		GzipRequestProperties.class, RequestHeaderProperties.class })
+		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class })
 public class OkHttp3AutoConfiguration {
 
 	@Bean
@@ -114,8 +114,7 @@ public class OkHttp3AutoConfiguration {
 			HttpLoggingInterceptor loggingInterceptor,
 			OkHttp3Properties properties,
 			OkHttp3PoolProperties poolProperties,
-			OkHttp3SslProperties sslProperties,
-			OkHttp3MetricsProperties metricsProperties) throws Exception {
+			OkHttp3SslProperties sslProperties) throws Exception {
 
 		/**
 	     * Create a new connection pool with tuning parameters appropriate for a single-user application.
