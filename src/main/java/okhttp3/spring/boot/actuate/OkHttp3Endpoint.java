@@ -15,9 +15,11 @@
  */
 package okhttp3.spring.boot.actuate;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.Gauge;
@@ -51,19 +53,17 @@ public class OkHttp3Endpoint {
     
     public Map<String, Object> getMetrics() {
         Map<String, Object> metrics = new HashMap<>();
-        //gauge
-        registry.getMeters().stream().filter(meter -> meter.getId().getName()
+        // gauge
+        Map<String, Gauge> gauges = registry.getMeters().stream().filter(meter -> meter.getId().getName()
                 .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Gauge.class)
-
-        ).collect(Collectors.toList());
-
-
-        SortedMap<String, Gauge> gauges = registry.getGauges((name, metric) -> name.startsWith("okhttp3.OkHttpClient."));
+        ).map(meter -> (Gauge) meter).collect(Collectors.toMap(meter -> meter.getId().getName(), meter -> meter));
         for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
-            metrics.put(entry.getKey(), entry.getValue().getValue());
+            metrics.put(entry.getKey(), entry.getValue().value());
         }
-        //timer
-        SortedMap<String, com.codahale.metrics.Timer> timers = registry.getTimers((name, metric) -> name.startsWith("okhttp3.OkHttpClient."));
+        // timer
+        Map<String, Timer> timers = registry.getMeters().stream().filter(meter -> meter.getId().getName()
+                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Timer.class)
+        ).map(meter -> (Timer) meter).collect(Collectors.toMap(meter -> meter.getId().getName(), meter -> meter));
         for (Map.Entry<String, Timer> entry : timers.entrySet()) {
             metrics.putAll(convertTimerToMap(entry.getKey(), entry.getValue()));
         }
@@ -72,22 +72,19 @@ public class OkHttp3Endpoint {
 
     public Map<String, Object> convertTimerToMap(String name, Timer timer) {
         Map<String, Object> map = new HashMap<>();
-        map.put(name + ".count", timer.getCount());
-        map.put(name + ".oneMinuteRate", timer.getOneMinuteRate());
-        map.put(name + ".fiveMinuteRate", timer.getFiveMinuteRate());
-        map.put(name + ".fifteenMinuteRate", timer.getFifteenMinuteRate());
-        map.put(name + ".meanRate", timer.getMeanRate());
+        timer.measure().forEach(measure -> {
+            map.put(name + measure.getStatistic().name(), measure.getValue());
+        });
+        map.put(name + ".meanRate", timer.mean(TimeUnit.SECONDS));
         HistogramSnapshot snapshot = timer.takeSnapshot();
         map.put(name + ".snapshot.mean", snapshot.mean());
         map.put(name + ".snapshot.max", snapshot.max());
-        map.put(name + ".snapshot.min", snapshot.());
-        map.put(name + ".snapshot.median", snapshot.getMedian());
-        map.put(name + ".snapshot.stdDev", snapshot.getStdDev());
-        map.put(name + ".snapshot.75thPercentile", snapshot.get75thPercentile());
-        map.put(name + ".snapshot.95thPercentile", snapshot.get95thPercentile());
-        map.put(name + ".snapshot.98thPercentile", snapshot.get98thPercentile());
-        map.put(name + ".snapshot.99thPercentile", snapshot.get99thPercentile());
-        map.put(name + ".snapshot.999thPercentile", snapshot.get999thPercentile());
+        Arrays.stream(snapshot.percentileValues()).forEach(percentile -> {
+            map.put(name + ".snapshot.percentile." + percentile.percentile(), percentile.value());
+        });
+        Arrays.stream(snapshot.histogramCounts()).forEach(count -> {
+            map.put(name + ".snapshot.bucket." + count.bucket(), count.count());
+        });
         return map;
     }
 	
