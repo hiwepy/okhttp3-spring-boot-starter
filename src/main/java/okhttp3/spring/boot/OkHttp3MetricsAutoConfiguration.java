@@ -8,6 +8,8 @@ import io.micrometer.observation.ObservationRegistry;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.spring.boot.metrics.OKhttp3MetricsSpecificTagHandler;
+import okhttp3.spring.boot.metrics.OkHttp3Metrics;
 import okhttp3.spring.boot.metrics.OkHttp3MetricsInterceptor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;

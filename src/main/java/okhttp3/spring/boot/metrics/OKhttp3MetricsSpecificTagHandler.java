@@ -1,4 +1,4 @@
-package okhttp3.spring.boot;
+package okhttp3.spring.boot.metrics;
 
 import io.micrometer.common.KeyValue;
 import okhttp3.ConnectionPool;

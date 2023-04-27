@@ -1,16 +1,12 @@
 package okhttp3.spring.boot.metrics;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.*;
 import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.spring.boot.OkHttp3Metrics;
-import okhttp3.spring.boot.metrics.MetricNames;
 import org.springframework.core.annotation.Order;
 
 /**

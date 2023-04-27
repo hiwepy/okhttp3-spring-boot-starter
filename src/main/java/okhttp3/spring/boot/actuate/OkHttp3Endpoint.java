@@ -18,7 +18,6 @@ package okhttp3.spring.boot.actuate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
-import okhttp3.spring.boot.OkHttp3Metrics;
+import okhttp3.spring.boot.metrics.OkHttp3Metrics;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
