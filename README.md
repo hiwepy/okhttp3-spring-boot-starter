@@ -6,7 +6,8 @@ Spring Boot Starter For Okhttp 3.x
 
  > 基于 okhttp 3.x 的 Spring Boot Starter 实现
  
- 部分代码参考了：https://github.com/linux-china/spring-boot-starter-okhttp3
+- 部分代码参考了：https://github.com/linux-china/spring-boot-starter-okhttp3
+- 整合了：https://github.com/raskasa/metrics-okhttp
 
 ### 使用说明
 
@@ -27,13 +28,19 @@ Spring Boot Starter For Okhttp 3.x
 ###okhttp3基本配置：
 ################################################################################################################
 okhttp3:
-  connect-timeout: 10s
+  # 连接超时时间，默认 10s
+  connect-timeout: 5s
+  # 读取超时时间，默认 10s
   read-timeout: 30s
-  write-timeout: 20s
-  log-level: BODY
+  # 写入超时时间，默认 10s
+  write-timeout: 30s
+  # 连接失败后是否重试
+  retry-on-connection-failure: false
+  # 打印日志级别：NONE、BASIC、HEADERS、BODY
+  log-level: HEADERS
   pool:
     # 最大空闲连接梳数量，超出该值后，连接用完后会被关闭，最多只会保留idleConnectionCount个连接数量
-    max-idle-connections: 256
+    max-idle-connections: 48
     # 最大瞬时处理连接数量
     max-requests: 128
     # 每个请求地址最大瞬时处理连接数量

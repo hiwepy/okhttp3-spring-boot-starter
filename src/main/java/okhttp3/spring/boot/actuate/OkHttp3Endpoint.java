@@ -18,14 +18,15 @@ package okhttp3.spring.boot.actuate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.stream.Collectors;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
+import okhttp3.spring.boot.OkHttp3Metrics;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Snapshot;
-import com.codahale.metrics.Timer;
 
 /**
  * {@link Endpoint} to expose OkHttp3 Metrics.
@@ -34,9 +35,9 @@ import com.codahale.metrics.Timer;
 @Endpoint(id = "okhttp3")
 public class OkHttp3Endpoint {
 	
-	private MetricRegistry registry;
+	private MeterRegistry registry;
 
-    public OkHttp3Endpoint(MetricRegistry registry) {
+    public OkHttp3Endpoint(MeterRegistry registry) {
         this.registry = registry;
     }
     
@@ -51,6 +52,12 @@ public class OkHttp3Endpoint {
     public Map<String, Object> getMetrics() {
         Map<String, Object> metrics = new HashMap<>();
         //gauge
+        registry.getMeters().stream().filter(meter -> meter.getId().getName()
+                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Gauge.class)
+
+        ).collect(Collectors.toList());
+
+
         SortedMap<String, Gauge> gauges = registry.getGauges((name, metric) -> name.startsWith("okhttp3.OkHttpClient."));
         for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
             metrics.put(entry.getKey(), entry.getValue().getValue());
@@ -70,10 +77,10 @@ public class OkHttp3Endpoint {
         map.put(name + ".fiveMinuteRate", timer.getFiveMinuteRate());
         map.put(name + ".fifteenMinuteRate", timer.getFifteenMinuteRate());
         map.put(name + ".meanRate", timer.getMeanRate());
-        Snapshot snapshot = timer.getSnapshot();
-        map.put(name + ".snapshot.mean", snapshot.getMean());
-        map.put(name + ".snapshot.max", snapshot.getMax());
-        map.put(name + ".snapshot.min", snapshot.getMin());
+        HistogramSnapshot snapshot = timer.takeSnapshot();
+        map.put(name + ".snapshot.mean", snapshot.mean());
+        map.put(name + ".snapshot.max", snapshot.max());
+        map.put(name + ".snapshot.min", snapshot.());
         map.put(name + ".snapshot.median", snapshot.getMedian());
         map.put(name + ".snapshot.stdDev", snapshot.getStdDev());
         map.put(name + ".snapshot.75thPercentile", snapshot.get75thPercentile());

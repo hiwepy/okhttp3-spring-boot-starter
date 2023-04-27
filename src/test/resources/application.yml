@@ -1,10 +1,27 @@
+################################################################################################################
+###okhttp3基本配置：
+################################################################################################################
 okhttp3:
-  enabled: true
-  connect-timeout: 10
+  # 连接超时时间，默认 10s
+  connect-timeout: 5s
+  # 读取超时时间，默认 10s
+  read-timeout: 30s
+  # 写入超时时间，默认 10s
+  write-timeout: 30s
+  # ping 间隔时间，默认 0, 禁用 ping
+  ping-interval: 0
+  # 是否开启缓存，默认 false
   follow-redirects: false
   follow-ssl-redirects: false
   keep-alive-duration: 60s
-  ping-interval: 0
-  read-timeout: 10
+  # 连接失败后是否重试
   retry-on-connection-failure: false
-  write-timeout: 10
+  # 打印日志级别：NONE、BASIC、HEADERS、BODY
+  log-level: HEADERS
+  pool:
+    # 最大空闲连接梳数量，超出该值后，连接用完后会被关闭，最多只会保留idleConnectionCount个连接数量
+    max-idle-connections: 48
+    # 最大瞬时处理连接数量
+    max-requests: 128
+    # 每个请求地址最大瞬时处理连接数量
+    max-requests-per-host: 24

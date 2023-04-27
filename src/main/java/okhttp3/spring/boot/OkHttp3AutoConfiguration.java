@@ -3,12 +3,8 @@ package okhttp3.spring.boot;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.net.SocketFactory;
@@ -22,16 +18,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.micrometer.common.KeyValue;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.okhttp3.DefaultOkHttpObservationConvention;
-import io.micrometer.core.instrument.binder.okhttp3.OkHttpConnectionPoolMetrics;
-import io.micrometer.core.instrument.binder.okhttp3.OkHttpObservationConvention;
-import io.micrometer.core.instrument.binder.okhttp3.OkHttpObservationInterceptor;
-import io.micrometer.observation.ObservationRegistry;
 import okhttp3.*;
-import okhttp3.internal.Util;
-import okhttp3.spring.boot.cache.CaffeineCacheCookieJar;
+import okhttp3.spring.boot.cookie.CaffeineCacheCookieJar;
+import okhttp3.spring.boot.cookie.NestedCookieJar;
 import okhttp3.spring.boot.ext.*;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -53,7 +42,7 @@ import org.springframework.util.CollectionUtils;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class })
+		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class , OkHttp3MetricsProperties.class})
 public class OkHttp3AutoConfiguration {
 
 	@Bean
@@ -110,7 +99,6 @@ public class OkHttp3AutoConfiguration {
 			ObjectProvider<X509TrustManager> trustManagerProvider,
 			ObjectProvider<RequestInterceptor> requestInterceptorProvider,
 			ObjectProvider<NetworkInterceptor> networkInterceptorProvider,
-			ObjectProvider<OKhttp3Configurer> configurerProvider,
 			HttpLoggingInterceptor loggingInterceptor,
 			OkHttp3Properties properties,
 			OkHttp3PoolProperties poolProperties,
@@ -121,12 +109,20 @@ public class OkHttp3AutoConfiguration {
 	     * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
 	     */
     	ConnectionPool connectionPool = new ConnectionPool(poolProperties.getMaxIdleConnections(), poolProperties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
-
+		/**
+		 * get connectionSpecs
+		 */
 		List<ConnectionSpec> connectionSpecs = connectionSpecProvider.stream().collect(Collectors.toList());
 		if(CollectionUtils.isEmpty(connectionSpecs)){
 			connectionSpecs = Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT);
 		}
-
+		/**
+		 * get cookieJar
+		 */
+		List<CookieJar> cookieJars = cookieJarProvider.stream().collect(Collectors.toList());
+		/**
+		 *  Create a new OkHttpClient Builder with configuration.
+		 */
 		okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
 				// Application Interceptors、Network Interceptors : https://segmentfault.com/a/1190000013164260
 				.authenticator(authenticatorProvider.getIfAvailable(() -> Authenticator.NONE))
@@ -138,7 +134,7 @@ public class OkHttp3AutoConfiguration {
 				.connectionPool(connectionPool)
 				.connectTimeout(properties.getConnectTimeout())
 				.connectionSpecs(connectionSpecs)
-				.cookieJar(cookieJarProvider.getIfAvailable(() -> CookieJar.NO_COOKIES))
+				.cookieJar(CollectionUtils.isEmpty(cookieJars) ? CookieJar.NO_COOKIES: new NestedCookieJar(cookieJars))
 				.dns(dnsProvider.getIfAvailable(() -> Dns.SYSTEM))
 				.dispatcher(dispatcherProvider.getIfAvailable(() -> new Dispatcher()))
 				.eventListener(eventListenerProvider.getIfAvailable(() -> EventListener.NONE))
@@ -154,14 +150,6 @@ public class OkHttp3AutoConfiguration {
 				.retryOnConnectionFailure(properties.isRetryOnConnectionFailure())
 				.socketFactory(socketFactoryProvider.getIfAvailable(() -> SocketFactory.getDefault()))
 				.writeTimeout(properties.getWriteTimeout());
-
-		List<OKhttp3Configurer> oKhttp3Configurers = configurerProvider.stream().collect(Collectors.toList());
-		if(CollectionUtils.isEmpty(connectionSpecs)){
-			for (OKhttp3Configurer oKhttp3Configurer : oKhttp3Configurers) {
-				oKhttp3Configurer.configure(connectionPool);
-				oKhttp3Configurer.configure(builder);
-			}
-		}
 
 		for (RequestInterceptor requestInterceptor : requestInterceptorProvider) {
 			builder.addInterceptor(requestInterceptor);
@@ -186,8 +174,13 @@ public class OkHttp3AutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(OkHttpClient.class)
-	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder) throws Exception {
-		return okhttp3Builder.build();
+	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder,
+									  OkHttp3MetricsProperties metricsProperties) throws Exception {
+		OkHttpClient okhttp3Client = okhttp3Builder.build();
+		/*if (metricsProperties.isEnabled()) {
+			return InstrumentedOkHttpClients.create(registry, okhttp3Client);
+		}*/
+		return okhttp3Client;
 	}
 
 	@Bean
@@ -196,10 +189,8 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	public OkHttp3Template okHttp3Template(ObjectProvider<OkHttpClient> okhttp3ClientProvider,
+	public OkHttp3Template okHttp3Template(OkHttpClient okhttp3Client,
 										  ObjectProvider<ObjectMapper> objectMapperProvider) {
-
-		OkHttpClient okhttp3Client = okhttp3ClientProvider.getIfAvailable(() -> new OkHttpClient.Builder().build());
 
 		ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> {
 			ObjectMapper objectMapperDef = new ObjectMapper();

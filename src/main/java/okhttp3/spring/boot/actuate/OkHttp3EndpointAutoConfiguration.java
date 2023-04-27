@@ -16,6 +16,7 @@
 package okhttp3.spring.boot.actuate;
 
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
@@ -38,28 +39,16 @@ import okhttp3.spring.boot.OkHttp3AutoConfiguration;
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @Configuration
-@ConditionalOnClass({OkHttpClient.class, MetricRegistry.class, HealthIndicator.class, EndpointAutoConfiguration.class})
+@ConditionalOnClass({OkHttpClient.class, MeterRegistry.class, HealthIndicator.class, EndpointAutoConfiguration.class})
 @ConditionalOnEnabledHealthIndicator("okhttp3")
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 @AutoConfigureAfter(OkHttp3AutoConfiguration.class)
 public class OkHttp3EndpointAutoConfiguration {
-	
-	@Bean
-	@ConditionalOnMissingBean
-	public MetricRegistry registry() {
-		return new MetricRegistry();
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean
-    public OkHttp3MetricsInterceptor okHttp3MetricsInterceptor(MetricRegistry registry) {
-        return new OkHttp3MetricsInterceptor(registry);
-    }
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
-    public OkHttp3Endpoint okHttp3Endpoint(MetricRegistry registry) {
+    public OkHttp3Endpoint okHttp3Endpoint(MeterRegistry registry) {
         return new OkHttp3Endpoint(registry);
 	}
 

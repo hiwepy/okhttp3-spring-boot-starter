@@ -44,16 +44,12 @@
 	</developers>
 
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<name>Maven Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
 		<repository>
-		    <id>ossrh</id>
-			<name>Maven Central Staging Repository</name>
-		    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		  </repository>
+			<!--必须与 settings.xml 的 id 一致-->
+			<id>aiban-tianyin-core</id>
+			<name>core</name>
+			<url>https://aiban-maven.pkg.coding.net/repository/tianyin/core/</url>
+		</repository>
 	</distributionManagement>
 
 	<build>
@@ -367,17 +363,6 @@
 		<micrometer.version>1.10.4</micrometer.version>
 	</properties>
 
-	<dependencyManagement>
-		<dependencies>
-			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-			<dependency>
-			    <groupId>com.google.guava</groupId>
-			    <artifactId>guava</artifactId>
-			    <version>${guava.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -468,11 +453,6 @@
 					<artifactId>micrometer-core</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
