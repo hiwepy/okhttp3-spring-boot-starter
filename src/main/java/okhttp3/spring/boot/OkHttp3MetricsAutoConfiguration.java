@@ -67,8 +67,10 @@ public class OkHttp3MetricsAutoConfiguration {
 	}
 
 	@Bean
-	public OkHttp3MetricsInterceptor okHttp3MetricsInterceptor(MeterRegistry meterRegistry) {
-		return new OkHttp3MetricsInterceptor(meterRegistry);
+	public OkHttp3MetricsInterceptor okHttp3MetricsInterceptor(MeterRegistry meterRegistry,
+															   OkHttp3MetricsProperties metricsProperties) {
+		Iterable<Tag> extraTags = CollectionUtils.isEmpty(metricsProperties.getExtraTags()) ? Collections.emptyList() : metricsProperties.getExtraTags().entrySet().stream().map(e -> Tag.of(e.getKey(), e.getValue())).collect(Collectors.toList());
+		return new OkHttp3MetricsInterceptor(meterRegistry, extraTags);
 	}
 
 	@Autowired

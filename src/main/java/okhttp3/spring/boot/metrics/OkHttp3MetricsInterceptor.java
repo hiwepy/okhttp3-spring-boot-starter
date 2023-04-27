@@ -1,6 +1,8 @@
 package okhttp3.spring.boot.metrics;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.*;
@@ -17,13 +19,15 @@ import org.springframework.core.annotation.Order;
 public class OkHttp3MetricsInterceptor implements Interceptor {
 	
 	private MeterRegistry registry;
+    private Iterable<Tag> tags;
     private final Counter submitted;
     private final Counter running;
     private final Counter completed;
     private final Timer duration;
 
-    public OkHttp3MetricsInterceptor(MeterRegistry registry) {
+    public OkHttp3MetricsInterceptor(MeterRegistry registry, Iterable<Tag> tags) {
         this.registry = registry;
+        this.tags = Objects.isNull(tags) ? Collections.emptyList() : tags;
         this.submitted = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_SUBMITTED);
         this.running = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_RUNNING);
         this.completed = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_COMPLETED);
