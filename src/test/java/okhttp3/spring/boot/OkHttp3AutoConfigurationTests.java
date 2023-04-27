@@ -1,15 +1,16 @@
 package okhttp3.spring.boot;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.codahale.metrics.MetricRegistry;
 
 import net.minidev.json.JSONObject;
 import okhttp3.OkHttpClient;
@@ -19,11 +20,12 @@ import okhttp3.spring.boot.actuate.OkHttp3Endpoint;
 
 /**
  * okhttp3 client auto configuration tests
- * @author linux_china
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@SpringBootConfiguration
 public class OkHttp3AutoConfigurationTests {
+
     private static ApplicationContext context;
 
     @BeforeClass
@@ -33,8 +35,8 @@ public class OkHttp3AutoConfigurationTests {
     }
 
     @Bean
-    public MetricRegistry registry() {
-        return new MetricRegistry();
+    public MeterRegistry registry() {
+        return new SimpleMeterRegistry();
     }
     
     @Test
