@@ -28,10 +28,10 @@ public class OkHttp3MetricsInterceptor implements Interceptor {
     public OkHttp3MetricsInterceptor(MeterRegistry registry, Iterable<Tag> tags) {
         this.registry = registry;
         this.tags = Objects.isNull(tags) ? Collections.emptyList() : tags;
-        this.submitted = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_SUBMITTED);
-        this.running = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_RUNNING);
-        this.completed = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_COMPLETED);
-        this.duration = registry.timer(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_DURATION);
+        this.submitted = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_SUBMITTED, this.tags);
+        this.running = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_RUNNING, this.tags);
+        this.completed = registry.counter(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_COMPLETED, this.tags);
+        this.duration = registry.timer(OkHttp3Metrics.METRIC_NAME_NETWORK_REQUESTS_DURATION, this.tags);
     }
     
     @Override
