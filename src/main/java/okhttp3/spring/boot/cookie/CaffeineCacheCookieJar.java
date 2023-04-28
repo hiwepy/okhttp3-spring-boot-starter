@@ -15,12 +15,6 @@
  */
 package okhttp3.spring.boot.cookie;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
@@ -31,6 +25,12 @@ import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  *  持久化Cookie，运行时缓存了Cookie，当App退出的时候Cookie就不存在了

@@ -1,8 +1,7 @@
 package okhttp3.spring.boot;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(OkHttp3SslProperties.PREFIX)
 @Data

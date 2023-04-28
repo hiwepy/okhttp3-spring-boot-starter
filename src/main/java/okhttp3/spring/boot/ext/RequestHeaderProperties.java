@@ -15,9 +15,8 @@
  */
 package okhttp3.spring.boot.ext;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Http Request Header 配置

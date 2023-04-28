@@ -1,10 +1,9 @@
 package okhttp3.spring.boot;
 
-import java.time.Duration;
-
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import lombok.Data;
+import java.time.Duration;
 
 /**
  * https://www.cnblogs.com/lujiango/p/11771319.html

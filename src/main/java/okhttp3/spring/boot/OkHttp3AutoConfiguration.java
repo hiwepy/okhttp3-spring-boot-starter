@@ -1,27 +1,18 @@
 package okhttp3.spring.boot;
 
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import okhttp3.*;
+import okhttp3.internal.tls.OkHostnameVerifier;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.spring.boot.cookie.CaffeineCacheCookieJar;
 import okhttp3.spring.boot.cookie.NestedCookieJar;
 import okhttp3.spring.boot.ext.*;
+import okhttp3.spring.boot.ssl.SSLContexts;
+import okhttp3.spring.boot.ssl.TrustManagerUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,12 +20,19 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-
-import okhttp3.internal.tls.OkHostnameVerifier;
-import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.spring.boot.ssl.SSLContexts;
-import okhttp3.spring.boot.ssl.TrustManagerUtils;
 import org.springframework.util.CollectionUtils;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * OkHttp Client Ini

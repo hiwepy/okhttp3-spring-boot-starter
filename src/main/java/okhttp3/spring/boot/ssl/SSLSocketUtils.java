@@ -1,9 +1,8 @@
 package okhttp3.spring.boot.ssl;
 
+import javax.net.ssl.SSLSocket;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import javax.net.ssl.SSLSocket;
 
 /*
  * General utilities for SSLSocket.
