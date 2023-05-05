@@ -42,7 +42,7 @@ import org.springframework.util.CollectionUtils;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class , OkHttp3MetricsProperties.class})
+		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class})
 public class OkHttp3AutoConfiguration {
 
 	@Bean
@@ -174,12 +174,8 @@ public class OkHttp3AutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(OkHttpClient.class)
-	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder,
-									  OkHttp3MetricsProperties metricsProperties) throws Exception {
+	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder) throws Exception {
 		OkHttpClient okhttp3Client = okhttp3Builder.build();
-		/*if (metricsProperties.isEnabled()) {
-			return InstrumentedOkHttpClients.create(registry, okhttp3Client);
-		}*/
 		return okhttp3Client;
 	}
 
