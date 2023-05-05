@@ -1,15 +1,10 @@
 package okhttp3.spring.boot;
 
-import java.util.concurrent.TimeUnit;
-
+import okhttp3.*;
+import okio.ByteString;
 import org.junit.Test;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import okio.ByteString;
+import java.util.concurrent.TimeUnit;
 
 /**
  * https://blog.csdn.net/fomin_zhu/article/details/85990363

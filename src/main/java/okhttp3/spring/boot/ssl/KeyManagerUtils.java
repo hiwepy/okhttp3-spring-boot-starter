@@ -18,22 +18,17 @@
 
 package okhttp3.spring.boot.ssl;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.X509ExtendedKeyManager;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.Principal;
-import java.security.PrivateKey;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
-
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.X509ExtendedKeyManager;
 
 
 /**

@@ -1,13 +1,5 @@
 package okhttp3.spring.boot;
 
-import java.net.ProxySelector;
-import java.net.Socket;
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import lombok.Data;
 import okhttp3.ConnectionPool;
 import okhttp3.Protocol;
@@ -16,6 +8,12 @@ import okhttp3.WebSocketListener;
 import okhttp3.internal.Util;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 import okio.Source;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.net.ProxySelector;
+import java.net.Socket;
+import java.time.Duration;
+import java.util.List;
 
 @ConfigurationProperties(OkHttp3Properties.PREFIX)
 @Data

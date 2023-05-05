@@ -15,13 +15,6 @@
  */
 package okhttp3.spring.boot.ext;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
@@ -31,6 +24,12 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class RequestRetryIntercepter implements RequestInterceptor {

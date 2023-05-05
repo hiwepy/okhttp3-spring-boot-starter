@@ -15,16 +15,15 @@
  */
 package okhttp3.spring.boot.ext;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.StringUtils;
-
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 请求头拦截器：动态增加请求头

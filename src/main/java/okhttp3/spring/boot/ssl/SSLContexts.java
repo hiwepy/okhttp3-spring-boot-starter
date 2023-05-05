@@ -27,17 +27,12 @@
 
 package okhttp3.spring.boot.ssl;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import java.io.File;
+import java.io.IOException;
+import java.security.*;
 
 /*
  * {@link javax.net.ssl.SSLContext} factory methods.
