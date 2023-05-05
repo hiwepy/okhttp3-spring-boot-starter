@@ -7,7 +7,6 @@ Spring Boot Starter For Okhttp 3.x
  > 基于 okhttp 3.x 的 Spring Boot Starter 实现
  
 - 部分代码参考了：https://github.com/linux-china/spring-boot-starter-okhttp3
-- 整合了：https://github.com/raskasa/metrics-okhttp
 
 ### 使用说明
 
@@ -94,6 +93,27 @@ public class Application {
 	}
 
 }
+```
+
+##### 4、集成 Prometheus 监控
+
+项目中引入 micrometer-prometheus、okhttp3-metrics-prometheus 依赖，可实现 `OkHttp` 组件的指标采集
+
+```xml
+<dependency>
+	<groupId>io.micrometer</groupId>
+	<artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.github.hiwepy</groupId>
+    <artifactId>okhttp3-metrics-prometheus</artifactId>
+</dependency>
+```
+
+可采集到如下指标：
+
+```markdown
+sigar.
 ```
 
 ## Jeebiz 技术社区
