@@ -141,11 +141,11 @@ public class OkHttp3Template implements InitializingBean {
 			Class<T> rtClass) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
 		Response response = this.doRequest(startTime, httpUrl, method, headers, bodyContent);
-		if(rtClass.equals(Void.TYPE)){
-			return null;
-		}
 		T res = null;
 		try {
+			if(rtClass.equals(Void.TYPE)){
+				return res;
+			}
 			if (response.isSuccessful()) {
 				String body = response.body().string();
 				res = this.readValue(body, rtClass);
