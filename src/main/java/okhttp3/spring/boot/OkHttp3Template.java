@@ -18,6 +18,7 @@ package okhttp3.spring.boot;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import okhttp3.internal.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.CollectionUtils;
@@ -140,9 +141,8 @@ public class OkHttp3Template implements InitializingBean {
 			Object bodyContent,
 			Class<T> rtClass) throws IOException {
 		// 2.创建一个call对象,参数就是Request请求对象
-		Response response = this.doRequest(startTime, httpUrl, method, headers, bodyContent);
 		T res = null;
-		try {
+		try (Response response = this.doRequest(startTime, httpUrl, method, headers, bodyContent)){
 			if(rtClass.equals(Void.TYPE)){
 				return res;
 			}
