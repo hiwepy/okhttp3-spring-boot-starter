@@ -2,7 +2,7 @@ package okhttp3.spring.boot;
 
 import okhttp3.*;
 import okio.ByteString;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 

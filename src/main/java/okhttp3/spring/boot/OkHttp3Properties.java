@@ -13,6 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.net.ProxySelector;
 import java.net.Socket;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 
 @ConfigurationProperties(OkHttp3Properties.PREFIX)
@@ -136,7 +137,7 @@ public class OkHttp3Properties {
      *     be supported. Otherwise the list must contain {@link Protocol#HTTP_1_1}. The list must
      *     not contain null or {@link Protocol#HTTP_1_0}.
 	 */
-	List<Protocol> protocols = Util.immutableList(Protocol.HTTP_2, Protocol.HTTP_1_1);
+	List<Protocol> protocols = Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
 
 	private Level logLevel = Level.NONE;
 
