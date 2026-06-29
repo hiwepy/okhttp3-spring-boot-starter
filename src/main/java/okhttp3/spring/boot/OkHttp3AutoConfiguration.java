@@ -12,13 +12,11 @@ import okhttp3.extension.cookie.CaffeineCacheCookieJar;
 import okhttp3.extension.cookie.NestedCookieJar;
 
 
-
-
-
-
 import okhttp3.extension.ssl.SSLContexts;
 import okhttp3.extension.ssl.TrustManagerUtils;
 import okhttp3.extension.interceptor.*;
+import okhttp3.spring.boot.ext.OkHttp3GzipRequestProperties;
+import okhttp3.spring.boot.ext.OkHttp3RequestHeaderProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
