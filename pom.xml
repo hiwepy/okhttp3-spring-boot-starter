@@ -437,11 +437,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure</artifactId>
+		</dependency>
 		<!-- Spring Boot Actuator (for metrics endpoint) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
