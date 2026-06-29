@@ -14,6 +14,8 @@ import okhttp3.extension.interceptor.ProxyAuthenticator;
 import okhttp3.extension.interceptor.RequestInterceptor;
 import okhttp3.spring.boot.ext.GzipRequestInterceptor;
 import okhttp3.spring.boot.ext.RequestHeaderInterceptor;
+import okhttp3.spring.boot.ext.GzipRequestProperties;
+import okhttp3.spring.boot.ext.RequestHeaderProperties;
 import okhttp3.spring.boot.ext.RequestRetryIntercepter;
 import okhttp3.spring.boot.cookie.NestedCookieJar;
 import okhttp3.extension.interceptor.NetworkInterceptor;
