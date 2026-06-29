@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @Configuration
-@ConditionalOnClass({OkHttpClient.class, MeterRegistry.class.class}})
+@ConditionalOnClass({OkHttpClient.class, MeterRegistry.class})
 
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 public class OkHttp3EndpointAutoConfiguration {
