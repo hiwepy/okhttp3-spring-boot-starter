@@ -375,10 +375,23 @@
 		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
 		<maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
-		<okhttp3.version>4.12.0</okhttp3.version>
-		<okhttp3-extension.version>2.0.x-SNAPSHOT</okhttp3-extension.version>
-		<okhttp3-metrics.version>2.0.x-SNAPSHOT</okhttp3-metrics.version>
+		<okhttp.version>4.12.0</okhttp.version>
+		<okhttp-extension.version>2.0.x-SNAPSHOT</okhttp-extension.version>
+		<okhttp-metrics.version>2.0.x-SNAPSHOT</okhttp-metrics.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+		<!-- OkHttp BOM -->
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp-bom</artifactId>
+			<version>${okhttp.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 
@@ -459,30 +472,27 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
-			<version>${okhttp3.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>logging-interceptor</artifactId>
-			<version>${okhttp3.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp-dnsoverhttps</artifactId>
-			<version>${okhttp3.version}</version>
 		</dependency>
 
 		<!-- OkHttp3 Extension (pure Java) -->
 		<dependency>
 			<groupId>io.github.hiwepy</groupId>
 			<artifactId>okhttp3-extension</artifactId>
-			<version>${okhttp3-extension.version}</version>
+			<version>${okhttp-extension.version}</version>
 		</dependency>
 		<!-- OkHttp3 Metrics (pure Java) -->
 		<dependency>
 			<groupId>io.github.hiwepy</groupId>
 			<artifactId>okhttp3-metrics-prometheus</artifactId>
-			<version>${okhttp3-metrics.version}</version>
+			<version>${okhttp-metrics.version}</version>
 		</dependency>
 
 	</dependencies>
