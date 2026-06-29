@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.13</version>
+		<version>2.3.12.RELEASE</version>
 		<relativePath /> 
 	</parent>
 
 	<groupId>io.github.hiwepy</groupId>
 	<artifactId>okhttp3-spring-boot-starter</artifactId>
 	<description>Spring Boot Starter For Okhttp 3.x</description>
-	<version>3.0.x.20260527-SNAPSHOT</version>
+	<version>2.3.x.20260527-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<url>https://github.com/hiwepy/${project.artifactId}</url>
 	<packaging>jar</packaging>
@@ -41,6 +41,32 @@
 			<timezone>+8</timezone>
 		</developer>
 	</developers>
+
+	<distributionManagement>
+		<repository>
+			<id>2624322-release-6F6h6R</id>
+			<name>Maven Release Repository</name>
+			<url>https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-release-6f6h6r</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<snapshotRepository>
+			<id>2624322-snapshot-3EoOv3</id>
+			<name>Maven Snapshot Repository</name>
+			<url>https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-snapshot-3eoov3</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<build>
 		<pluginManagement>
@@ -216,41 +242,49 @@
 		</pluginManagement>
 		<plugins>
 			
+			<!--环境监察插件：代码编译前的环境监察 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 			</plugin>
 			
+			<!-- 编译插件：编译主代码至主输出目录 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 			
+			<!-- 资源插件：复制主资源文件至主输出目录 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 			</plugin>
 			
+			<!-- 单元测试插件 ：执行测试用例 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
 			
+			<!-- jar包生成插件 ：创建项目jar包 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 			</plugin>
 			
+			<!-- 源码插件:发布时自动将源码同时发布 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
 			
+			<!-- 安装插件：将项目输出构件安装到本地仓库 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
 			</plugin>
 			
+			<!-- 发布插件 ：将项目输出构件部署到远程仓库 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
@@ -266,8 +300,6 @@
 				</activation>
 			<properties>
 				<additionalparam>-Xdoclint:none</additionalparam>
-		<okhttp3-extension.version>2.0.x-SNAPSHOT</okhttp3-extension.version>
-		<okhttp3-metrics.version>2.0.x-SNAPSHOT</okhttp3-metrics.version>
 			</properties>
 		</profile>
 		<profile>
@@ -341,8 +373,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>17</java.version>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
+		<java.version>1.8</java.version>
+        
 		
 		<maven.version>3.9.9</maven.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
@@ -367,8 +399,9 @@
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
-		<okhttp3-extension.version>2.0.x-SNAPSHOT</okhttp3-extension.version>
-		<okhttp3-metrics.version>2.0.x-SNAPSHOT</okhttp3-metrics.version>
+		<okhttp3.version>4.12.0</okhttp3.version>
+		<okhttp3-extension.version>1.0.x-SNAPSHOT</okhttp3-extension.version>
+		<okhttp3-metrics.version>1.0.x-SNAPSHOT</okhttp3-metrics.version>
 	</properties>
 
 	<dependencies>
@@ -457,5 +490,4 @@
 			<version>${okhttp3-metrics.version}</version>
 		</dependency>
 	</dependencies>
-
-<distributionManagement><repository><id>2624322-release-6F6h6R</id><name>Maven Release Repository</name><url>https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-release-6f6h6r</url><releases><enabled>true</enabled></releases><snapshots><enabled>false</enabled></snapshots></repository><snapshotRepository><id>2624322-snapshot-3EoOv3</id><name>Maven Snapshot Repository</name><url>https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-snapshot-3eoov3</url><releases><enabled>false</enabled></releases><snapshots><enabled>true</enabled></snapshots><uniqueVersion>true</uniqueVersion></snapshotRepository></distributionManagement></project>
+</project>
