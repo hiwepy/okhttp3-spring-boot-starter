@@ -266,6 +266,8 @@
 				</activation>
 			<properties>
 				<additionalparam>-Xdoclint:none</additionalparam>
+		<okhttp3-extension.version>2.0.x-SNAPSHOT</okhttp3-extension.version>
+		<okhttp3-metrics.version>2.0.x-SNAPSHOT</okhttp3-metrics.version>
 			</properties>
 		</profile>
 		<profile>
@@ -365,6 +367,8 @@
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+		<okhttp3-extension.version>2.0.x-SNAPSHOT</okhttp3-extension.version>
+		<okhttp3-metrics.version>2.0.x-SNAPSHOT</okhttp3-metrics.version>
 	</properties>
 
 	<dependencies>
