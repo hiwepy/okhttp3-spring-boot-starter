@@ -268,6 +268,7 @@
 				<additionalparam>-Xdoclint:none</additionalparam>
 		<okhttp3-extension.version>3.0.x-SNAPSHOT</okhttp3-extension.version>
 		<okhttp3-metrics.version>3.0.x-SNAPSHOT</okhttp3-metrics.version>
+		<okhttp3.version>4.12.0</okhttp3.version>
 			</properties>
 		</profile>
 		<profile>
@@ -369,6 +370,7 @@
 		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
 		<okhttp3-extension.version>3.0.x-SNAPSHOT</okhttp3-extension.version>
 		<okhttp3-metrics.version>3.0.x-SNAPSHOT</okhttp3-metrics.version>
+		<okhttp3.version>4.12.0</okhttp3.version>
 	</properties>
 
 	<dependencies>
@@ -439,10 +441,12 @@
 		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>logging-interceptor</artifactId>
+		    <version>${okhttp3.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp-dnsoverhttps</artifactId>
+		    <version>${okhttp3.version}</version>
 		</dependency>
 
 		<!-- OkHttp3 Extension (pure Java) -->
