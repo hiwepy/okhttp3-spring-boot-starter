@@ -189,3 +189,20 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
+	}
+
+										  ObjectProvider<ObjectMapper> objectMapperProvider) {
+
+		ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> {
+			ObjectMapper objectMapperDef = new ObjectMapper();
+			objectMapperDef.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+			objectMapperDef.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
+			objectMapperDef.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS);
+			objectMapperDef.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+			objectMapperDef.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			return objectMapperDef;
+		});
+
+	}
+
+}
