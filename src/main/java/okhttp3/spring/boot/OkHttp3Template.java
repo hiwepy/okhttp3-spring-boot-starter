@@ -18,7 +18,6 @@ package okhttp3.spring.boot;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import okhttp3.internal.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.CollectionUtils;

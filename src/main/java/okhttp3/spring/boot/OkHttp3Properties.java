@@ -5,7 +5,6 @@ import okhttp3.ConnectionPool;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.WebSocketListener;
-import okhttp3.internal.Util;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 import okio.Source;
 import org.springframework.boot.context.properties.ConfigurationProperties;
