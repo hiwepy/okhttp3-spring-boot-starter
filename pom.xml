@@ -365,6 +365,8 @@
 		<caffeine.version>2.9.3</caffeine.version>
 		<metrics.version>4.0.3</metrics.version>
 		<micrometer.version>1.10.4</micrometer.version>
+		<okhttp3-extension.version>1.0.x-SNAPSHOT</okhttp3-extension.version>
+		<okhttp3-metrics.version>1.0.x-SNAPSHOT</okhttp3-metrics.version>
 	</properties>
 
 	<dependencies>
@@ -447,6 +449,18 @@
 		    <artifactId>okhttp-dnsoverhttps</artifactId>
 		</dependency>
 
+		<!-- OkHttp3 Extension (pure Java) -->
+		<dependency>
+			<groupId>io.github.hiwepy</groupId>
+			<artifactId>okhttp3-extension</artifactId>
+			<version>${okhttp3-extension.version}</version>
+		</dependency>
+		<!-- OkHttp3 Metrics (pure Java) -->
+		<dependency>
+			<groupId>io.github.hiwepy</groupId>
+			<artifactId>okhttp3-metrics-prometheus</artifactId>
+			<version>${okhttp3-metrics.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>
