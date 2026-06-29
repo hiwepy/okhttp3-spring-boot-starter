@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package okhttp3.spring.boot.ext;
+package okhttp3.spring.boot;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(GzipRequestProperties.PREFIX)
 @Data
-public class GzipRequestProperties {
+public class OkHttp3GzipRequestProperties {
 
 	public static final String PREFIX = "okhttp3.gzip";
 
