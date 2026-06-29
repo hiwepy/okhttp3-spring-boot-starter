@@ -8,14 +8,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import okhttp3.*;
 import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.extension.interceptor.*;
 import okhttp3.spring.boot.cookie.CaffeineCacheCookieJar;
 import okhttp3.spring.boot.cookie.NestedCookieJar;
 import okhttp3.extension.interceptor.NetworkInterceptor;
 import okhttp3.extension.interceptor.ProxyAuthenticator;
 import okhttp3.extension.interceptor.RequestInterceptor;
-import okhttp3.spring.boot.ext.GzipRequestInterceptor;
-import okhttp3.spring.boot.ext.RequestHeaderInterceptor;
-import okhttp3.spring.boot.ext.RequestRetryIntercepter;
 import okhttp3.extension.ssl.SSLContexts;
 import okhttp3.extension.ssl.TrustManagerUtils;
 import org.springframework.beans.factory.ObjectProvider;
@@ -45,11 +43,11 @@ import java.util.stream.Collectors;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class})
+		OkHttp3CookieProperties.class, OkHttp3GzipRequestProperties.class, OkHttp3RequestHeaderProperties.class})
 public class OkHttp3AutoConfiguration {
 
 	@Bean
-	public RequestHeaderInterceptor headerInterceptor(RequestHeaderProperties headerProperties) {
+	public RequestHeaderInterceptor headerInterceptor(OkHttp3RequestHeaderProperties headerProperties) {
 		return new RequestHeaderInterceptor(headerProperties);
 	}
 
@@ -59,8 +57,8 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	public GzipRequestInterceptor gzipInterceptor(GzipRequestProperties gzipProperties) {
-		return new GzipRequestInterceptor(gzipProperties);
+	public GzipRequestInterceptor gzipInterceptor(OkHttp3GzipRequestProperties gzipProperties) {
+		return new GzipRequestInterceptor(gzipProperties.isEnabled());
 	}
 
 	@Bean
