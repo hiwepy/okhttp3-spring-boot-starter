@@ -295,6 +295,7 @@
 				<additionalparam>-Xdoclint:none</additionalparam>
 		<lombok.version>1.18.30</lombok.version>
 		<guava.version>31.0.1-jre</guava.version>
+		<micrometer.version>1.10.6</micrometer.version>
 			</properties>
 		</profile>
 		<profile>
@@ -383,6 +384,7 @@
 		<okhttp-metrics.version>1.0.x-SNAPSHOT</okhttp-metrics.version>
 		<lombok.version>1.18.30</lombok.version>
 		<guava.version>31.0.1-jre</guava.version>
+		<micrometer.version>1.10.6</micrometer.version>
 	</properties>
 
 	<dependencyManagement>
@@ -460,18 +462,21 @@
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-core</artifactId>
+			<version>${micrometer.version}</version>
 		</dependency>
 
 		<!-- Micrometer Observation -->
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-observation</artifactId>
+			<version>${micrometer.version}</version>
 		</dependency>
 
 		<!-- Micrometer Prometheus Registry -->
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${micrometer.version}</version>
 		</dependency>
 
 		<!-- Spring Boot Actuator (for metrics endpoint) -->
