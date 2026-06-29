@@ -7,7 +7,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.5</version>
-		<relativePath />
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>io.github.hiwepy</groupId>
@@ -385,6 +385,7 @@
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 			<artifactId>lombok</artifactId>
 			<scope>compile</scope>
 		</dependency>
