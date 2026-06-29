@@ -46,12 +46,20 @@ import java.util.stream.Collectors;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class})
+		OkHttp3CookieProperties.class, OkHttp3GzipRequestProperties.class, OkHttp3RequestHeaderProperties.class})
 public class OkHttp3AutoConfiguration {
 
 	@Bean
-	public RequestHeaderInterceptor headerInterceptor(RequestHeaderProperties headerProperties) {
-		return new RequestHeaderInterceptor(headerProperties);
+	public RequestHeaderInterceptor headerInterceptor(OkHttp3RequestHeaderProperties headerProperties) {
+		return new RequestHeaderInterceptor(new RequestHeaderInterceptor.RequestHeaderProvider() {
+			@Override
+			public java.util.List<RequestHeaderInterceptor.HeaderEntry> getHeaders() {
+				java.util.List<RequestHeaderInterceptor.HeaderEntry> headers = new java.util.ArrayList<>();
+				headers.add(new RequestHeaderInterceptor.HeaderEntry("Accept", headerProperties.getAccept()));
+				headers.add(new RequestHeaderInterceptor.HeaderEntry("User-Agent", headerProperties.getUserAgent()));
+				return headers;
+			}
+		});
 	}
 
 	@Bean
@@ -60,8 +68,8 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	public GzipRequestInterceptor gzipInterceptor(GzipRequestProperties gzipProperties) {
-		return new GzipRequestInterceptor(gzipProperties);
+	public GzipRequestInterceptor gzipInterceptor(OkHttp3GzipRequestProperties gzipProperties) {
+		return new GzipRequestInterceptor(gzipProperties.isEnabled());
 	}
 
 	@Bean
