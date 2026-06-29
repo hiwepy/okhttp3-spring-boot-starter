@@ -17,6 +17,10 @@ package okhttp3.spring.boot.ext;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.extension.interceptor.RequestInterceptor;
+
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
