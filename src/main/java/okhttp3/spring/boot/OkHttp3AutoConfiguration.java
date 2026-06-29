@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.util.CollectionUtils;
 
 import javax.net.SocketFactory;
@@ -190,25 +189,3 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	public OkHttp3ClientHttpRequestFactory okHttp3ClientHttpRequestFactory(OkHttpClient okhttp3Client) {
-		return new OkHttp3ClientHttpRequestFactory(okhttp3Client);
-	}
-
-	@Bean
-	public OkHttp3Template okHttp3Template(OkHttpClient okhttp3Client,
-										  ObjectProvider<ObjectMapper> objectMapperProvider) {
-
-		ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> {
-			ObjectMapper objectMapperDef = new ObjectMapper();
-			objectMapperDef.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-			objectMapperDef.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
-			objectMapperDef.enable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS);
-			objectMapperDef.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-			objectMapperDef.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			return objectMapperDef;
-		});
-
-		return new OkHttp3Template(okhttp3Client, objectMapper);
-	}
-
-}
