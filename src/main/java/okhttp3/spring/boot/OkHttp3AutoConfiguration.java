@@ -8,8 +8,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import okhttp3.*;
 import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.extension.interceptor.*;
 import okhttp3.spring.boot.cookie.CaffeineCacheCookieJar;
+import okhttp3.extension.interceptor.NetworkInterceptor;
+import okhttp3.extension.interceptor.ProxyAuthenticator;
+import okhttp3.extension.interceptor.RequestInterceptor;
+import okhttp3.spring.boot.ext.GzipRequestInterceptor;
+import okhttp3.spring.boot.ext.RequestHeaderInterceptor;
+import okhttp3.spring.boot.ext.RequestRetryIntercepter;
 import okhttp3.spring.boot.cookie.NestedCookieJar;
 import okhttp3.extension.interceptor.NetworkInterceptor;
 import okhttp3.extension.interceptor.ProxyAuthenticator;
@@ -48,7 +53,7 @@ public class OkHttp3AutoConfiguration {
 
 	@Bean
 	public RequestHeaderInterceptor headerInterceptor(OkHttp3RequestHeaderProperties headerProperties) {
-		return new RequestHeaderInterceptor(headerProperties);
+		return new RequestHeaderInterceptor(OkHttp3RequestHeaderProperties.PREFIX, headerProperties);
 	}
 
 	@Bean
@@ -58,7 +63,7 @@ public class OkHttp3AutoConfiguration {
 
 	@Bean
 	public GzipRequestInterceptor gzipInterceptor(OkHttp3GzipRequestProperties gzipProperties) {
-		return new GzipRequestInterceptor(gzipProperties.isEnabled());
+		return new GzipRequestInterceptor(gzipProperties);
 	}
 
 	@Bean
