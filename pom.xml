@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.7</version>
+		<version>3.3.13</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -382,14 +382,26 @@
 
 	<dependencyManagement>
 		<dependencies>
-		<!-- OkHttp BOM -->
-		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>okhttp-bom</artifactId>
-			<version>${okhttp.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency>
+			<!-- OkHttp BOM -->
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp-bom</artifactId>
+				<version>${okhttp.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- OkHttp3 Extension (pure Java) -->
+			<dependency>
+				<groupId>io.github.hiwepy</groupId>
+				<artifactId>okhttp3-extension</artifactId>
+				<version>${okhttp-extension.version}</version>
+			</dependency>
+			<!-- OkHttp3 Metrics (pure Java) -->
+			<dependency>
+				<groupId>io.github.hiwepy</groupId>
+				<artifactId>okhttp3-metrics-prometheus</artifactId>
+				<version>${okhttp-metrics.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -407,7 +419,6 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -486,13 +497,11 @@
 		<dependency>
 			<groupId>io.github.hiwepy</groupId>
 			<artifactId>okhttp3-extension</artifactId>
-			<version>${okhttp-extension.version}</version>
 		</dependency>
 		<!-- OkHttp3 Metrics (pure Java) -->
 		<dependency>
 			<groupId>io.github.hiwepy</groupId>
 			<artifactId>okhttp3-metrics-prometheus</artifactId>
-			<version>${okhttp-metrics.version}</version>
 		</dependency>
 
 	</dependencies>
