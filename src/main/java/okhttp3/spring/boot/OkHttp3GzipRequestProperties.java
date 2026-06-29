@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package okhttp3.spring.boot.ext;
+package okhttp3.spring.boot;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
