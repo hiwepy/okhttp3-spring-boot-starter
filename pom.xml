@@ -294,6 +294,7 @@
 			<properties>
 				<additionalparam>-Xdoclint:none</additionalparam>
 		<lombok.version>1.18.30</lombok.version>
+		<guava.version>31.0.1-jre</guava.version>
 			</properties>
 		</profile>
 		<profile>
@@ -381,6 +382,7 @@
 		<okhttp-extension.version>1.0.x-SNAPSHOT</okhttp-extension.version>
 		<okhttp-metrics.version>1.0.x-SNAPSHOT</okhttp-metrics.version>
 		<lombok.version>1.18.30</lombok.version>
+		<guava.version>31.0.1-jre</guava.version>
 	</properties>
 
 	<dependencyManagement>
@@ -476,6 +478,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
 		</dependency>
 
 		<!-- OkHttp3 -->
