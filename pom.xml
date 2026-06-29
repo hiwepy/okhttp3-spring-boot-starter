@@ -457,6 +457,18 @@
 		    <artifactId>okhttp-dnsoverhttps</artifactId>
 		</dependency>
 
+		<!-- OkHttp3 Extension (pure Java) -->
+		<dependency>
+			<groupId>io.github.hiwepy</groupId>
+			<artifactId>okhttp3-extension</artifactId>
+			<version>${okhttp3-extension.version}</version>
+		</dependency>
+		<!-- OkHttp3 Metrics (pure Java) -->
+		<dependency>
+			<groupId>io.github.hiwepy</groupId>
+			<artifactId>okhttp3-metrics-prometheus</artifactId>
+			<version>${okhttp3-metrics.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>
