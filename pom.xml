@@ -472,6 +472,12 @@
 			<artifactId>caffeine</artifactId>
 		</dependency>
 
+		<!-- Google Guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
 		<!-- OkHttp3 -->
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
