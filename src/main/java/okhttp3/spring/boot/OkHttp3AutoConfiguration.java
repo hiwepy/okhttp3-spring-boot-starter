@@ -188,8 +188,6 @@ public class OkHttp3AutoConfiguration {
 		return okhttp3Client;
 	}
 
-	@Bean
-	}
 
 	@Bean
 	public OkHttp3Template okHttp3Template(OkHttpClient okhttp3Client,
