@@ -48,12 +48,12 @@ import java.util.stream.Collectors;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-		OkHttp3CookieProperties.class, OkHttp3GzipRequestProperties.class, OkHttp3RequestHeaderProperties.class})
+		OkHttp3CookieProperties.class, GzipRequestProperties.class, RequestHeaderProperties.class})
 public class OkHttp3AutoConfiguration {
 
 	@Bean
-	public RequestHeaderInterceptor headerInterceptor(OkHttp3RequestHeaderProperties headerProperties) {
-		return new RequestHeaderInterceptor(OkHttp3RequestHeaderProperties.PREFIX, headerProperties);
+	public RequestHeaderInterceptor headerInterceptor(RequestHeaderProperties headerProperties) {
+		return new RequestHeaderInterceptor(headerProperties);
 	}
 
 	@Bean
@@ -62,7 +62,7 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	public GzipRequestInterceptor gzipInterceptor(OkHttp3GzipRequestProperties gzipProperties) {
+	public GzipRequestInterceptor gzipInterceptor(GzipRequestProperties gzipProperties) {
 		return new GzipRequestInterceptor(gzipProperties);
 	}
 
