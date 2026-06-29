@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 public class OkHttp3WebSoket_Test {
 
     @Test
-    public void testWebsocket(){
+    public void testWebsocket() {
 
-       // 1、 配置OkHttpClient
+        // 1、 配置OkHttpClient
 
         OkHttpClient mClient = new OkHttpClient.Builder()
                 .readTimeout(3, TimeUnit.SECONDS)//设置读取超时时间
@@ -69,11 +69,10 @@ public class OkHttp3WebSoket_Test {
             }
         });
 
-       // 使用WebSocket对象发送消息，msg为消息内容（一般是json，当然你也可以使用其他的，例如xml等），send方法会马上返回发送结果。
+        // 使用WebSocket对象发送消息，msg为消息内容（一般是json，当然你也可以使用其他的，例如xml等），send方法会马上返回发送结果。
 
         //发送消息
         boolean isSendSuccess = websocket.send("msg");
-
 
 
     }

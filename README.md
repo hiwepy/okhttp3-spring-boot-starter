@@ -4,8 +4,8 @@ Spring Boot Starter For Okhttp 3.x
 
 ### 组件简介
 
- > 基于 okhttp 3.x 的 Spring Boot Starter 实现
- 
+> 基于 okhttp 3.x 的 Spring Boot Starter 实现
+
 - 部分代码参考了：https://github.com/linux-china/spring-boot-starter-okhttp3
 
 ### 使用说明
@@ -261,7 +261,7 @@ okhttp3_dns_started_total{application="app-test",} 4.0
 
 Jeebiz 技术社区 **微信公共号**、**小程序**，欢迎关注反馈意见和一起交流，关注公众号回复「Jeebiz」拉你入群。
 
-|公共号|小程序|
-|---|---|
-| ![](https://raw.githubusercontent.com/hiwepy/static/main/images/qrcode_for_gh_1d965ea2dfd1_344.jpg)| ![](https://raw.githubusercontent.com/hiwepy/static/main/images/gh_09d7d00da63e_344.jpg)|
+| 公共号                                                                                                 | 小程序                                                                                      |
+|-----------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| ![](https://raw.githubusercontent.com/hiwepy/static/main/images/qrcode_for_gh_1d965ea2dfd1_344.jpg) | ![](https://raw.githubusercontent.com/hiwepy/static/main/images/gh_09d7d00da63e_344.jpg) |
 
