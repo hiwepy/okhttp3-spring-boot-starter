@@ -403,7 +403,8 @@
 			<groupId>org.projectlombok</groupId>
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 			<artifactId>lombok</artifactId>
-			<scope>compile</scope>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Java Servlet API -->
