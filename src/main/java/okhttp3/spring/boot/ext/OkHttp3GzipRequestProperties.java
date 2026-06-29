@@ -22,9 +22,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Http Request Gzip 配置
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-@ConfigurationProperties(GzipRequestProperties.PREFIX)
+@ConfigurationProperties(OkHttp3GzipRequestProperties.PREFIX)
 @Data
-public class GzipRequestProperties {
+public class OkHttp3GzipRequestProperties {
 
 	public static final String PREFIX = "okhttp3.gzip";
 
