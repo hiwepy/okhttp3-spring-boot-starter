@@ -191,6 +191,8 @@ public class OkHttp3AutoConfiguration {
 	@Bean
 	}
 
+	@Bean
+	public OkHttp3Template okHttp3Template(OkHttpClient okhttp3Client,
 										  ObjectProvider<ObjectMapper> objectMapperProvider) {
 
 		ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> {
@@ -203,6 +205,7 @@ public class OkHttp3AutoConfiguration {
 			return objectMapperDef;
 		});
 
+		return new OkHttp3Template(okhttp3Client, objectMapper);
 	}
 
 }
