@@ -378,8 +378,8 @@
 		<maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
 		<okhttp.version>4.12.0</okhttp.version>
-		<okhttp-extension.version>1.0.2-SNAPSHOT</okhttp-extension.version>
-		<okhttp-metrics.version>1.0.2-SNAPSHOT</okhttp-metrics.version>
+		<okhttp-extension.version>1.0.x-SNAPSHOT</okhttp-extension.version>
+		<okhttp-metrics.version>1.0.x-SNAPSHOT</okhttp-metrics.version>
 		<lombok.version>1.18.30</lombok.version>
 	</properties>
 
