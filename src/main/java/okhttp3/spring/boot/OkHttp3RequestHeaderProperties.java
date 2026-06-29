@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Http Request Header 配置
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-@ConfigurationProperties(RequestHeaderProperties.PREFIX)
+@ConfigurationProperties(OkHttp3RequestHeaderProperties.PREFIX)
 @Data
 public class OkHttp3RequestHeaderProperties {
 
