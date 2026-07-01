@@ -13,10 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package okhttp3.spring.boot.ext;
+package okhttp3.spring.boot;
 
-import okhttp3.Interceptor;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-public interface ApplicationInterceptor extends Interceptor {
+/**
+ * Http Request Gzip 配置
+ * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
+ */
+@ConfigurationProperties(OkHttp3RequestGzipProperties.PREFIX)
+@Data
+public class OkHttp3RequestGzipProperties {
+
+	public static final String PREFIX = "okhttp3.gzip";
+
+	/** Whether Enable OkHttp3 Gzip . */
+	private boolean enabled = false;
 
 }
