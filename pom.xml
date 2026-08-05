@@ -376,7 +376,7 @@
 		<maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
 		<okhttp.version>5.4.0</okhttp.version>
-		<okhttp-extension.version>3.0.x-SNAPSHOT</okhttp-extension.version>
+		<okhttp-extension.version>3.0.x.20260630-SNAPSHOT</okhttp-extension.version>
 		<okhttp-metrics.version>3.0.x-SNAPSHOT</okhttp-metrics.version>
 	</properties>
 
