@@ -434,6 +434,7 @@
         <lombok.version>1.18.30</lombok.version>
         <guava.version>31.0.1-jre</guava.version>
         <micrometer.version>1.10.6</micrometer.version>
+                <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
     </properties>
 
     <dependencyManagement>
@@ -448,7 +449,13 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-        </dependencies>
+                <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <optional>true</optional>
+        </dependency>
+</dependencies>
     </dependencyManagement>
 
     <dependencies>
@@ -467,7 +474,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <version>${javax.servlet-api.version}</version>
             <optional>true</optional>
         </dependency>
 
