@@ -1,267 +1,177 @@
+<a id="readme-top"></a>
+
+<div align="center">
+
 # okhttp3-spring-boot-starter
 
-Spring Boot Starter For Okhttp 3.x
+**Spring Boot Starter for okhttp3**
 
-### 组件简介
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.easy4j/okhttp3-spring-boot-starter)](https://github.com/easy-4-java/okhttp3-spring-boot-starter)
+[![Java](https://img.shields.io/badge/Java-17-orange)](#3-requirements-and-compatibility)
+[![License](https://img.shields.io/badge/license-Apache-2.0-green)](https://www.apache.org/licenses/LICENSE-2.0)
 
- > 基于 okhttp 3.x 的 Spring Boot Starter 实现
- 
-- 部分代码参考了：https://github.com/linux-china/spring-boot-starter-okhttp3
+[简体中文](./README.zh-CN.md) | [English](./README.md)
 
-### 使用说明
+[Positioning](#1-positioning) · [Capabilities](#2-core-capabilities) ·
+[Dependency](#5-dependency) · [Quick Start](#6-quick-start) ·
+[Configuration](#7-configuration-reference) · [Versions](#9-version-lines-and-compatibility) ·
+[Build](#10-build-and-test) · [License](#12-license)
 
-##### 1、Spring Boot 项目添加 Maven 依赖
+</div>
 
-``` xml
-<dependency>
-	<groupId>com.github.hiwepy</groupId>
-	<artifactId>okhttp3-spring-boot-starter</artifactId>
-	<version>${project.version}</version>
-</dependency>
-```
+---
 
-##### 2、在`application.yml`文件中增加如下配置
+> **Current Version**：`1.1.3-SNAPSHOT`<br>
+> **JDK Baseline**：`17`<br>
+> **Group ID**：`io.github.easy4j`<br>
+> **Artifact ID**：`okhttp3-spring-boot-starter`<br>
+> **License**：Apache License 2.0<br>
 
-```yaml
-################################################################################################################
-###okhttp3基本配置：
-################################################################################################################
-okhttp3:
-  # 连接超时时间，默认 10s
-  connect-timeout: 5s
-  # 读取超时时间，默认 10s
-  read-timeout: 30s
-  # 写入超时时间，默认 10s
-  write-timeout: 30s
-  # 连接失败后是否重试
-  retry-on-connection-failure: false
-  # 打印日志级别：NONE、BASIC、HEADERS、BODY
-  log-level: HEADERS
-  pool:
-    # 最大空闲连接梳数量，超出该值后，连接用完后会被关闭，最多只会保留idleConnectionCount个连接数量
-    max-idle-connections: 48
-    # 最大瞬时处理连接数量
-    max-requests: 128
-    # 每个请求地址最大瞬时处理连接数量
-    max-requests-per-host: 24
-```
+## 1. Positioning
 
-##### 3、使用示例
+**okhttp3-spring-boot-starter** is a Spring Boot starter that integrates **okhttp3** for applications using okhttp3. It provides auto-configuration, property binding, and ready-to-use beans so that applications can consume okhttp3 capabilities with minimal setup.
 
-```java
+| Dimension | Description |
+|---|---|
+| Type | Spring Boot Starter |
+| Consumers | Spring Boot applications using okhttp3 |
+| Core Capabilities | auto-configuration, property binding, ready-to-use beans for okhttp3 |
+| JDK | `17` |
+| Coordinates | `io.github.easy4j:okhttp3-spring-boot-starter:1.1.3-SNAPSHOT` |
+| Config Prefix | `okhttp3` |
 
-import java.io.IOException;
+## 2. Core Capabilities
 
-import javax.annotation.PostConstruct;
+| Capability | Status | Description |
+|---|:---:|---|
+| Auto-configuration | ✅ Stable | Registers okhttp3 beans automatically |
+| Property Binding | ✅ Stable | Binds `okhttp3.*` to `OkHttp3CookieProperties` |
+| `RequestHeaderInterceptor` bean | ✅ Stable | Auto-registered via OkHttp3AutoConfiguration |
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+## 3. Requirements and Compatibility
 
-@SpringBootApplication
-public class Application {
-	
-	@Autowired
-	private OkHttpClient okHttpClient;
-	
-	@PostConstruct
-	public void test() throws IOException {
-		
-		//调用ok的get请求
-       	Request request = new Request.Builder()
-                .get()
-                .url(url)
-                .build();
-       	//同步请求方式
-	   	Response theResponse = okHttpClient.newCall(newRequest).execute();
-	   	// 解析响应内容
-	   	ResponseBody body = theResponse.body();
-	   	// 响应头信息
-	   	Headers headers = theResponse.headers();
-	   	// 响应类型
-	   	MediaType mediaType = body.contentType();
-	   	// 成功状态
-		if( theResponse.isSuccessful()) {
-			// do something
-		} 
-		
-	}
-	
-	
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(Application.class, args);
-	}
+| Dependency | Minimum | Evidence |
+|---|---:|---|
+| JDK | `17` | `pom.xml` |
+| Spring Boot | `2.3.0.RELEASE` | `pom.xml` parent |
+| Maven | `3.6+` | Maven Enforcer |
 
-}
-```
+## 4. Auto-configuration
 
-##### 4、集成 Prometheus 监控
+The starter auto-configures the following beans:
 
-项目中引入 micrometer-prometheus、okhttp3-metrics-prometheus 依赖，可实现 `OkHttp` 组件的指标采集
+| Bean | Condition | Missing Behavior |
+|---|---|---|
+| `RequestHeaderInterceptor` | classpath + property | not created |
+| `RequestRetryIntercepter` | classpath + property | not created |
+| `GzipRequestInterceptor` | classpath + property | not created |
+| `HttpLoggingInterceptor` | classpath + property | not created |
+| `Dispatcher` | classpath + property | not created |
+| `CookieJar` | classpath + property | not created |
+| `Builder` | classpath + property | not created |
+| `OkHttpClient` | classpath + property | not created |
+| `OkHttp3ClientHttpRequestFactory` | classpath + property | not created |
+| `OkHttp3Template` | classpath + property | not created |
+
+Auto-configuration registration:
+
+- `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` (Spring Boot 2.7+ / 3.x / 4.x)
+- `META-INF/spring.factories` (Spring Boot 2.x legacy)
+
+## 5. Dependency
 
 ```xml
 <dependency>
-	<groupId>io.micrometer</groupId>
-	<artifactId>micrometer-registry-prometheus</artifactId>
-</dependency>
-<dependency>
-    <groupId>com.github.hiwepy</groupId>
-    <artifactId>okhttp3-metrics-prometheus</artifactId>
+    <groupId>io.github.easy4j</groupId>
+    <artifactId>okhttp3-spring-boot-starter</artifactId>
+    <version>1.1.3-SNAPSHOT</version>
 </dependency>
 ```
 
-可采集到如下指标：
+No additional easy4j component dependencies.
 
-```markdown
-# HELP okhttp3_pool_dispatcher_running_calls_count Total number of running calls
-# TYPE okhttp3_pool_dispatcher_running_calls_count gauge
-okhttp3_pool_dispatcher_running_calls_count{application="app-test",} 1.0
-# HELP okhttp3_pool_dispatcher_queued_calls_count Total number of queued calls
-# TYPE okhttp3_pool_dispatcher_queued_calls_count gauge
-okhttp3_pool_dispatcher_queued_calls_count{application="app-test",} 0.0
-# HELP okhttp3_pool_dispatcher_max_requests_perhost_total max requests of dispatcher by per host
-# TYPE okhttp3_pool_dispatcher_max_requests_perhost_total counter
-okhttp3_pool_dispatcher_max_requests_perhost_total{application="app-test",} 5.0
-# HELP okhttp3_network_requests_completed_total
-# TYPE okhttp3_network_requests_completed_total counter
-okhttp3_network_requests_completed_total{application="app-test",} 410.0
-# HELP okhttp3_requests_body_bytes_max
-# TYPE okhttp3_requests_body_bytes_max gauge
-okhttp3_requests_body_bytes_max{application="app-test",} 0.0
-# HELP okhttp3_requests_body_bytes
-# TYPE okhttp3_requests_body_bytes summary
-okhttp3_requests_body_bytes_count{application="app-test",} 0.0
-okhttp3_requests_body_bytes_sum{application="app-test",} 0.0
-# HELP okhttp3_connections_started_total
-# TYPE okhttp3_connections_started_total counter
-okhttp3_connections_started_total{application="app-test",} 4.0
-# HELP okhttp3_connections_released_total
-# TYPE okhttp3_connections_released_total counter
-okhttp3_connections_released_total{application="app-test",} 410.0
-# HELP okhttp3_responses_failed_total
-# TYPE okhttp3_responses_failed_total counter
-okhttp3_responses_failed_total{application="app-test",} 0.0
-# HELP okhttp3_responses_headers_end_total
-# TYPE okhttp3_responses_headers_end_total counter
-okhttp3_responses_headers_end_total{application="app-test",} 410.0
-# HELP okhttp3_requests_body_started_total
-# TYPE okhttp3_requests_body_started_total counter
-okhttp3_requests_body_started_total{application="app-test",} 0.0
-# HELP okhttp3_connections_end_total
-# TYPE okhttp3_connections_end_total counter
-okhttp3_connections_end_total{application="app-test",} 4.0
-# HELP okhttp3_dns_duration_seconds
-# TYPE okhttp3_dns_duration_seconds summary
-okhttp3_dns_duration_seconds_count{application="app-test",} 0.0
-okhttp3_dns_duration_seconds_sum{application="app-test",} 0.0
-# HELP okhttp3_dns_duration_seconds_max
-# TYPE okhttp3_dns_duration_seconds_max gauge
-okhttp3_dns_duration_seconds_max{application="app-test",} 0.0
-# HELP okhttp3_requests_failed_total
-# TYPE okhttp3_requests_failed_total counter
-okhttp3_requests_failed_total{application="app-test",} 0.0
-# HELP okhttp3_pool_dispatcher_max_requests_total max requests of dispatcher
-# TYPE okhttp3_pool_dispatcher_max_requests_total counter
-okhttp3_pool_dispatcher_max_requests_total{application="app-test",} 64.0
-# HELP okhttp3_connections_acquired_total
-# TYPE okhttp3_connections_acquired_total counter
-okhttp3_connections_acquired_total{application="app-test",} 410.0
-# HELP okhttp3_calls_failed_total
-# TYPE okhttp3_calls_failed_total counter
-okhttp3_calls_failed_total{application="app-test",} 0.0
-# HELP okhttp3_pool_connection_count_connections The state of connections in the OkHttp connection pool
-# TYPE okhttp3_pool_connection_count_connections gauge
-okhttp3_pool_connection_count_connections{application="app-test",state="active",} 0.0
-okhttp3_pool_connection_count_connections{application="app-test",state="idle",} 2.0
-# HELP okhttp3_dns_end_total
-# TYPE okhttp3_dns_end_total counter
-okhttp3_dns_end_total{application="app-test",} 4.0
-# HELP okhttp3_connections_failed_total
-# TYPE okhttp3_connections_failed_total counter
-okhttp3_connections_failed_total{application="app-test",} 0.0
-# HELP okhttp3_requests_seconds_max Timer of OkHttp operation
-# TYPE okhttp3_requests_seconds_max gauge
-okhttp3_requests_seconds_max{application="app-test",method="GET",status="302",target_host="baidu.com",target_port="443",target_scheme="https",uri="/",} 0.4752953
-# HELP okhttp3_requests_seconds Timer of OkHttp operation
-# TYPE okhttp3_requests_seconds summary
-okhttp3_requests_seconds_count{application="app-test",method="GET",status="302",target_host="baidu.com",target_port="443",target_scheme="https",uri="/",} 205.0
-okhttp3_requests_seconds_sum{application="app-test",method="GET",status="302",target_host="baidu.com",target_port="443",target_scheme="https",uri="/",} 8.9529481
-# HELP okhttp3_calls_duration_seconds
-# TYPE okhttp3_calls_duration_seconds summary
-okhttp3_calls_duration_seconds_count{application="app-test",} 0.0
-okhttp3_calls_duration_seconds_sum{application="app-test",} 0.0
-# HELP okhttp3_calls_duration_seconds_max
-# TYPE okhttp3_calls_duration_seconds_max gauge
-okhttp3_calls_duration_seconds_max{application="app-test",} 0.0
-# HELP okhttp3_responses_body_bytes_max
-# TYPE okhttp3_responses_body_bytes_max gauge
-okhttp3_responses_body_bytes_max{application="app-test",} 1142.0
-# HELP okhttp3_responses_body_bytes
-# TYPE okhttp3_responses_body_bytes summary
-okhttp3_responses_body_bytes_count{application="app-test",} 410.0
-okhttp3_responses_body_bytes_sum{application="app-test",} 234110.0
-# HELP okhttp3_responses_body_end_total
-# TYPE okhttp3_responses_body_end_total counter
-okhttp3_responses_body_end_total{application="app-test",} 410.0
-# HELP okhttp3_calls_started_total
-# TYPE okhttp3_calls_started_total counter
-okhttp3_calls_started_total{application="app-test",} 205.0
-# HELP okhttp3_network_requests_submitted_total
-# TYPE okhttp3_network_requests_submitted_total counter
-okhttp3_network_requests_submitted_total{application="app-test",} 431.0
-# HELP okhttp3_requests_body_end_total
-# TYPE okhttp3_requests_body_end_total counter
-okhttp3_requests_body_end_total{application="app-test",} 0.0
-# HELP okhttp3_requests_headers_end_total
-# TYPE okhttp3_requests_headers_end_total counter
-okhttp3_requests_headers_end_total{application="app-test",} 431.0
-# HELP okhttp3_requests_headers_started_total
-# TYPE okhttp3_requests_headers_started_total counter
-okhttp3_requests_headers_started_total{application="app-test",} 434.0
-# HELP okhttp3_responses_headers_started_total
-# TYPE okhttp3_responses_headers_started_total counter
-okhttp3_responses_headers_started_total{application="app-test",} 434.0
-# HELP okhttp3_responses_body_started_total
-# TYPE okhttp3_responses_body_started_total counter
-okhttp3_responses_body_started_total{application="app-test",} 433.0
-# HELP okhttp3_network_requests_duration_seconds
-# TYPE okhttp3_network_requests_duration_seconds histogram
-okhttp3_network_requests_duration_seconds{application="app-test",quantile="0.5",} 0.031981568
-okhttp3_network_requests_duration_seconds{application="app-test",quantile="0.75",} 0.041418752
-okhttp3_network_requests_duration_seconds{application="app-test",quantile="0.95",} 0.047710208
-okhttp3_network_requests_duration_seconds{application="app-test",quantile="0.98",} 0.051904512
-okhttp3_network_requests_duration_seconds{application="app-test",quantile="0.99",} 0.056098816
-okhttp3_network_requests_duration_seconds{application="app-test",quantile="0.999",} 0.318242816
-okhttp3_network_requests_duration_seconds_bucket{application="app-test",le="0.1",} 432.0
-okhttp3_network_requests_duration_seconds_bucket{application="app-test",le="+Inf",} 433.0
-okhttp3_network_requests_duration_seconds_count{application="app-test",} 433.0
-okhttp3_network_requests_duration_seconds_sum{application="app-test",} 11.691
-# HELP okhttp3_network_requests_duration_seconds_max
-# TYPE okhttp3_network_requests_duration_seconds_max gauge
-okhttp3_network_requests_duration_seconds_max{application="app-test",} 0.307
-# HELP okhttp3_connections_duration_seconds
-# TYPE okhttp3_connections_duration_seconds summary
-okhttp3_connections_duration_seconds_count{application="app-test",} 0.0
-okhttp3_connections_duration_seconds_sum{application="app-test",} 0.0
-# HELP okhttp3_connections_duration_seconds_max
-# TYPE okhttp3_connections_duration_seconds_max gauge
-okhttp3_connections_duration_seconds_max{application="app-test",} 0.0
-# HELP okhttp3_network_requests_running_total
-# TYPE okhttp3_network_requests_running_total counter
-okhttp3_network_requests_running_total{application="app-test",} 434.0
-# HELP okhttp3_calls_end_total
-# TYPE okhttp3_calls_end_total counter
-okhttp3_calls_end_total{application="app-test",} 216.0
-# HELP okhttp3_dns_started_total
-# TYPE okhttp3_dns_started_total counter
-okhttp3_dns_started_total{application="app-test",} 4.0
+## 6. Quick Start
+
+### 6.1 Add dependency
+
+Add the dependency above to your `pom.xml`.
+
+### 6.2 Configure
+
+```yaml
+okhttp3:
+  enabled: true
 ```
 
-## Jeebiz 技术社区
+### 6.3 Use the bean
 
-Jeebiz 技术社区 **微信公共号**、**小程序**，欢迎关注反馈意见和一起交流，关注公众号回复「Jeebiz」拉你入群。
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
 
-|公共号|小程序|
-|---|---|
-| ![](https://raw.githubusercontent.com/hiwepy/static/main/images/qrcode_for_gh_1d965ea2dfd1_344.jpg)| ![](https://raw.githubusercontent.com/hiwepy/static/main/images/gh_09d7d00da63e_344.jpg)|
+Then inject the auto-configured bean in your code:
 
+```java
+@Autowired
+private RequestHeaderInterceptor headerInterceptor;
+```
+
+## 7. Configuration Reference
+
+### 7.1 Config Prefix
+
+`okhttp3`
+
+### 7.2 Configuration Items
+
+| Property | Type | Default | Required | Description | Sensitive |
+|---|---|---|:---:|---|:---:|
+| `okhttp3.enabled` | boolean | `true` | No | Enable the starter | No |
+<!-- additional properties below -->
+
+## 8. Version Lines and Compatibility
+
+| Branch | JDK | Spring Boot | Component Version | Status |
+|---|---:|---:|---|:---:|
+| `2.3.x` / `2.7.x` | `8+` | 2.3.x / 2.7.x | `1.0.x` | Maintenance |
+| `3.0.x` ~ `3.5.x` | `17` | 3.x | `2.0.x` | Maintenance |
+| `4.0.x` / `4.1.x` | `17+` | 4.x | `3.0.x` | Active |
+
+## 9. Build and Test
+
+```bash
+mvn clean verify
+mvn -pl okhttp3-spring-boot-starter -am test
+```
+
+## 10. Troubleshooting
+
+| Symptom | Diagnosis | Resolution |
+|---|---|---|
+| Bean not created | Check auto-configuration report | Verify `okhttp3.enabled=true` and classpath |
+| `ClassNotFoundException` | Missing dependency | Add the required module |
+| Version conflict | `mvn dependency:tree` | Use BOM for version alignment |
+
+## 11. Contribution
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Run `mvn clean verify` before submitting.
+4. Submit a pull request.
+
+## 12. License
+
+This project is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+---
+
+<div align="center">
+
+[Back to top](#readme-top) · [Issues](https://github.com/easy-4-java/okhttp3-spring-boot-starter/issues) · [Repository](https://github.com/easy-4-java/okhttp3-spring-boot-starter)
+
+</div>
