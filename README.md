@@ -1,85 +1,171 @@
-# spring-boot-starter-okhttp3
+<a id="readme-top"></a>
 
-Spring Boot Starter For Okhttp 3.x
+<div align="center">
 
+# okhttp3-spring-boot-starter
 
-### 说明
+**Spring Boot Starter for okhttp3**
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.easy4j/okhttp3-spring-boot-starter)](https://github.com/easy-4-java/okhttp3-spring-boot-starter)
+[![Java](https://img.shields.io/badge/Java-17-orange)](#3-requirements-and-compatibility)
+[![License](https://img.shields.io/badge/license-Apache-2.0-green)](https://www.apache.org/licenses/LICENSE-2.0)
 
- > 基于 okhttp 3.x 的 Spring Boot Starter 实现
+[简体中文](./README.zh-CN.md) | [English](./README.md)
 
-### Maven
+[Positioning](#1-positioning) · [Capabilities](#2-core-capabilities) ·
+[Dependency](#5-dependency) · [Quick Start](#6-quick-start) ·
+[Configuration](#7-configuration-reference) · [Versions](#9-version-lines-and-compatibility) ·
+[Build](#10-build-and-test) · [License](#12-license)
 
-``` xml
+</div>
+
+---
+
+> **Current Version**：`1.0.0.RELEASE`<br>
+> **JDK Baseline**：`17`<br>
+> **Group ID**：`io.github.easy4j`<br>
+> **Artifact ID**：`okhttp3-spring-boot-starter`<br>
+> **License**：Apache License 2.0<br>
+
+## 1. Positioning
+
+**okhttp3-spring-boot-starter** is a Spring Boot starter that integrates **okhttp3** for applications using okhttp3. It provides auto-configuration, property binding, and ready-to-use beans so that applications can consume okhttp3 capabilities with minimal setup.
+
+| Dimension | Description |
+|---|---|
+| Type | Spring Boot Starter |
+| Consumers | Spring Boot applications using okhttp3 |
+| Core Capabilities | auto-configuration, property binding, ready-to-use beans for okhttp3 |
+| JDK | `17` |
+| Coordinates | `io.github.easy4j:okhttp3-spring-boot-starter:1.0.0.RELEASE` |
+| Config Prefix | `okhttp3` |
+
+## 2. Core Capabilities
+
+| Capability | Status | Description |
+|---|:---:|---|
+| Auto-configuration | ✅ Stable | Registers okhttp3 beans automatically |
+| Property Binding | ✅ Stable | Binds `okhttp3.*` to `Okhttp3Properties` |
+| `OkHttpHostnameVerifier` bean | ✅ Stable | Auto-registered via Okhttp3AutoConfiguration |
+
+## 3. Requirements and Compatibility
+
+| Dependency | Minimum | Evidence |
+|---|---:|---|
+| JDK | `17` | `pom.xml` |
+| Spring Boot | `2.0.1.RELEASE` | `pom.xml` parent |
+| Maven | `3.6+` | Maven Enforcer |
+
+## 4. Auto-configuration
+
+The starter auto-configures the following beans:
+
+| Bean | Condition | Missing Behavior |
+|---|---|---|
+| `OkHttpHostnameVerifier` | classpath + property | not created |
+| `X509TrustManager` | classpath + property | not created |
+| `CertificateChainCleaner` | classpath + property | not created |
+| `OkHttpClient` | classpath + property | not created |
+
+Auto-configuration registration:
+
+- `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` (Spring Boot 2.7+ / 3.x / 4.x)
+- `META-INF/spring.factories` (Spring Boot 2.x legacy)
+
+## 5. Dependency
+
+```xml
 <dependency>
-	<groupId>com.github.vindell</groupId>
-	<artifactId>spring-boot-starter-okhttp3</artifactId>
-	<version>1.0.0.RELEASE</version>
+    <groupId>io.github.easy4j</groupId>
+    <artifactId>okhttp3-spring-boot-starter</artifactId>
+    <version>1.0.0.RELEASE</version>
 </dependency>
 ```
 
-### Sample
+No additional easy4j component dependencies.
 
-```java
+## 6. Quick Start
 
-import java.io.IOException;
+### 6.1 Add dependency
 
-import javax.annotation.PostConstruct;
+Add the dependency above to your `pom.xml`.
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+### 6.2 Configure
 
-@SpringBootApplication
-public class Application {
-	
-	@Autowired
-	private OkHttpClient okHttpClient;
-	
-	@PostConstruct
-	public void test() throws IOException {
-		
-		//调用ok的get请求
-       	Request request = new Request.Builder()
-                .get()
-                .url(url)
-                .build();
-       	//同步请求方式
-	   	Response theResponse = okHttpClient.newCall(newRequest).execute();
-	   	// 解析响应内容
-	   	ResponseBody body = theResponse.body();
-	   	// 响应头信息
-	   	Headers headers = theResponse.headers();
-	   	// 响应类型
-	   	MediaType mediaType = body.contentType();
-	   	// 成功状态
-		if( theResponse.isSuccessful()) {
-			// do something
-		} 
-		
-	}
-	
-	
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(Application.class, args);
-	}
-
-}
-
-```
-
-自定义配置，参考如下：
 ```yaml
 okhttp3:
   enabled: true
-  connect-timeout: 10
-  follow-redirects: false
-  follow-ssl-redirects: false
-  ping-interval: 0
-  read-timeout: 10
-  retry-on-connection-failure: false
-  write-timeout: 10
 ```
 
+### 6.3 Use the bean
 
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
 
+Then inject the auto-configured bean in your code:
+
+```java
+@Autowired
+private OkHttpHostnameVerifier okhttpHostnameVerifier;
+```
+
+## 7. Configuration Reference
+
+### 7.1 Config Prefix
+
+`okhttp3`
+
+### 7.2 Configuration Items
+
+| Property | Type | Default | Required | Description | Sensitive |
+|---|---|---|:---:|---|:---:|
+| `okhttp3.enabled` | boolean | `true` | No | Enable the starter | No |
+<!-- additional properties below -->
+
+## 8. Version Lines and Compatibility
+
+| Branch | JDK | Spring Boot | Component Version | Status |
+|---|---:|---:|---|:---:|
+| `2.3.x` / `2.7.x` | `8+` | 2.3.x / 2.7.x | `1.0.x` | Maintenance |
+| `3.0.x` ~ `3.5.x` | `17` | 3.x | `2.0.x` | Maintenance |
+| `4.0.x` / `4.1.x` | `17+` | 4.x | `3.0.x` | Active |
+
+## 9. Build and Test
+
+```bash
+mvn clean verify
+mvn -pl okhttp3-spring-boot-starter -am test
+```
+
+## 10. Troubleshooting
+
+| Symptom | Diagnosis | Resolution |
+|---|---|---|
+| Bean not created | Check auto-configuration report | Verify `okhttp3.enabled=true` and classpath |
+| `ClassNotFoundException` | Missing dependency | Add the required module |
+| Version conflict | `mvn dependency:tree` | Use BOM for version alignment |
+
+## 11. Contribution
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Run `mvn clean verify` before submitting.
+4. Submit a pull request.
+
+## 12. License
+
+This project is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+---
+
+<div align="center">
+
+[Back to top](#readme-top) · [Issues](https://github.com/easy-4-java/okhttp3-spring-boot-starter/issues) · [Repository](https://github.com/easy-4-java/okhttp3-spring-boot-starter)
+
+</div>
