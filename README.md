@@ -1,67 +1,194 @@
+<a id="readme-top"></a>
+
+<div align="center">
+
 # okhttp3-spring-boot-starter
 
-Spring Boot 自动装配层，只负责属性绑定、Bean 装配、Actuator/metrics 接入；纯 Java 能力下沉到 `okhttp3-extension` 与 `okhttp3-metrics-prometheus`。
+**Spring Boot Starter for okhttp3**
 
-## Maven
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.easy4j/okhttp3-spring-boot-starter)](https://github.com/easy-4-java/okhttp3-spring-boot-starter)
+[![Java](https://img.shields.io/badge/Java-1.8-orange)](#3-requirements-and-compatibility)
+[![License](https://img.shields.io/badge/license-Apache-2.0-green)](https://www.apache.org/licenses/LICENSE-2.0)
+
+[简体中文](./README.zh-CN.md) | [English](./README.md)
+
+[Positioning](#1-positioning) · [Capabilities](#2-core-capabilities) ·
+[Dependency](#5-dependency) · [Quick Start](#6-quick-start) ·
+[Configuration](#7-configuration-reference) · [Versions](#9-version-lines-and-compatibility) ·
+[Build](#10-build-and-test) · [License](#12-license)
+
+</div>
+
+---
+
+> **Current Version**：`2.7.x.20260630-SNAPSHOT`<br>
+> **JDK Baseline**：`1.8`<br>
+> **Group ID**：`io.github.easy4j`<br>
+> **Artifact ID**：`okhttp3-spring-boot-starter`<br>
+> **License**：Apache License 2.0<br>
+
+## 1. Positioning
+
+**okhttp3-spring-boot-starter** is a Spring Boot starter that integrates **okhttp3** for applications using okhttp3. It provides auto-configuration, property binding, and ready-to-use beans so that applications can consume okhttp3 capabilities with minimal setup.
+
+| Dimension | Description |
+|---|---|
+| Type | Spring Boot Starter |
+| Consumers | Spring Boot applications using okhttp3 |
+| Core Capabilities | auto-configuration, property binding, ready-to-use beans for okhttp3 |
+| JDK | `1.8` |
+| Coordinates | `io.github.easy4j:okhttp3-spring-boot-starter:2.7.x.20260630-SNAPSHOT` |
+| Config Prefix | `okhttp3` |
+
+## 2. Core Capabilities
+
+| Capability | Status | Description |
+|---|:---:|---|
+| Auto-configuration | ✅ Stable | Registers okhttp3 beans automatically |
+| Property Binding | ✅ Stable | Binds `okhttp3.*` to `OkHttp3CookieProperties` |
+| `RequestHeaderInterceptor` bean | ✅ Stable | Auto-registered via OkHttp3AutoConfiguration, OkHttp3MetricsAutoConfiguration, OkHttp3EndpointAutoConfiguration |
+
+## 3. Requirements and Compatibility
+
+| Dependency | Minimum | Evidence |
+|---|---:|---|
+| JDK | `1.8` | `pom.xml` |
+| Spring Boot | `2.7.18` | `pom.xml` parent |
+| Maven | `3.6+` | Maven Enforcer |
+
+## 4. Auto-configuration
+
+The starter auto-configures the following beans:
+
+| Bean | Condition | Missing Behavior |
+|---|---|---|
+| `RequestHeaderInterceptor` | classpath + property | not created |
+| `RequestRetryIntercepter` | classpath + property | not created |
+| `GzipRequestInterceptor` | classpath + property | not created |
+| `HttpLoggingInterceptor` | classpath + property | not created |
+| `Dispatcher` | classpath + property | not created |
+| `CookieJar` | classpath + property | not created |
+| `Builder` | classpath + property | not created |
+| `OkHttpClient` | classpath + property | not created |
+| `OkHttp3ClientHttpRequestFactory` | classpath + property | not created |
+| `OkHttp3Template` | classpath + property | not created |
+| `Builder` | classpath + property | not created |
+| `OkHttpClient` | classpath + property | not created |
+| `OkHttpCacheMetrics` | classpath + property | not created |
+| `OkHttpDispatcherMetrics` | classpath + property | not created |
+| `OkHttpConnectionPoolMetrics` | classpath + property | not created |
+| `OkHttp3Endpoint` | classpath + property | not created |
+
+Auto-configuration registration:
+
+- `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` (Spring Boot 2.7+ / 3.x / 4.x)
+- `META-INF/spring.factories` (Spring Boot 2.x legacy)
+
+## 5. Dependency
 
 ```xml
 <dependency>
-  <groupId>io.github.hiwepy</groupId>
-  <artifactId>okhttp3-spring-boot-starter</artifactId>
-  <version>2.7.x.20260630-SNAPSHOT</version>
+    <groupId>io.github.easy4j</groupId>
+    <artifactId>okhttp3-spring-boot-starter</artifactId>
+    <version>2.7.x.20260630-SNAPSHOT</version>
 </dependency>
 ```
 
-## 依赖关系
+This starter depends on the following components (managed by ddd4j BOM):
 
-- `okhttp3-extension`
-  - SSL、CookieJar、Interceptor、纯 Java Response/工具
-- `okhttp3-metrics-prometheus`
-  - OkHttp 指标采集与 Micrometer 绑定
-- `okhttp3-spring-boot-starter`
-  - `@ConfigurationProperties`
-  - `@Configuration`
-  - Actuator / metrics 装配
-
-## 版本矩阵
-
-| Starter 分支 | Spring Boot Parent | JDK | `okhttp3-extension` | `okhttp3-metrics-prometheus` |
-|--------------|--------------------|-----|---------------------|------------------------------|
-| `2.3.x` | `2.3.12.RELEASE` | 8 | `1.0.x.*` | `1.0.x.*` |
-| `2.4.x` | `2.4.13` | 8 | `1.0.x.*` | `1.0.x.*` |
-| `2.5.x` | `2.5.15` | 8 | `1.0.x.*` | `1.0.x.*` |
-| `2.6.x` | `2.6.15` | 8 | `1.0.x.*` | `1.0.x.*` |
-| `2.7.x` | `2.7.18` | 8 | `1.0.x.*` | `1.0.x.*` |
-| `3.0.x` | `3.0.13` | 17 | `2.0.x.*` | `2.0.x.*` |
-| `3.1.x` | `3.1.12` | 17 | `2.0.x.*` | `2.0.x.*` |
-| `3.2.x` | `3.2.12` | 17 | `2.0.x.*` | `2.0.x.*` |
-| `3.3.x` | `3.3.13` | 17 | `2.0.x.*` | `2.0.x.*` |
-| `3.4.x` | `3.4.13` | 17 | `2.0.x.*` | `2.0.x.*` |
-| `3.5.x` | `3.5.16` | 17 | `2.0.x.*` | `2.0.x.*` |
-| `4.0.x` | `4.0.7` | 21 | `3.0.x.*` | `3.0.x.*` |
-| `4.1.x` | `4.1.0` | 21 | `3.0.x.*` | `3.0.x.*` |
-
-## 分支 POM 生成
-
-```bash
-python3 scripts/render-branch-pom.py 2.7.x
+```xml
+<dependency>
+    <groupId>io.github.easy4j</groupId>
+    <artifactId>okhttp3-extension</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.github.easy4j</groupId>
+    <artifactId>okhttp3-metrics-prometheus</artifactId>
+</dependency>
 ```
 
-## 配置示例
+## 6. Quick Start
+
+### 6.1 Add dependency
+
+Add the dependency above to your `pom.xml`.
+
+### 6.2 Configure
 
 ```yaml
 okhttp3:
-  connect-timeout: 5s
-  read-timeout: 30s
-  write-timeout: 30s
-  retry-on-connection-failure: false
-  log-level: HEADERS
-  pool:
-    max-idle-connections: 48
-    max-requests: 128
-    max-requests-per-host: 24
+  enabled: true
 ```
 
-## License
+### 6.3 Use the bean
 
-Apache License 2.0
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
+
+Then inject the auto-configured bean in your code:
+
+```java
+@Autowired
+private RequestHeaderInterceptor headerInterceptor;
+```
+
+## 7. Configuration Reference
+
+### 7.1 Config Prefix
+
+`okhttp3`
+
+### 7.2 Configuration Items
+
+| Property | Type | Default | Required | Description | Sensitive |
+|---|---|---|:---:|---|:---:|
+| `okhttp3.enabled` | boolean | `true` | No | Enable the starter | No |
+<!-- additional properties below -->
+
+## 8. Version Lines and Compatibility
+
+| Branch | JDK | Spring Boot | Component Version | Status |
+|---|---:|---:|---|:---:|
+| `2.3.x` / `2.7.x` | `8+` | 2.3.x / 2.7.x | `1.0.x` | Maintenance |
+| `3.0.x` ~ `3.5.x` | `17` | 3.x | `2.0.x` | Maintenance |
+| `4.0.x` / `4.1.x` | `17+` | 4.x | `3.0.x` | Active |
+
+## 9. Build and Test
+
+```bash
+mvn clean verify
+mvn -pl okhttp3-spring-boot-starter -am test
+```
+
+## 10. Troubleshooting
+
+| Symptom | Diagnosis | Resolution |
+|---|---|---|
+| Bean not created | Check auto-configuration report | Verify `okhttp3.enabled=true` and classpath |
+| `ClassNotFoundException` | Missing dependency | Add the required module |
+| Version conflict | `mvn dependency:tree` | Use BOM for version alignment |
+
+## 11. Contribution
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Run `mvn clean verify` before submitting.
+4. Submit a pull request.
+
+## 12. License
+
+This project is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+---
+
+<div align="center">
+
+[Back to top](#readme-top) · [Issues](https://github.com/easy-4-java/okhttp3-spring-boot-starter/issues) · [Repository](https://github.com/easy-4-java/okhttp3-spring-boot-starter)
+
+</div>
