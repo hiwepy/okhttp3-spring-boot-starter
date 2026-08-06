@@ -14,7 +14,7 @@ Spring Boot Starter For Okhttp 3.x
 
 ``` xml
 <dependency>
-	<groupId>io.github.hiwepy</groupId>
+	<groupId>io.github.easy4j</groupId>
 	<artifactId>okhttp3-spring-boot-starter</artifactId>
 	<version>${project.version}</version>
 </dependency>
@@ -105,7 +105,7 @@ public class Application {
 	<artifactId>micrometer-registry-prometheus</artifactId>
 </dependency>
 <dependency>
-    <groupId>io.github.hiwepy</groupId>
+    <groupId>io.github.easy4j</groupId>
     <artifactId>okhttp3-metrics-prometheus</artifactId>
 </dependency>
 ```
