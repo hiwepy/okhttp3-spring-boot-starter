@@ -13,7 +13,7 @@
     <groupId>io.github.easy4j</groupId>
     <artifactId>okhttp3-spring-boot-starter</artifactId>
     <description>Spring Boot Starter For OkHttp 3.x</description>
-    <version>3.1.x.20260527-SNAPSHOT</version>
+    <version>3.1.x.20260630-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/easy-4-java/${project.artifactId}</url>
     <packaging>jar</packaging>
@@ -425,8 +425,8 @@
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
         <maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
         <okhttp.version>4.12.0</okhttp.version>
-        <okhttp-extension.version>2.0.x-SNAPSHOT</okhttp-extension.version>
-        <okhttp-metrics.version>2.0.x-SNAPSHOT</okhttp-metrics.version>
+        <okhttp-extension.version>2.0.x.20260630-SNAPSHOT</okhttp-extension.version>
+        <okhttp-metrics.version>2.0.x.20260630-SNAPSHOT</okhttp-metrics.version>
                 <commons-io.version>2.22.0</commons-io.version>
                 <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
                 <okhttp.version>4.12.0</okhttp.version>
