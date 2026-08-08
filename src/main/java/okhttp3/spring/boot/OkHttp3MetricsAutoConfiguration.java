@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  * OkHttp Client Metrics Ini
- * @author wandl
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 
 @Configuration(proxyBeanMethods = false)
