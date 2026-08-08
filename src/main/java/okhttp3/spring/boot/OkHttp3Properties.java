@@ -5,6 +5,7 @@ import okhttp3.ConnectionPool;
 import okhttp3.Protocol;
 import okhttp3.Response;
 import okhttp3.WebSocketListener;
+import okhttp3.internal.Util;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 import okio.Source;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,36 +20,32 @@ import java.util.List;
 @Data
 public class OkHttp3Properties {
 
-    public static final String PREFIX = "okhttp3";
+	public static final String PREFIX = "okhttp3";
 
-    /**
-     * Default value for disabling SSL validation.
-     */
-    public static final boolean DEFAULT_DISABLE_SSL_VALIDATION = false;
+	/**
+	 * Default value for disabling SSL validation.
+	 */
+	public static final boolean DEFAULT_DISABLE_SSL_VALIDATION = false;
 
-    /**
-     * Default value for following redirects.
-     */
-    public static final boolean DEFAULT_FOLLOW_REDIRECTS = true;
-    /**
-     * the protocols to use, in order of preference. If the list contains {@link
-     * Protocol#H2_PRIOR_KNOWLEDGE} then that must be the only protocol and HTTPS URLs will not
-     * be supported. Otherwise the list must contain {@link Protocol#HTTP_1_1}. The list must
-     * not contain null or {@link Protocol#HTTP_1_0}.
-     */
-    List<Protocol> protocols = Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
-    /**
+	/**
+	 * Default value for following redirects.
+	 */
+	public static final boolean DEFAULT_FOLLOW_REDIRECTS = true;
+
+	/**
      * Configure this client to follow redirects from HTTPS to HTTP and from HTTP to HTTPS.
      *
      * <p>If unset, protocol redirects will be followed. This is different than the built-in {@code
      * HttpURLConnection}'s default.
      */
-    private boolean followSslRedirects = DEFAULT_FOLLOW_REDIRECTS;
-    /**
-     * Configure this client to follow redirects. If unset, redirects will be followed.
-     */
-    private boolean followRedirects = true;
-    /**
+	private boolean followSslRedirects = DEFAULT_FOLLOW_REDIRECTS;
+
+	/**
+	 * Configure this client to follow redirects. If unset, redirects will be followed.
+	 */
+	private boolean followRedirects = true;
+
+	/**
      * Configure this client to retry or not when a connectivity problem is encountered. By default,
      * this client silently recovers from the following problems:
      *
@@ -62,31 +59,35 @@ public class OkHttp3Properties {
      *       attempt multiple proxy servers in sequence, eventually falling back to a direct
      *       connection.
      * </ul>
-     * <p>
+     *
      * Set this to false to avoid retrying requests when doing so is destructive. In this case the
      * calling application should do its own recovery of connectivity failures.
      */
-    private boolean retryOnConnectionFailure = true;
-    /**
-     * 最大重试次数
-     */
-    private int retryMaxAttempts = 0;
-    /**
-     * 重试的间隔
-     */
+	private boolean retryOnConnectionFailure = true;
+
+	/**
+	 * 最大重试次数
+	 */
+	private int retryMaxAttempts = 0;
+
+	/**
+	 * 重试的间隔
+	 */
     private long retryInterval;
-    /**
+
+	/**
      * Sets the default timeout for complete calls. A value of 0 means no timeout, otherwise values
      * must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
-     * <p>
+     *
      * The call timeout spans the entire call: resolving DNS, connecting, writing the request
      * body, server processing, and reading the response body. If the call requires redirects or
      * retries all must complete within one timeout period.
-     * <p>
+     *
      * The default value is 0 which imposes no timeout.
      */
-    private Duration callTimeout = Duration.ofSeconds(0);
-    /**
+	private Duration callTimeout = Duration.ofSeconds(0);
+
+	 /**
      * Sets the default connect timeout for new connections. A value of 0 means no timeout,
      * otherwise values must be between 1 and {@link Integer#MAX_VALUE} when converted to
      * milliseconds.
@@ -94,19 +95,19 @@ public class OkHttp3Properties {
      * <p>The connectTimeout is applied when connecting a TCP socket to the target host.
      * The default value is 10 seconds.
      */
-    private Duration connectTimeout = Duration.ofSeconds(10);
-    /**
+	private Duration connectTimeout = Duration.ofSeconds(2);
+	/**
      * Sets the default read timeout for new connections. A value of 0 means no timeout, otherwise
      * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
-     * <p>
+     *
      * The read timeout is applied to both the TCP socket and for individual read IO operations
      * including on {@link Source} of the {@link Response}. The default value is 10 seconds.
      *
      * @see Socket#setSoTimeout(int)
      * @see Source#timeout()
      */
-    private Duration readTimeout = Duration.ofSeconds(10);
-    /**
+	private Duration readTimeout = Duration.ofSeconds(120);
+	 /**
      * Sets the default write timeout for new connections. A value of 0 means no timeout, otherwise
      * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
      *
@@ -114,8 +115,8 @@ public class OkHttp3Properties {
      * The default value is 10 seconds.
      *
      */
-    private Duration writeTimeout = Duration.ofSeconds(10);
-    /**
+	private Duration writeTimeout = Duration.ofSeconds(10);
+	/**
      * Sets the interval between HTTP/2 and web socket pings initiated by this client. Use this to
      * automatically send ping frames until either the connection fails or it is closed. This keeps
      * the connection alive and may detect connectivity failures.
@@ -128,7 +129,16 @@ public class OkHttp3Properties {
      *
      * <p>The default value of 0 disables client-initiated pings.
      */
-    private Duration pingInterval = Duration.ofSeconds(0);
-    private Level logLevel = Level.NONE;
+	private Duration pingInterval = Duration.ofSeconds(0);
+
+	/**
+	 * the protocols to use, in order of preference. If the list contains {@link
+     *     Protocol#H2_PRIOR_KNOWLEDGE} then that must be the only protocol and HTTPS URLs will not
+     *     be supported. Otherwise the list must contain {@link Protocol#HTTP_1_1}. The list must
+     *     not contain null or {@link Protocol#HTTP_1_0}.
+	 */
+	List<Protocol> protocols = Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1);
+
+	private Level logLevel = Level.NONE;
 
 }
