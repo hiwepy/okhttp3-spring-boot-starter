@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 /**
  * OkHttp3 常规请求模板
  *
- * @author ： <a href="https://github.com/easy-4-java">wandl</a>
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 @Slf4j
 public class OkHttp3Template implements InitializingBean {

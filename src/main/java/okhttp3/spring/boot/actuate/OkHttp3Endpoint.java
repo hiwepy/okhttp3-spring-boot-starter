@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 /**
  * {@link Endpoint} to expose OkHttp3 Metrics.
- * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 @Endpoint(id = "okhttp3")
 public class OkHttp3Endpoint {
