@@ -10,7 +10,6 @@ import okhttp3.metrics.OkHttp3Metrics;
 import okhttp3.metrics.OkHttpCacheMetrics;
 import okhttp3.metrics.OkHttpDispatcherMetrics;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -25,9 +24,9 @@ import java.util.stream.Collectors;
 
 /**
  * OkHttp Client Metrics Ini
- * @author wandl
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
-@AutoConfigureAfter(MetricsAutoConfiguration.class)
+
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MeterRegistry.class, OkHttpClient.class, OkHttpConnectionPoolMetrics.class , OkHttpObservationInterceptor.class  })
 @ConditionalOnBean(MeterRegistry.class)
