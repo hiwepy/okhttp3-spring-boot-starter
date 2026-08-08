@@ -5,6 +5,11 @@ import okhttp3.extension.interceptor.RequestHeaderInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,5 +41,19 @@ class OkHttp3AutoConfigurationTest {
                 client.dispatcher().executorService().shutdown();
             }
         });
+    }
+
+    @Test
+    void springFactoriesShouldContainThreeNonBlankAutoConfigurations() throws IOException {
+        Properties factories = PropertiesLoaderUtils.loadAllProperties("META-INF/spring.factories");
+        String value = factories.getProperty("org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+        String[] classNames = Arrays.stream(value.split(","))
+                .map(String::trim)
+                .toArray(String[]::new);
+
+        assertEquals(3, classNames.length);
+        assertTrue(Arrays.stream(classNames).noneMatch(String::isEmpty));
+        assertTrue(Arrays.asList(classNames).contains(
+                "okhttp3.spring.boot.actuate.OkHttp3EndpointAutoConfiguration"));
     }
 }
