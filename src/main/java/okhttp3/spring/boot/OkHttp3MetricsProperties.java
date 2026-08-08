@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author wandl
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 @ConfigurationProperties(OkHttp3MetricsProperties.PREFIX)
 @Data
