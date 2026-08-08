@@ -28,9 +28,9 @@
 
     <scm>
 
-        <connection>scm:git:https:github.com/easy-4-java/${project.artifactId}.git</connection>
-        <developerConnection>scm:git:https:github.com/easy-4-java/${project.artifactId}.git</developerConnection>
-        <url>https:github.com/easy-4-java/${project.artifactId}</url>
+        <connection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</connection>
+        <developerConnection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</developerConnection>
+        <url>https://github.com/easy-4-java/${project.artifactId}</url>
         <tag>${project.artifactId}</tag>
     </scm>
 
@@ -194,6 +194,7 @@
                         </additionalClasspathElements>
                         <includes>
                             <include>**/*Test.java</include>
+                        <include>**/*_Test.java</include>
                         </includes>
                         <excludes>
                             <exclude>**/TestBean.java</exclude>
@@ -252,6 +253,18 @@
                         <detectBuildFailures>true</detectBuildFailures>
                     </configuration>
                 </plugin>
+                        <!-- 中央仓库发布插件: 将制品发布至 Maven Central -->
+            <!-- https://mvnrepository.com/artifact/org.sonatype.central/central-publishing-maven-plugin -->
+            <plugin>
+                <!-- 中央仓库发布插件: 将制品发布至 Maven Central -->
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${maven-central-publishing-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -432,7 +445,13 @@
                         <!-- 将制品 staging 至 OSS Sonatype Nexus -->
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
+                    </plugin>                    <!-- https://mvnrepository.com/artifact/org.sonatype.central/central-publishing-maven-plugin -->
+                    <plugin>
+                        <!-- 中央仓库发布插件: 将制品发布至 Maven Central -->
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
                     </plugin>
+
                 </plugins>
             </build>
         </profile>
@@ -452,6 +471,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
         <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
         <okhttp.version>4.12.0</okhttp.version>
         <okhttp-extension.version>1.0.x.20260630-SNAPSHOT</okhttp-extension.version>
