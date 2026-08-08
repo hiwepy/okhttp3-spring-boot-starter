@@ -17,6 +17,7 @@ package okhttp3.spring.boot.actuate;
 
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
@@ -55,21 +56,21 @@ public class OkHttp3Endpoint {
         Map<String, Object> metrics = new HashMap<>();
         // gauge
         Map<String, Gauge> gauges = registry.getMeters().stream().filter(meter -> meter.getId().getName()
-                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Gauge.class)
+                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Meter.Type.GAUGE)
         ).map(meter -> (Gauge) meter).collect(Collectors.toMap(meter -> meter.getId().getName(), meter -> meter));
         for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
             metrics.put(entry.getKey(), entry.getValue().value());
         }
         // timer
         Map<String, Timer> timers = registry.getMeters().stream().filter(meter -> meter.getId().getName()
-                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Timer.class)
+                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Meter.Type.TIMER)
         ).map(meter -> (Timer) meter).collect(Collectors.toMap(meter -> meter.getId().getName(), meter -> meter));
         for (Map.Entry<String, Timer> entry : timers.entrySet()) {
             metrics.putAll(convertTimerToMap(entry.getKey(), entry.getValue()));
         }
         // summary
         Map<String, DistributionSummary> summarys = registry.getMeters().stream().filter(meter -> meter.getId().getName()
-                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(DistributionSummary.class)
+                .startsWith(OkHttp3Metrics.OKHTTP3_METRIC_NAME_PREFIX) && meter.getId().getType().equals(Meter.Type.DISTRIBUTION_SUMMARY)
         ).map(meter -> (DistributionSummary) meter).collect(Collectors.toMap(meter -> meter.getId().getName(), meter -> meter));
         for (Map.Entry<String, DistributionSummary> entry : summarys.entrySet()) {
             metrics.putAll(convertSummaryToMap(entry.getKey(), entry.getValue()));
