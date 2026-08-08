@@ -5,6 +5,8 @@ import okhttp3.extension.interceptor.RequestHeaderInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import java.io.IOException;
@@ -55,5 +57,24 @@ class OkHttp3AutoConfigurationTest {
         assertTrue(Arrays.stream(classNames).noneMatch(String::isEmpty));
         assertTrue(Arrays.asList(classNames).contains(
                 "okhttp3.spring.boot.actuate.OkHttp3EndpointAutoConfiguration"));
+    }
+
+    @Test
+    void shouldKeepPrimarySharedClientWhenProviderHasDedicatedClient() {
+        contextRunner.withUserConfiguration(DedicatedProviderClientConfiguration.class).run(context -> {
+            assertEquals(2, context.getBeansOfType(OkHttpClient.class).size());
+            assertEquals(context.getBean("okhttp3Client"), context.getBean(OkHttpClient.class));
+            assertEquals(context.getBean("providerOkHttpClient"),
+                    context.getBean("providerOkHttpClient", OkHttpClient.class));
+        });
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class DedicatedProviderClientConfiguration {
+
+        @Bean
+        OkHttpClient providerOkHttpClient() {
+            return new OkHttpClient();
+        }
     }
 }

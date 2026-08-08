@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.util.CollectionUtils;
 
@@ -198,7 +199,8 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(OkHttpClient.class)
+	@Primary
+	@ConditionalOnMissingBean(name = "okhttp3Client")
 	public OkHttpClient okhttp3Client(okhttp3.OkHttpClient.Builder okhttp3Builder) throws Exception {
 		OkHttpClient okhttp3Client = okhttp3Builder.build();
 		return okhttp3Client;
