@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, hiwepy (https://github.com/hiwepy).
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,7 +18,6 @@ package okhttp3.spring.boot;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import okhttp3.internal.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.CollectionUtils;
@@ -36,7 +35,7 @@ import java.util.function.Consumer;
 /**
  * OkHttp3 常规请求模板
  *
- * @author ： <a href="https://github.com/hiwepy">wandl</a>
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 @Slf4j
 public class OkHttp3Template implements InitializingBean {
@@ -449,19 +448,19 @@ public class OkHttp3Template implements InitializingBean {
 		 * post request.
 		 */
 		POST("POST", (builder, bodyStr)->{
-			return builder.post(RequestBody.create(APPLICATION_JSON_UTF8, Objects.isNull(bodyStr) ? "" : bodyStr));
+			return builder.post(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
 		}),
 		/**
 		 * put request.
 		 */
 		PUT("PUT", (builder, bodyStr)->{
-			return builder.put(RequestBody.create(APPLICATION_JSON_UTF8, Objects.isNull(bodyStr) ? "" : bodyStr));
+			return builder.put(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
 		}),
 		/**
 		 * patch request.
 		 */
 		PATCH("PATCH", (builder, bodyStr)->{
-			return builder.patch(RequestBody.create(APPLICATION_JSON_UTF8, Objects.isNull(bodyStr) ? "" : bodyStr));
+			return builder.patch(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
 		}),
 		/**
 		 * delete request.
