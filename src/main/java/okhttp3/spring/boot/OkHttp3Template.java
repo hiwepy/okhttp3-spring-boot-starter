@@ -289,7 +289,10 @@ public class OkHttp3Template implements InitializingBean {
 		// 2.创建一个call对象,参数就是Request请求对象
 		this.doAsyncRequest(startTime, httpUrl, method, headers, bodyContent, (call, response) -> {
 			if(rtClass.equals(Void.TYPE)){
-				return Void.TYPE;
+				if (Objects.nonNull(success)) {
+					success.accept(null);
+				}
+				return null;
 			}
 			T res = null;
 			try {
@@ -445,19 +448,19 @@ public class OkHttp3Template implements InitializingBean {
 		 * post request.
 		 */
 		POST("POST", (builder, bodyStr)->{
-			return builder.post(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr));
+			return builder.post(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
 		}),
 		/**
 		 * put request.
 		 */
 		PUT("PUT", (builder, bodyStr)->{
-			return builder.put(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr));
+			return builder.put(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
 		}),
 		/**
 		 * patch request.
 		 */
 		PATCH("PATCH", (builder, bodyStr)->{
-			return builder.patch(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr));
+			return builder.patch(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
 		}),
 		/**
 		 * delete request.

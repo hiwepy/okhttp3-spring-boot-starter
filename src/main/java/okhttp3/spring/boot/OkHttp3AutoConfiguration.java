@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import okhttp3.*;
-import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.extension.cookie.CaffeineCacheCookieJar;
 import okhttp3.extension.cookie.NestedCookieJar;
@@ -79,8 +78,8 @@ public class OkHttp3AutoConfiguration {
 	@Bean
 	public Dispatcher dispatcher(OkHttp3PoolProperties properties) {
 		Dispatcher dispatcher = new Dispatcher();
-		dispatcher.setMaxRequests(Math.max(properties.getMaxRequests(), OkHttp3PoolProperties.DEFAULT_MAX_REQUESTS));
-		dispatcher.setMaxRequestsPerHost(Math.max(properties.getMaxRequestsPerHost(), OkHttp3PoolProperties.DEFAULT_MAX_REQUESTS_PER_ROUTE));
+		dispatcher.setMaxRequests(Math.max(1, properties.getMaxRequests()));
+		dispatcher.setMaxRequestsPerHost(Math.max(1, properties.getMaxRequestsPerHost()));
 		return dispatcher;
 	}
 
@@ -117,7 +116,10 @@ public class OkHttp3AutoConfiguration {
 	     * Create a new connection pool with tuning parameters appropriate for a single-user application.
 	     * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
 	     */
-    	ConnectionPool connectionPool = new ConnectionPool(poolProperties.getMaxIdleConnections(), poolProperties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
+		ConnectionPool connectionPool = new ConnectionPool(
+				Math.max(1, poolProperties.getMaxIdleConnections()),
+				Math.max(1L, poolProperties.getKeepAliveDuration().toMillis()),
+				TimeUnit.MILLISECONDS);
 		/**
 		 * get connectionSpecs
 		 */
@@ -132,11 +134,9 @@ public class OkHttp3AutoConfiguration {
 		/**
 		 *  Create a new OkHttpClient Builder with configuration.
 		 */
-		okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
+		okhttp3.OkHttpClient.Builder builder = new OkHttpClient.Builder()
 				// Application Interceptors、Network Interceptors : https://segmentfault.com/a/1190000013164260
 				.authenticator(authenticatorProvider.getIfAvailable(() -> Authenticator.NONE))
-				.addInterceptor(loggingInterceptor)
-				.addNetworkInterceptor(loggingInterceptor)
 				.cache(cacheProvider.getIfAvailable())
 				.callTimeout(properties.getCallTimeout())
 				.certificatePinner(certificatePinnerProvider.getIfAvailable(() -> CertificatePinner.DEFAULT))
@@ -149,7 +149,6 @@ public class OkHttp3AutoConfiguration {
 				.eventListener(eventListenerProvider.getIfAvailable(() -> EventListener.NONE))
 				.followRedirects(properties.isFollowRedirects())
 				.followSslRedirects(properties.isFollowSslRedirects())
-				.hostnameVerifier(hostnameVerifierProvider.getIfAvailable(() -> OkHostnameVerifier.INSTANCE))
 				.protocols(properties.getProtocols())
 				.proxy(proxyProvider.getIfAvailable())
 				.proxySelector(proxySelectorProvider.getIfAvailable(() -> ProxySelector.getDefault()))
@@ -160,7 +159,23 @@ public class OkHttp3AutoConfiguration {
 				.socketFactory(socketFactoryProvider.getIfAvailable(() -> SocketFactory.getDefault()))
 				.writeTimeout(properties.getWriteTimeout());
 
+		HostnameVerifier hostnameVerifier = hostnameVerifierProvider.getIfAvailable();
+		if (hostnameVerifier != null) {
+			builder.hostnameVerifier(hostnameVerifier);
+		}
+		if (properties.getLogLevel() != HttpLoggingInterceptor.Level.NONE) {
+			builder.addInterceptor(loggingInterceptor);
+		}
+
 		for (RequestInterceptor requestInterceptor : requestInterceptorProvider) {
+			if (requestInterceptor instanceof RequestRetryIntercepter retryInterceptor
+					&& !retryInterceptor.isEnabled()) {
+				continue;
+			}
+			if (requestInterceptor instanceof GzipRequestInterceptor gzipRequestInterceptor
+					&& !gzipRequestInterceptor.isEnabled()) {
+				continue;
+			}
 			builder.addInterceptor(requestInterceptor);
 		}
 		for (NetworkInterceptor networkInterceptor : networkInterceptorProvider) {

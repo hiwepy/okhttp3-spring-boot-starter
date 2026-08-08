@@ -94,7 +94,7 @@ public class OkHttp3Properties {
      * <p>The connectTimeout is applied when connecting a TCP socket to the target host.
      * The default value is 10 seconds.
      */
-	private Duration connectTimeout = Duration.ofSeconds(10);
+	private Duration connectTimeout = Duration.ofSeconds(2);
 	/**
      * Sets the default read timeout for new connections. A value of 0 means no timeout, otherwise
      * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
@@ -105,7 +105,7 @@ public class OkHttp3Properties {
      * @see Socket#setSoTimeout(int)
      * @see Source#timeout()
      */
-	private Duration readTimeout = Duration.ofSeconds(10);
+	private Duration readTimeout = Duration.ofSeconds(120);
 	 /**
      * Sets the default write timeout for new connections. A value of 0 means no timeout, otherwise
      * values must be between 1 and {@link Integer#MAX_VALUE} when converted to milliseconds.
