@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, hiwepy (https://github.com/hiwepy).
+ * Copyright (c) 2018, hiwepy (https://github.com/easy-4-java).
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,18 +20,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Http Request Gzip 配置
- *
- * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 @ConfigurationProperties(OkHttp3GzipRequestProperties.PREFIX)
 @Data
 public class OkHttp3GzipRequestProperties {
 
-    public static final String PREFIX = "okhttp3.gzip";
+	public static final String PREFIX = "okhttp3.gzip";
 
-    /**
-     * Whether Enable OkHttp3 Gzip .
-     */
-    private boolean enabled = false;
+	/** Whether Enable OkHttp3 Gzip . */
+	private boolean enabled = false;
 
 }
