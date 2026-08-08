@@ -5,29 +5,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.common.net.HttpHeaders;
-import okhttp3.Authenticator;
-import okhttp3.Cache;
-import okhttp3.CertificatePinner;
-import okhttp3.ConnectionPool;
-import okhttp3.ConnectionSpec;
-import okhttp3.CookieJar;
-import okhttp3.Dispatcher;
-import okhttp3.Dns;
-import okhttp3.EventListener;
-import okhttp3.OkHttpClient;
+import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.extension.cookie.CaffeineCacheCookieJar;
 import okhttp3.extension.cookie.NestedCookieJar;
-import okhttp3.extension.interceptor.GzipRequestInterceptor;
-import okhttp3.extension.interceptor.NetworkInterceptor;
-import okhttp3.extension.interceptor.ProxyAuthenticator;
-import okhttp3.extension.interceptor.RequestInterceptor;
-import okhttp3.extension.interceptor.RequestHeaderInterceptor;
-import okhttp3.extension.interceptor.RequestRetryIntercepter;
+
+
 import okhttp3.extension.ssl.SSLContexts;
 import okhttp3.extension.ssl.TrustManagerUtils;
+import okhttp3.extension.interceptor.*;
+import okhttp3.spring.boot.OkHttp3GzipRequestProperties;
+import okhttp3.spring.boot.OkHttp3RequestHeaderProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -55,25 +43,20 @@ import java.util.stream.Collectors;
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
-		OkHttp3CookieProperties.class, OkHttp3RequestGzipProperties.class, OkHttp3RequestHeaderProperties.class})
+		OkHttp3CookieProperties.class, OkHttp3GzipRequestProperties.class, OkHttp3RequestHeaderProperties.class})
 public class OkHttp3AutoConfiguration {
 
 	@Bean
 	public RequestHeaderInterceptor headerInterceptor(OkHttp3RequestHeaderProperties headerProperties) {
-		return new RequestHeaderInterceptor(() -> Arrays.asList(
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.ACCEPT, headerProperties.getAccept()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.ACCEPT_CHARSET, headerProperties.getAcceptCharset()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.ACCEPT_ENCODING, headerProperties.getAcceptEncoding()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.ACCEPT_LANGUAGE, headerProperties.getAcceptLanguage()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.ACCEPT_RANGES, headerProperties.getAcceptRanges()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.AUTHORIZATION, headerProperties.getAuthorization()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.CONNECTION, headerProperties.getConnection()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.HOST, headerProperties.getHost()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.ORIGIN, headerProperties.getOrigin()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.PROXY_AUTHENTICATE, headerProperties.getProxyAuthenticate()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.PROXY_AUTHORIZATION, headerProperties.getProxyAuthorization()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.REFERER, headerProperties.getReferer()),
-				new RequestHeaderInterceptor.HeaderEntry(HttpHeaders.USER_AGENT, headerProperties.getUserAgent())));
+		return new RequestHeaderInterceptor(new RequestHeaderInterceptor.RequestHeaderProvider() {
+			@Override
+			public java.util.List<RequestHeaderInterceptor.HeaderEntry> getHeaders() {
+				java.util.List<RequestHeaderInterceptor.HeaderEntry> headers = new java.util.ArrayList<>();
+				headers.add(new RequestHeaderInterceptor.HeaderEntry("Accept", headerProperties.getAccept()));
+				headers.add(new RequestHeaderInterceptor.HeaderEntry("User-Agent", headerProperties.getUserAgent()));
+				return headers;
+			}
+		});
 	}
 
 	@Bean
@@ -82,7 +65,7 @@ public class OkHttp3AutoConfiguration {
 	}
 
 	@Bean
-	public GzipRequestInterceptor gzipInterceptor(OkHttp3RequestGzipProperties gzipProperties) {
+	public GzipRequestInterceptor gzipInterceptor(OkHttp3GzipRequestProperties gzipProperties) {
 		return new GzipRequestInterceptor(gzipProperties.isEnabled());
 	}
 
@@ -96,8 +79,8 @@ public class OkHttp3AutoConfiguration {
 	@Bean
 	public Dispatcher dispatcher(OkHttp3PoolProperties properties) {
 		Dispatcher dispatcher = new Dispatcher();
-		dispatcher.setMaxRequests(Math.max(properties.getMaxRequests(), OkHttp3PoolProperties.DEFAULT_MAX_REQUESTS));
-		dispatcher.setMaxRequestsPerHost(Math.max(properties.getMaxRequestsPerHost(), OkHttp3PoolProperties.DEFAULT_MAX_REQUESTS_PER_ROUTE));
+		dispatcher.setMaxRequests(Math.max(1, properties.getMaxRequests()));
+		dispatcher.setMaxRequestsPerHost(Math.max(1, properties.getMaxRequestsPerHost()));
 		return dispatcher;
 	}
 
@@ -134,7 +117,10 @@ public class OkHttp3AutoConfiguration {
 	     * Create a new connection pool with tuning parameters appropriate for a single-user application.
 	     * The tuning parameters in this pool are subject to change in future OkHttp releases. Currently
 	     */
-    	ConnectionPool connectionPool = new ConnectionPool(poolProperties.getMaxIdleConnections(), poolProperties.getKeepAliveDuration().getSeconds(), TimeUnit.SECONDS);
+		ConnectionPool connectionPool = new ConnectionPool(
+				Math.max(1, poolProperties.getMaxIdleConnections()),
+				Math.max(1L, poolProperties.getKeepAliveDuration().toMillis()),
+				TimeUnit.MILLISECONDS);
 		/**
 		 * get connectionSpecs
 		 */
@@ -149,11 +135,9 @@ public class OkHttp3AutoConfiguration {
 		/**
 		 *  Create a new OkHttpClient Builder with configuration.
 		 */
-		okhttp3.OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
+		okhttp3.OkHttpClient.Builder builder = new OkHttpClient.Builder()
 				// Application Interceptors、Network Interceptors : https://segmentfault.com/a/1190000013164260
 				.authenticator(authenticatorProvider.getIfAvailable(() -> Authenticator.NONE))
-				.addInterceptor(loggingInterceptor)
-				.addNetworkInterceptor(loggingInterceptor)
 				.cache(cacheProvider.getIfAvailable())
 				.callTimeout(properties.getCallTimeout())
 				.certificatePinner(certificatePinnerProvider.getIfAvailable(() -> CertificatePinner.DEFAULT))
@@ -166,7 +150,6 @@ public class OkHttp3AutoConfiguration {
 				.eventListener(eventListenerProvider.getIfAvailable(() -> EventListener.NONE))
 				.followRedirects(properties.isFollowRedirects())
 				.followSslRedirects(properties.isFollowSslRedirects())
-				.hostnameVerifier(hostnameVerifierProvider.getIfAvailable(() -> OkHostnameVerifier.INSTANCE))
 				.protocols(properties.getProtocols())
 				.proxy(proxyProvider.getIfAvailable())
 				.proxySelector(proxySelectorProvider.getIfAvailable(() -> ProxySelector.getDefault()))
@@ -177,7 +160,23 @@ public class OkHttp3AutoConfiguration {
 				.socketFactory(socketFactoryProvider.getIfAvailable(() -> SocketFactory.getDefault()))
 				.writeTimeout(properties.getWriteTimeout());
 
+		HostnameVerifier hostnameVerifier = hostnameVerifierProvider.getIfAvailable();
+		if (hostnameVerifier != null) {
+			builder.hostnameVerifier(hostnameVerifier);
+		}
+		if (properties.getLogLevel() != HttpLoggingInterceptor.Level.NONE) {
+			builder.addInterceptor(loggingInterceptor);
+		}
+
 		for (RequestInterceptor requestInterceptor : requestInterceptorProvider) {
+			if (requestInterceptor instanceof RequestRetryIntercepter
+					&& !((RequestRetryIntercepter) requestInterceptor).isEnabled()) {
+				continue;
+			}
+			if (requestInterceptor instanceof GzipRequestInterceptor
+					&& !((GzipRequestInterceptor) requestInterceptor).isEnabled()) {
+				continue;
+			}
 			builder.addInterceptor(requestInterceptor);
 		}
 		for (NetworkInterceptor networkInterceptor : networkInterceptorProvider) {
@@ -209,6 +208,7 @@ public class OkHttp3AutoConfiguration {
 	public OkHttp3ClientHttpRequestFactory okHttp3ClientHttpRequestFactory(OkHttpClient okhttp3Client) {
 		return new OkHttp3ClientHttpRequestFactory(okhttp3Client);
 	}
+
 
 	@Bean
 	public OkHttp3Template okHttp3Template(OkHttpClient okhttp3Client,

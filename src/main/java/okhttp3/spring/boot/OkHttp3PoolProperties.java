@@ -17,17 +17,17 @@ public class OkHttp3PoolProperties {
 	/**
 	 * Default value for max number od connections.
 	 */
-	public static final int DEFAULT_MAX_CONNECTIONS = 200;
+    public static final int DEFAULT_MAX_CONNECTIONS = 32;
 
 	/**
 	 * Default value for max number od connections.
 	 */
-	public static final int DEFAULT_MAX_REQUESTS = 64;
+    public static final int DEFAULT_MAX_REQUESTS = 128;
 
 	/**
 	 * Default value for max number od connections per route.
 	 */
-	public static final int DEFAULT_MAX_REQUESTS_PER_ROUTE = 5;
+    public static final int DEFAULT_MAX_REQUESTS_PER_ROUTE = 64;
 
 	/**
 	 * The maximum number of requests to execute concurrently. Above this requests queue in
