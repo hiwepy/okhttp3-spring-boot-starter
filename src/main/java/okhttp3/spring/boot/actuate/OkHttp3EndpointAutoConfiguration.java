@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link OkHttp3Endpoint}.
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @Configuration
 @ConditionalOnClass({OkHttpClient.class, MeterRegistry.class})
