@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 /**
  * {@link Endpoint} to expose OkHttp3 Metrics.
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @Endpoint(id = "okhttp3")
 public class OkHttp3Endpoint {
