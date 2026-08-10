@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Http Request Gzip 配置
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @ConfigurationProperties(OkHttp3RequestGzipProperties.PREFIX)
 @Data
