@@ -476,6 +476,13 @@
         <okhttp.version>4.12.0</okhttp.version>
         <okhttp-extension.version>1.0.x.20260630-SNAPSHOT</okhttp-extension.version>
         <okhttp-metrics.version>1.0.x.20260630-SNAPSHOT</okhttp-metrics.version>
+        <!-- SECURITY (audit 2026-08): override Spring Boot's Jackson BOM to pick up
+                 the security-fixed 2.18.x line (CVE-2026-54512, -54513, -52999,
+                 -42003, -42004). Jackson 2.20+ decoupled annotations from the patch
+                 line, so pin the annotations version explicitly to the mirror-available
+                 revision. -->
+        <jackson-bom.version>2.18.8</jackson-bom.version>
+        <jackson-annotations.version>2.18</jackson-annotations.version>
         <lombok.version>1.18.30</lombok.version>
         <guava.version>31.0.1-jre</guava.version>
         <micrometer.version>1.10.6</micrometer.version>
@@ -490,6 +497,15 @@
     <dependencyManagement>
 
         <dependencies>
+        <!-- Jackson BOM (security override) -->
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
+        <dependency>
+            <groupId>com.fasterxml.jackson</groupId>
+            <artifactId>jackson-bom</artifactId>
+            <version>${jackson-bom.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
         <!-- OkHttp BOM -->
         <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-bom -->
         <dependency>
