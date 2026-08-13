@@ -125,7 +125,10 @@ public class OkHttp3AutoConfiguration {
 		 */
 		List<ConnectionSpec> connectionSpecs = connectionSpecProvider.stream().collect(Collectors.toList());
 		if(CollectionUtils.isEmpty(connectionSpecs)){
-			connectionSpecs = Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT);
+			// SECURITY (audit 2026-08): CLEARTEXT removed from the default ConnectionSpec
+			// list. Callers that genuinely need cleartext HTTP should inject their own
+			// ConnectionSpec bean (or rely on okhttp3.ssl.enabled / OkHttp3SslProperties).
+			connectionSpecs = Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS);
 		}
 		/**
 		 * get cookieJar
@@ -183,7 +186,16 @@ public class OkHttp3AutoConfiguration {
 		}
 		if(sslProperties.isEnabled()) {
 
-			X509TrustManager trustManager = trustManagerProvider.getIfAvailable(()-> { return TrustManagerUtils.getAcceptAllTrustManager(); });
+			// SECURITY (audit 2026-08): fall back to the JVM default TrustManager
+			// rather than the trust-all stub. Callers who really need a custom trust
+			// material can inject their own X509TrustManager bean.
+			X509TrustManager trustManager = trustManagerProvider.getIfAvailable(() -> {
+				try {
+					return (X509TrustManager) TrustManagerUtils.getDefaultTrustManager(null);
+				} catch (java.security.GeneralSecurityException ex) {
+					throw new IllegalStateException("Unable to resolve the JVM default TrustManager", ex);
+				}
+			});
 
 			SSLContext sslContext = SSLContexts.createSSLContext(sslProperties.getProtocol().name(), null, trustManager);
 
