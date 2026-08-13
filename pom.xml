@@ -472,6 +472,10 @@
         <okhttp.version>4.12.0</okhttp.version>
         <okhttp-extension.version>2.0.x.20260630-SNAPSHOT</okhttp-extension.version>
         <okhttp-metrics.version>2.0.x.20260630-SNAPSHOT</okhttp-metrics.version>
+        <!-- SECURITY (audit 2026-08): override Spring Boot's Jackson BOM to pick up
+                 the security-fixed 2.18.x line. -->
+        <jackson-bom.version>2.18.8</jackson-bom.version>
+        <jackson-annotations.version>2.18</jackson-annotations.version>
                 <commons-io.version>2.22.0</commons-io.version>
                 <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
                 <slf4j.version>2.0.18</slf4j.version>
@@ -480,6 +484,15 @@
     <dependencyManagement>
 
         <dependencies>
+            <!-- Jackson BOM (security override) -->
+            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- OkHttp BOM -->
             <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-bom -->
             <dependency>
