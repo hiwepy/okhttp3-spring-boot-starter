@@ -362,13 +362,15 @@ public class OkHttp3Template implements InitializingBean {
 	}
 
 	public HttpUrl getHttpUrl(String httpUrl, Map<String, Object> params) {
-		log.info("OkHttp3 >> Request Url : {}", httpUrl);
+		// SECURITY (audit 2026-08): URLs and query parameters can carry secrets
+		// (api keys, tokens, etc.). Demote to debug so they are not emitted at INFO.
+		log.debug("OkHttp3 >> Request Url : {}", httpUrl);
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(httpUrl).newBuilder();
 		if (CollectionUtils.isEmpty(params)) {
 			return urlBuilder.build();
 		}
 		if (!CollectionUtils.isEmpty(params)) {
-			log.info("OkHttp3 >> Request Params : {}", params);
+			log.debug("OkHttp3 >> Request Params : {}", params);
 			Iterator<Entry<String, Object>> it = params.entrySet().iterator();
 			while (it.hasNext()) {
 				Entry<String, Object> entry = it.next();
@@ -382,12 +384,14 @@ public class OkHttp3Template implements InitializingBean {
 												  HttpMethod method,
 												  Map<String, Object> headers,
 												  Object bodyContent) throws IOException{
-		log.info("OkHttp3 >> Request Query Url : {} , Method : {}", httpUrl.query() , method.getName());
+		// SECURITY (audit 2026-08): query strings, headers and bodies often carry
+		// Authorization/Cookie/PII. Demote to debug.
+		log.debug("OkHttp3 >> Request Query Url : {} , Method : {}", httpUrl.query() , method.getName());
 		// 1、创建Request.Builder对象
 		Request.Builder builder = new Request.Builder().url(httpUrl);
 		// 2、添加请求头
 		if(Objects.nonNull(headers)) {
-			log.info("OkHttp3 >> Request Headers : {}", headers);
+			log.debug("OkHttp3 >> Request Headers : {}", headers);
 			for (Entry<String, Object> entry : headers.entrySet()) {
 				builder.addHeader(entry.getKey(), String.valueOf(entry.getValue()));
 			}
@@ -395,7 +399,7 @@ public class OkHttp3Template implements InitializingBean {
 		// 3、添加请求体
 		if(Objects.nonNull(bodyContent)) {
 			String bodyStr = objectMapper.writeValueAsString(bodyContent);
-			log.info("OkHttp3 >> Request Body : {}", bodyStr);
+			log.debug("OkHttp3 >> Request Body : {}", bodyStr);
 			builder = method.apply(builder, bodyStr);
 		} else {
 			builder = method.apply(builder);
@@ -448,19 +452,19 @@ public class OkHttp3Template implements InitializingBean {
 		 * post request.
 		 */
 		POST("POST", (builder, bodyStr)->{
-			return builder.post(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
+			return builder.post(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr != null ? bodyStr : ""));
 		}),
 		/**
 		 * put request.
 		 */
 		PUT("PUT", (builder, bodyStr)->{
-			return builder.put(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
+			return builder.put(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr != null ? bodyStr : ""));
 		}),
 		/**
 		 * patch request.
 		 */
 		PATCH("PATCH", (builder, bodyStr)->{
-			return builder.patch(RequestBody.create(APPLICATION_JSON_UTF8, Objects.requireNonNullElse(bodyStr, "")));
+			return builder.patch(RequestBody.create(APPLICATION_JSON_UTF8, bodyStr != null ? bodyStr : ""));
 		}),
 		/**
 		 * delete request.
