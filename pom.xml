@@ -472,6 +472,9 @@
         <okhttp.version>5.4.0</okhttp.version>
         <okhttp-extension.version>3.0.x.20260630-SNAPSHOT</okhttp-extension.version>
         <okhttp-metrics.version>3.0.x.20260630-SNAPSHOT</okhttp-metrics.version>
+        <!-- SECURITY (audit 2026-08): override Spring Boot 4.x's Jackson 3 BOM
+             to pick up the security-fixed 3.1.x line. -->
+        <jackson-bom.version>3.1.5</jackson-bom.version>
                 <commons-io.version>2.22.0</commons-io.version>
                 <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
                 <slf4j.version>2.0.18</slf4j.version>
@@ -480,6 +483,16 @@
     <dependencyManagement>
 
         <dependencies>
+            <!-- Jackson BOM (security override) — Spring Boot 4.x uses tools.jackson group;
+                 override the tools.jackson BOM to pick up the security-fixed 3.1.x line. -->
+            <!-- https://mvnrepository.com/artifact/tools.jackson/jackson-bom -->
+            <dependency>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- OkHttp BOM -->
             <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-bom -->
             <dependency>
