@@ -16,6 +16,7 @@
     <version>4.1.x.20260630-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
+            <url>https://github.com/loong10k</url>
     <description>Spring Boot Starter For OkHttp 3.x</description>
     <url>https://github.com/easy-4-java/${project.artifactId}</url>
 
@@ -51,7 +52,7 @@
         <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.version>3.0</maven.version>
+        <maven.version>3.6.3</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- Third-Party Dependencies -->
