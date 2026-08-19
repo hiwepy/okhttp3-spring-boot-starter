@@ -19,6 +19,34 @@
     <description>Spring Boot Starter For OkHttp 3.x</description>
     <url>https://github.com/easy-4-java/${project.artifactId}</url>
 
+        <licenses>
+
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+        <scm>
+
+        <connection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</connection>
+        <developerConnection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</developerConnection>
+        <url>https://github.com/easy-4-java/${project.artifactId}</url>
+        <tag>${project.artifactId}</tag>
+    </scm>
+
+        <developers>
+
+        <developer>
+            <name>hiwepy</name>
+            <email>hiwepy@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+
     <properties>
         <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
