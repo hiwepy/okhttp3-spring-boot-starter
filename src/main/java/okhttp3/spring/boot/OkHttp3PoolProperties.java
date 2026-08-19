@@ -7,6 +7,8 @@ import java.time.Duration;
 
 /**
  * https://www.cnblogs.com/lujiango/p/11771319.html
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @ConfigurationProperties(OkHttp3PoolProperties.PREFIX)
 @Data

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 /**
  * OkHttp Client Metrics Ini
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 
 @Configuration(proxyBeanMethods = false)
@@ -45,11 +46,21 @@ public class OkHttp3MetricsAutoConfiguration {
 		OkHttpClient okhttp3Client = okhttp3BuilderProvider.getObject().build();
 		return InstrumentedOkHttpClients.create(meterRegistryProvider.getObject(), okhttp3Client);
 	}
+	/**
+	 * <p>Ok http3 cache metrics.</p>
+	 * @param okhttp3ClientProvider the okhttp3 client provider
+	 * @return the ok http cache metrics
+	 */
 
 	@Bean
 	public OkHttpCacheMetrics okHttp3CacheMetrics(ObjectProvider<OkHttpClient> okhttp3ClientProvider) {
 		return new OkHttpCacheMetrics(okhttp3ClientProvider.getObject(), OkHttp3Metrics.OKHTTP3_POOL_METRIC_NAME_PREFIX);
 	}
+	/**
+	 * <p>Ok http3 dispatcher metrics.</p>
+	 * @param okhttp3ClientProvider the okhttp3 client provider
+	 * @return the ok http dispatcher metrics
+	 */
 
 	@Bean
 	public OkHttpDispatcherMetrics okHttp3DispatcherMetrics(ObjectProvider<OkHttpClient> okhttp3ClientProvider) {

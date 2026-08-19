@@ -32,11 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-/**
- * OkHttp3 常规请求模板
- *
- * @author <a href="https://github.com/loong10k">Loong Wan</a>
- */
 @Slf4j
 public class OkHttp3Template implements InitializingBean {
 
@@ -407,12 +402,6 @@ public class OkHttp3Template implements InitializingBean {
 		return builder;
 	}
 
-	/**
-	 * 字符串拼接
-	 *
-	 * @param url
-	 * @return
-	 */
 	public String joinPath(String url) {
 		if (StringUtils.hasText(baseUrl)) {
 			String address;
@@ -434,6 +423,12 @@ public class OkHttp3Template implements InitializingBean {
 		}
 	}
 
+	/**
+	 * <p>Enumeration of http method values.</p>
+	 *
+	 * @author <a href="https://github.com/loong10k">Loong Wan</a>
+	 * @since 1.0.0
+	 */
 	public static enum HttpMethod {
 
 		/**
@@ -492,6 +487,7 @@ public class OkHttp3Template implements InitializingBean {
 			this.name = name;
 			this.function = function;
 		}
+		/** Gets the name. */
 
 		public String getName() {
 			return name;
@@ -504,6 +500,7 @@ public class OkHttp3Template implements InitializingBean {
 		public Request.Builder apply(Request.Builder builder){
 			return function.apply(builder, null);
 		}
+		/** Gets the by name. */
 
 		public static HttpMethod getByName(int name) {
 			for (HttpMethod type : HttpMethod.values()) {

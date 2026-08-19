@@ -7,6 +7,12 @@ import java.time.Duration;
 
 @ConfigurationProperties(OkHttp3CookieProperties.PREFIX)
 @Data
+/**
+ * <p>Configuration properties for Ok Http3 Cookie.</p>
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
+ */
 public class OkHttp3CookieProperties {
 	
 	public static final String PREFIX = "okhttp3.cookie";

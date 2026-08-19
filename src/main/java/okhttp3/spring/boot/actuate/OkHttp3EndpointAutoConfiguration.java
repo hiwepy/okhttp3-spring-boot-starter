@@ -30,12 +30,18 @@ import org.springframework.context.annotation.Configuration;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link OkHttp3Endpoint}.
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnClass({OkHttpClient.class, MeterRegistry.class})
 
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 public class OkHttp3EndpointAutoConfiguration {
+    /**
+     * <p>Ok http3 endpoint.</p>
+     * @param registry the registry
+     * @return the ok http3 endpoint
+     */
 
 	@Bean
 	@ConditionalOnMissingBean

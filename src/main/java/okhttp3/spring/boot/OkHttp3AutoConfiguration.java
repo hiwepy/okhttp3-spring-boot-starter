@@ -36,14 +36,22 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * OkHttp Client Ini
- */
 @Configuration
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @EnableConfigurationProperties({ OkHttp3Properties.class, OkHttp3PoolProperties.class, OkHttp3SslProperties.class,
 		OkHttp3CookieProperties.class, OkHttp3GzipRequestProperties.class, OkHttp3RequestHeaderProperties.class})
+/**
+ * <p>Auto-configuration for Ok Http3 integration.</p>
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
+ */
 public class OkHttp3AutoConfiguration {
+	/**
+	 * <p>Header interceptor.</p>
+	 * @param headerProperties the header properties
+	 * @return the request header interceptor
+	 */
 
 	@Bean
 	public RequestHeaderInterceptor headerInterceptor(OkHttp3RequestHeaderProperties headerProperties) {
@@ -57,16 +65,31 @@ public class OkHttp3AutoConfiguration {
 			}
 		});
 	}
+	/**
+	 * <p>Request retry intercepter.</p>
+	 * @param properties the properties
+	 * @return the request retry intercepter
+	 */
 
 	@Bean
 	public RequestRetryIntercepter requestRetryIntercepter(OkHttp3Properties properties) {
 		return new RequestRetryIntercepter(properties.getRetryMaxAttempts(), properties.getRetryInterval());
 	}
+	/**
+	 * <p>Gzip interceptor.</p>
+	 * @param gzipProperties the gzip properties
+	 * @return the gzip request interceptor
+	 */
 
 	@Bean
 	public GzipRequestInterceptor gzipInterceptor(OkHttp3GzipRequestProperties gzipProperties) {
 		return new GzipRequestInterceptor(gzipProperties.isEnabled());
 	}
+	/**
+	 * <p>Logging interceptor.</p>
+	 * @param properties the properties
+	 * @return the http logging interceptor
+	 */
 
 	@Bean
 	public HttpLoggingInterceptor loggingInterceptor(OkHttp3Properties properties) {
@@ -74,6 +97,11 @@ public class OkHttp3AutoConfiguration {
 		loggingInterceptor.setLevel(properties.getLogLevel());
 		return loggingInterceptor;
 	}
+	/**
+	 * <p>Dispatcher.</p>
+	 * @param properties the properties
+	 * @return the dispatcher
+	 */
 
 	@Bean
 	public Dispatcher dispatcher(OkHttp3PoolProperties properties) {
@@ -82,6 +110,11 @@ public class OkHttp3AutoConfiguration {
 		dispatcher.setMaxRequestsPerHost(Math.max(1, properties.getMaxRequestsPerHost()));
 		return dispatcher;
 	}
+	/**
+	 * <p>Cookie jar.</p>
+	 * @param properties the properties
+	 * @return the cookie jar
+	 */
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -207,6 +240,12 @@ public class OkHttp3AutoConfiguration {
 
 		return builder;
 	}
+	/**
+	 * <p>Okhttp3 client.</p>
+	 * @param okhttp3Builder the okhttp3 builder
+	 * @return the ok http client
+	 * @throws Exception if an error occurs
+	 */
 
 	@Bean
 	@ConditionalOnMissingBean(OkHttpClient.class)

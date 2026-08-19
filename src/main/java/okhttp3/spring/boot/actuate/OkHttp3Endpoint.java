@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 /**
  * {@link Endpoint} to expose OkHttp3 Metrics.
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Endpoint(id = "okhttp3")
 public class OkHttp3Endpoint {
@@ -43,6 +44,10 @@ public class OkHttp3Endpoint {
     public OkHttp3Endpoint(MeterRegistry registry) {
         this.registry = registry;
     }
+    /**
+     * <p>Ok http3 metrics.</p>
+     * @return the map< string,  object>
+     */
 
     @ReadOperation
     public Map<String, Object> okHttp3Metrics() {
@@ -51,6 +56,7 @@ public class OkHttp3Endpoint {
          info.put("metrics", getMetrics());
 		return info;
 	}
+    /** Gets the metrics. */
 
     public Map<String, Object> getMetrics() {
         Map<String, Object> metrics = new HashMap<>();
@@ -77,6 +83,12 @@ public class OkHttp3Endpoint {
         }
         return metrics;
     }
+    /**
+     * <p>Convert timer to map.</p>
+     * @param name the name
+     * @param timer the timer
+     * @return the map< string,  object>
+     */
 
     public Map<String, Object> convertTimerToMap(String name, Timer timer) {
         Map<String, Object> map = new HashMap<>();
@@ -96,6 +108,12 @@ public class OkHttp3Endpoint {
         });
         return map;
     }
+    /**
+     * <p>Convert summary to map.</p>
+     * @param name the name
+     * @param summary the summary
+     * @return the map< string,  object>
+     */
 
     public Map<String, Object> convertSummaryToMap(String name, DistributionSummary summary) {
         Map<String, Object> map = new HashMap<>();

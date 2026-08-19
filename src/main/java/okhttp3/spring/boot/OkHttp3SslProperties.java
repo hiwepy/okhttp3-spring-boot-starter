@@ -9,11 +9,16 @@ public class OkHttp3SslProperties {
 	
 	public static final String PREFIX = "okhttp3.ssl";
 
-	/** Whether Enable OkHttp3 SSL. */
 	private boolean enabled = false;
 	
 	private Protocol protocol = Protocol.TLS;
 	
+	/**
+	 * <p>Enumeration of protocol values.</p>
+	 *
+	 * @author <a href="https://github.com/loong10k">Loong Wan</a>
+	 * @since 1.0.0
+	 */
 	public enum Protocol {
 
 		/**
@@ -40,6 +45,10 @@ public class OkHttp3SslProperties {
 		Protocol(String protocol) {
 			this.protocol = protocol;
 		}
+		/**
+		 * <p>Value.</p>
+		 * @return the string
+		 */
 
 		public String value() {
 			return protocol;

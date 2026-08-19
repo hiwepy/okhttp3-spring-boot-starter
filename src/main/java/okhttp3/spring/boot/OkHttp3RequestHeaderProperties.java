@@ -21,6 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Http Request Header 配置
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @ConfigurationProperties(OkHttp3RequestHeaderProperties.PREFIX)
 @Data
